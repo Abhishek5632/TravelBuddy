@@ -42,9 +42,10 @@ async function connectDB() {
     usersCollection = db.collection("users");
     chatsCollection = db.collection("chats");
     console.log("✅ Connected to MongoDB Atlas (travel_bunk)");
-    // Ensure indexes for quicker queries
+
     await usersCollection.createIndex({ email: 1 }, { unique: true });
     await chatsCollection.createIndex({ users: 1 });
+
   } catch (err) {
     console.error("❌ MongoDB connection failed:", err);
   }
@@ -180,9 +181,6 @@ app.post("/api/find-users-by-trip", async (req, res) => {
       firstName: u.firstName,
       lastName: u.lastName,
       email: u.email,
-      phone: u.phone,
-      age: u.age,
-      travelStyle: u.travelStyle,
       college: u.college || "",
       img: u.img || "https://cdn-icons-png.flaticon.com/512/1077/1077114.png",
       trips: u.trips.filter(
@@ -192,7 +190,6 @@ app.post("/api/find-users-by-trip", async (req, res) => {
       ),
     }));
 
-    console.log("🔎 Found:", matchedUsers.length, "users for trip search");
     res.json({ success: true, users: matchedUsers });
   } catch (err) {
     console.error("❌ Find-users-by-trip error:", err);
@@ -200,157 +197,149 @@ app.post("/api/find-users-by-trip", async (req, res) => {
   }
 });
 
-// ----------------- SEND CONNECT REQUEST -----------------
+// ----------------- SEND REQUEST -----------------
 app.post("/api/send-request", async (req, res) => {
   try {
-    const { fromEmail, toEmail, trip } = req.body;
-    if (!fromEmail || !toEmail) return res.json({ success: false, message: "Missing fromEmail or toEmail" });
-    if (fromEmail === toEmail) return res.json({ success: false, message: "Cannot send request to yourself" });
+    const { fromEmail, toEmail } = req.body;
+    if (!fromEmail || !toEmail)
+      return res.json({ success: false, message: "Missing fields" });
 
     const fromUser = await usersCollection.findOne({ email: fromEmail });
     const toUser = await usersCollection.findOne({ email: toEmail });
-    if (!fromUser || !toUser) return res.json({ success: false, message: "User(s) not found" });
 
-    // Prevent duplicate pending requests
-    const alreadySent = (toUser.requests || []).some(r => r.fromEmail === fromEmail && r.status === "pending");
-    if (alreadySent) return res.json({ success: false, message: "Request already sent and pending" });
+    if (!fromUser || !toUser)
+      return res.json({ success: false, message: "User(s) not found" });
+
+    // prevent duplicate pending requests
+    const pending = (toUser.requests || []).some(
+      (r) => r.fromEmail === fromEmail && r.status === "pending"
+    );
+    if (pending) return res.json({ success: false, message: "Already sent" });
 
     const requestObj = {
       fromEmail,
-      fromName: fromUser.firstName || fromEmail,
-      trip: trip || null,
-      status: "pending",
-      createdAt: new Date().toISOString(),
-    };
-    const sentObj = {
-      toEmail,
-      trip: trip || null,
+      fromName: fromUser.firstName,
       status: "pending",
       createdAt: new Date().toISOString(),
     };
 
-    await usersCollection.updateOne({ email: toEmail }, { $push: { requests: requestObj } });
-    await usersCollection.updateOne({ email: fromEmail }, { $push: { sentRequests: sentObj } });
+    await usersCollection.updateOne(
+      { email: toEmail },
+      { $push: { requests: requestObj } }
+    );
 
-    // Emit socket event to recipient if connected
-    io.to(toEmail).emit("request-received", { request: requestObj, toEmail });
+    await usersCollection.updateOne(
+      { email: fromEmail },
+      { $push: { sentRequests: { toEmail, status: "pending" } } }
+    );
 
-    console.log(`📨 ${fromEmail} sent connect request to ${toEmail}`);
-    res.json({ success: true, message: "Request sent" });
+    io.to(toEmail).emit("request-received", requestObj);
+
+    res.json({ success: true });
   } catch (err) {
     console.error("❌ send-request error:", err);
     res.status(500).json({ success: false, message: "Server error" });
   }
 });
 
-// ----------------- GET INCOMING / OUTGOING REQUESTS -----------------
+// ----------------- GET REQUESTS -----------------
 app.get("/api/requests", async (req, res) => {
   const { email } = req.query;
-  if (!email) return res.json({ success: false, message: "Missing email" });
   try {
     const user = await usersCollection.findOne({ email });
-    if (!user) return res.json({ success: false, message: "User not found" });
-    res.json({ success: true, requests: user.requests || [], sentRequests: user.sentRequests || [] });
+    res.json({
+      success: true,
+      requests: user.requests || [],
+      sentRequests: user.sentRequests || [],
+    });
   } catch (err) {
-    console.error("❌ requests fetch error:", err);
-    res.status(500).json({ success: false, message: "Server error" });
+    res.json({ success: false });
   }
 });
 
-// ----------------- RESPOND TO REQUEST (accept/reject) -----------------
+// ----------------- RESPOND TO REQUEST -----------------
 app.post("/api/respond-request", async (req, res) => {
   try {
-    const { toEmail, fromEmail, action } = req.body; // toEmail -> the one who received and is responding
-    if (!toEmail || !fromEmail || !action) return res.json({ success: false, message: "Missing fields" });
+    const { toEmail, fromEmail, action } = req.body;
 
-    const valid = ["accept", "reject"];
-    if (!valid.includes(action)) return res.json({ success: false, message: "Invalid action" });
+    if (action !== "accept" && action !== "reject")
+      return res.json({ success: false });
 
-    // Update request status in recipient's requests
     await usersCollection.updateOne(
       { email: toEmail, "requests.fromEmail": fromEmail },
-      { $set: { "requests.$.status": action === "accept" ? "accepted" : "rejected" } }
+      { $set: { "requests.$.status": action } }
     );
 
-    // Update sentRequests status in sender's sentRequests
     await usersCollection.updateOne(
       { email: fromEmail, "sentRequests.toEmail": toEmail },
-      { $set: { "sentRequests.$.status": action === "accept" ? "accepted" : "rejected" } }
+      { $set: { "sentRequests.$.status": action } }
     );
 
-    // If accepted -> add to connections and create/load chat
     if (action === "accept") {
-      await usersCollection.updateOne({ email: toEmail }, { $addToSet: { connections: fromEmail } });
-      await usersCollection.updateOne({ email: fromEmail }, { $addToSet: { connections: toEmail } });
-
-      // create chat doc if not exists
-      const usersPair = [fromEmail, toEmail].sort();
-      let chat = await chatsCollection.findOne({ users: usersPair });
-      if (!chat) {
-        const newChat = {
-          users: usersPair,
-          messages: [],
-          createdAt: new Date().toISOString(),
-        };
-        const insertRes = await chatsCollection.insertOne(newChat);
-        chat = { ...newChat, _id: insertRes.insertedId };
-      }
-      // Notify both parties via socket (include chatId and users)
-      io.to(fromEmail).emit("request-accepted", { by: toEmail, chatId: chat._id, users: usersPair });
-      io.to(toEmail).emit("request-accepted", { by: toEmail, chatId: chat._id, users: usersPair });
-
-      console.log(`✅ ${toEmail} accepted request from ${fromEmail}`);
-      return res.json({ success: true, message: "Accepted", chatId: chat._id });
-    } else {
-      // rejected
-      io.to(fromEmail).emit("request-rejected", { by: toEmail });
-      console.log(`❌ ${toEmail} rejected request from ${fromEmail}`);
-      return res.json({ success: true, message: "Rejected" });
+      await usersCollection.updateOne(
+        { email: toEmail },
+        { $addToSet: { connections: fromEmail } }
+      );
+      await usersCollection.updateOne(
+        { email: fromEmail },
+        { $addToSet: { connections: toEmail } }
+      );
     }
+
+    res.json({ success: true });
   } catch (err) {
-    console.error("❌ respond-request error:", err);
-    res.status(500).json({ success: false, message: "Server error" });
+    res.json({ success: false });
   }
 });
 
-// ----------------- GET CHAT HISTORY -----------------
+// ----------------- GET CHAT -----------------
 app.get("/api/get-chat", async (req, res) => {
   try {
     const { user1, user2 } = req.query;
-    if (!user1 || !user2) return res.json({ success: false, message: "Missing users" });
     const usersPair = [user1, user2].sort();
     const chat = await chatsCollection.findOne({ users: usersPair });
-    if (!chat) return res.json({ success: true, messages: [] });
-    res.json({ success: true, messages: chat.messages || [], chatId: chat._id });
+    res.json({
+      success: true,
+      messages: chat ? chat.messages : [],
+      chatId: chat ? chat._id : null,
+    });
   } catch (err) {
-    console.error("❌ get-chat error:", err);
-    res.status(500).json({ success: false, message: "Server error" });
+    res.json({ success: false });
   }
 });
 
-// ----------------- SEND MESSAGE (REST fallback) -----------------
+// ----------------- SEND MESSAGE -----------------
 app.post("/api/send-message", async (req, res) => {
   try {
     const { from, to, text } = req.body;
-    if (!from || !to || typeof text !== "string") return res.json({ success: false, message: "Missing fields" });
+    if (!from || !to || !text)
+      return res.json({ success: false, message: "Missing fields" });
 
     const usersPair = [from, to].sort();
-    const msg = { sender: from, text, time: new Date().toISOString() };
+    const msg = {
+      sender: from,
+      text,
+      time: new Date().toISOString(),
+    };
 
-    const chat = await chatsCollection.findOneAndUpdate(
+    await chatsCollection.updateOne(
       { users: usersPair },
-      { $push: { messages: msg } },
-      { upsert: true, returnDocument: "after" }
+      {
+        $push: { messages: msg },
+        $setOnInsert: {
+          users: usersPair,
+          createdAt: new Date().toISOString(),
+        },
+      },
+      { upsert: true }
     );
 
-    // Emit new-message to both participants
-    io.to(from).emit("new-message", { message: msg, users: usersPair });
-    io.to(to).emit("new-message", { message: msg, users: usersPair });
+    io.to(from).emit("new-message", msg);
+    io.to(to).emit("new-message", msg);
 
-    res.json({ success: true, message: msg });
+    res.json({ success: true });
   } catch (err) {
-    console.error("❌ send-message error:", err);
-    res.status(500).json({ success: false, message: "Server error" });
+    res.json({ success: false });
   }
 });
 
@@ -359,10 +348,10 @@ app.get("/api/user-profile", async (req, res) => {
   try {
     const email = req.query.email;
     const user = await usersCollection.findOne({ email });
-    if (!user) return res.json({ success: false, message: "User not found" });
+    if (!user) return res.json({ success: false, message: "Not found" });
     res.json({ success: true, user });
   } catch (err) {
-    res.json({ success: false, message: err.message });
+    res.json({ success: false });
   }
 });
 
@@ -372,57 +361,52 @@ app.get("/api/get-all-users", async (req, res) => {
     const users = await usersCollection.find().toArray();
     res.json({ success: true, users });
   } catch (err) {
-    console.error("Error fetching users:", err);
-    res.json({ success: false, message: "Error fetching users" });
+    res.json({ success: false });
   }
 });
 
-// ----------------- Simple ping for wake-ups -----------------
-app.get("/api/ping", (req, res) => res.json({ success: true, message: "pong" }));
+// ----------------- ADD MISSING ROUTES -----------------
 
-// ----------------- Socket.io logic -----------------
-io.on("connection", (socket) => {
-  console.log("socket connected:", socket.id);
+// ⭐ GET USER TRIPS
+app.get("/api/user-trips/:email", async (req, res) => {
+  try {
+    const email = req.params.email;
+    const user = await usersCollection.findOne({ email });
 
-  // client should join a room named by their email
-  socket.on("join", (payload) => {
-    const { email } = payload || {};
-    if (!email) return;
-    socket.join(email);
-    console.log(`Socket ${socket.id} joined room ${email}`);
-  });
-
-  // send message via socket (realtime)
-  socket.on("send-message", async (payload) => {
-    try {
-      const { from, to, text } = payload || {};
-      if (!from || !to || typeof text !== "string") return;
-
-      const usersPair = [from, to].sort();
-      const msg = { sender: from, text, time: new Date().toISOString() };
-
-      // store
-      await chatsCollection.updateOne(
-        { users: usersPair },
-        { $push: { messages: msg }, $setOnInsert: { createdAt: new Date().toISOString(), users: usersPair } },
-        { upsert: true }
-      );
-
-      // emit to both users rooms
-      io.to(from).emit("new-message", { message: msg, users: usersPair });
-      io.to(to).emit("new-message", { message: msg, users: usersPair });
-
-    } catch (err) {
-      console.error("❌ socket send-message error:", err);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
     }
-  });
 
-  socket.on("disconnect", () => {
-    console.log("socket disconnected:", socket.id);
-  });
+    res.json({ success: true, trips: user.trips || [] });
+
+  } catch (err) {
+    console.error("❌ /api/user-trips error:", err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
 });
 
-// ----------------- SERVE FRONTEND PAGES (unchanged) -----------------
+// ⭐ GET USER BLOGS
+app.get("/api/blogs/:email", async (req, res) => {
+  try {
+    const email = req.params.email;
+    const user = await usersCollection.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    res.json({ success: true, blogs: user.blogs || [] });
+
+  } catch (err) {
+    console.error("❌ /api/user-blogs error:", err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
+// ----------------- PING -----------------
+app.get("/api/ping", (req, res) => res.json({ success: true }));
+
+// ----------------- PAGE ROUTES -----------------
 const pages = [
   "index",
   "find-companion",
@@ -449,8 +433,8 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-// start server
+// ----------------- START SERVER -----------------
 const PORT = process.env.PORT || 5001;
 server.listen(PORT, "0.0.0.0", () => {
-  console.log("🚀 Server running on PORT", PORT);
+  console.log(`🚀 Server running on PORT ${PORT}`);
 });
