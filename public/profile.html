@@ -4,110 +4,136 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Profile | TravelBuddy</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <style>
+/* GLOBAL */
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:'Poppins',sans-serif;background:#f4f9f9;color:#2D3436;overflow-x:hidden;}
 a{text-decoration:none;color:inherit;}
 ul{list-style:none;}
 
-/* Navbar */
+/* NAVBAR */
 .navbar{background:#fff;position:fixed;top:0;width:100%;z-index:1000;box-shadow:0 2px 10px rgba(0,0,0,0.1);}
 .nav-container{max-width:1200px;margin:0 auto;padding:0 20px;display:flex;justify-content:space-between;align-items:center;height:70px;}
 .nav-logo h2{color:#00BFA6;font-size:1.9rem;font-weight:700;}
+
 .nav-menu{display:flex;gap:2rem;align-items:center;}
 .nav-menu li a{color:#2D3436;font-weight:500;transition:0.3s;}
 .nav-menu li a:hover{color:#00BFA6;}
 
+.menu-toggle{display:none;font-size:1.8rem;color:#00BFA6;cursor:pointer;}
+
 .user-profile-dropdown{position:relative;display:flex;align-items:center;gap:8px;cursor:pointer;}
 .user-avatar{width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid #00BFA6;}
 .user-name{font-weight:600;color:#00BFA6;display:flex;align-items:center;gap:5px;}
-.dropdown-content{display:none;position:absolute;right:0;top:55px;background:white;border-radius:10px;box-shadow:0 5px 25px rgba(0,0,0,0.15);min-width:180px;overflow:hidden;animation:fadeIn 0.2s ease-in-out;}
-.dropdown-content a{display:block;padding:10px 15px;color:#333;font-weight:500;transition:0.3s;}
+
+.dropdown-content{
+  display:none;position:absolute;right:0;top:55px;background:white;border-radius:10px;
+  box-shadow:0 5px 25px rgba(0,0,0,0.15);min-width:180px;overflow:hidden;
+}
+.dropdown-content a{
+  display:block;padding:10px 15px;color:#333;font-weight:500;transition:0.3s;
+}
 .dropdown-content a:hover{background:linear-gradient(135deg,#00BFA6,#FDCB6E);color:white;}
-@keyframes fadeIn{from{opacity:0;transform:translateY(-5px);}to{opacity:1;transform:translateY(0);}}
 
-/* Hamburger Menu */
-/* Hamburger Menu */
-.menu-toggle {
-  display: none;
-  font-size: 1.6rem;
-  cursor: pointer;
-  color: #00BFA6;
-}
-@media (max-width: 900px) {
-  .nav-container {
-    flex-wrap: wrap;
+@media(max-width:900px){
+  .menu-toggle{display:block;}
+  .nav-menu{
+    position:fixed;top:70px;left:-100%;width:100%;background:#fff;
+    padding:2rem;flex-direction:column;transition:0.3s;
   }
-  .menu-toggle {
-    display: block;
-  }
-  .nav-menu {
-    flex-direction: column;
-    align-items: flex-start;
-    width: 100%;
-    background: white;
-    position: fixed;
-    top: 70px;
-    left: -100%;
-    padding: 2rem 1.5rem;
-    transition: left 0.3s ease;
-    box-shadow: 0 10px 27px rgba(0, 0, 0, 0.05);
-  }
-  .nav-menu.active {
-    left: 0;
-  }
-  .nav-menu li {
-    width: 100%;
-    margin: 10px 0;
-  }
-  .nav-menu li a {
-    display: block;
-    width: 100%;
-    text-align: left;
-    padding: 10px 0;
-  }
-  .user-profile-dropdown {
-    justify-content: flex-start;
-    width: 100%;
-  }
+  .nav-menu.active{left:0;}
 }
 
-
-/* Hero */
-.page-hero{background:linear-gradient(135deg,#00BFA6,#FDCB6E);padding:150px 20px 80px;text-align:center;color:white;border-bottom-left-radius:50px;border-bottom-right-radius:50px;}
+/* HERO */
+.page-hero{
+  background:linear-gradient(135deg,#00BFA6,#FDCB6E);
+  padding:150px 20px 80px;text-align:center;color:white;
+  border-bottom-left-radius:50px;border-bottom-right-radius:50px;
+}
 .page-hero h1{font-size:3rem;font-weight:700;margin-bottom:1rem;}
+
+/* CONTENT */
 .page-content{max-width:1000px;margin:0 auto;padding:80px 20px;}
-.profile-card{background:white;padding:40px;border-radius:20px;box-shadow:0 8px 25px rgba(0,0,0,0.08);text-align:center;}
-.profile-card img{width:160px;height:160px;border-radius:50%;object-fit:cover;margin-bottom:20px;border:4px solid #00BFA6;}
+.profile-card{
+  background:white;padding:40px;border-radius:20px;
+  box-shadow:0 8px 25px rgba(0,0,0,0.08);text-align:center;
+}
+.profile-card img{
+  width:160px;height:160px;border-radius:50%;
+  object-fit:cover;margin-bottom:20px;border:4px solid #00BFA6;
+}
 .profile-card h2{color:#00BFA6;font-size:2rem;margin-bottom:10px;}
 .profile-card p{margin:6px 0;color:#555;font-weight:500;}
 .profile-card hr{margin:25px 0;border:0;border-top:1px solid #eee;}
-.profile-card .btn{margin-top:10px;padding:12px 28px;border:none;border-radius:12px;background:linear-gradient(135deg,#00BFA6,#FDCB6E);color:white;font-size:1rem;cursor:pointer;font-weight:600;transition:0.3s;}
-.profile-card .btn:hover{opacity:0.9;transform:translateY(-2px);}
+
+.btn{
+  margin:10px;padding:12px 28px;border:none;border-radius:12px;
+  background:linear-gradient(135deg,#00BFA6,#FDCB6E);
+  color:white;font-size:1rem;font-weight:600;cursor:pointer;transition:0.3s;
+}
+.btn:hover{opacity:0.9;transform:translateY(-2px);}
+
+/* SECTIONS */
 .section{text-align:left;margin-bottom:40px;}
 .section h3{color:#00BFA6;margin-bottom:15px;font-size:1.3rem;}
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:15px;}
-.stat-card{background:linear-gradient(135deg,#00BFA6,#FDCB6E);color:white;padding:15px;border-radius:15px;text-align:center;}
-.cards-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:15px;}
-.card{background:white;padding:15px;border-radius:15px;box-shadow:0 4px 15px rgba(0,0,0,0.05);}
-.modal{display:none;position:fixed;z-index:1000;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,0.5);justify-content:center;align-items:center;}
-.modal-content{background:#1e1e2f;padding:20px;border-radius:12px;width:90%;max-width:400px;color:white;position:relative;}
-.close-btn{position:absolute;top:10px;right:15px;font-size:24px;cursor:pointer;color:white;}
-.modal-content input{width:100%;padding:10px;margin:8px 0;border:none;border-radius:8px;}
-.modal-content button{width:100%;padding:10px;margin-top:12px;border:none;border-radius:8px;background:#4CAF50;color:white;font-weight:600;cursor:pointer;}
+
+.stats-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:15px;margin-top:10px;
+}
+.stat-card{
+  background:linear-gradient(135deg,#00BFA6,#FDCB6E);
+  color:white;padding:15px;border-radius:15px;text-align:center;
+}
+
+.cards-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:15px;margin-top:10px;
+}
+
+.card{
+  background:white;padding:15px;border-radius:15px;
+  box-shadow:0 4px 15px rgba(0,0,0,0.05);
+}
+.small-muted{font-size:0.85rem;color:#666;}
+
+/* MODAL */
+.modal{
+  display:none;position:fixed;z-index:1000;left:0;top:0;width:100%;height:100%;
+  background:rgba(0,0,0,0.5);justify-content:center;align-items:center;
+}
+.modal-content{
+  background:#1e1e2f;padding:20px;border-radius:12px;
+  width:90%;max-width:400px;color:white;position:relative;
+}
+.close-btn{
+  position:absolute;top:10px;right:15px;font-size:24px;
+  cursor:pointer;color:white;
+}
+.modal-content input{
+  width:100%;padding:10px;margin:8px 0;border:none;border-radius:8px;
+}
+.modal-content button{
+  width:100%;padding:10px;margin-top:12px;border:none;border-radius:8px;
+  background:#4CAF50;color:white;font-weight:600;cursor:pointer;
+}
 </style>
+
 </head>
 
 <body>
+
+<!-- NAVBAR -->
 <nav class="navbar">
   <div class="nav-container">
     <div class="nav-logo"><h2>TravelBuddy</h2></div>
+
     <div class="menu-toggle" id="mobileMenu"><i class="fas fa-bars"></i></div>
+
     <ul class="nav-menu" id="nav-menu">
       <li><a href="index.html">Home</a></li>
       <li><a href="find-companion.html">Find Companion</a></li>
@@ -115,23 +141,28 @@ ul{list-style:none;}
       <li><a href="blog.html">Blogs</a></li>
       <li id="auth-section"></li>
     </ul>
+
   </div>
 </nav>
 
+<!-- HERO -->
 <section class="page-hero">
   <h1>Your Profile</h1>
   <p>View and manage all your travel info in one place</p>
 </section>
 
+<!-- CONTENT -->
 <section class="page-content">
   <div class="profile-card">
-    <img id="profilePhoto" alt="Profile Photo">
+
+    <img id="profilePhoto">
     <h2 id="profileName">User Name</h2>
     <p id="profileEmail"></p>
     <p id="profileCollege"></p>
     <p id="profileBio"></p>
     <hr>
 
+    <!-- TRAVEL STATS -->
     <div class="section">
       <h3>Travel Stats</h3>
       <div class="stats-grid">
@@ -143,191 +174,200 @@ ul{list-style:none;}
 
     <div class="section">
       <h3>Recent Trips</h3>
-      <div class="cards-grid" id="recentTrips"><div class="card"><p>Loading...</p></div></div>
+      <div class="cards-grid" id="recentTrips">
+        <div class="card"><p>Loading...</p></div>
+      </div>
     </div>
 
     <div class="section">
-      <h3>Recent Blogs</h3>
-      <div class="cards-grid" id="recentBlogs"><div class="card"><p>Loading...</p></div></div>
+      <h3>Requests</h3>
+      <div class="cards-grid" id="requestsArea">
+        <div class="card"><p>Loading...</p></div>
+      </div>
     </div>
 
     <div class="section">
-      <h3>Badges</h3>
-      <div class="cards-grid" id="badges"><div class="card"><p>Loading...</p></div></div>
+      <h3>Connections</h3>
+      <div class="cards-grid" id="connectionsArea">
+        <div class="card"><p>Loading...</p></div>
+      </div>
     </div>
 
     <button class="btn" id="editProfileBtn">Edit Profile ✏️</button>
     <button class="btn" id="writeBlogBtn">Write Blog 📝</button>
     <button class="btn" id="logoutBtn">Logout</button>
+
   </div>
 </section>
 
-<!-- Edit Modal -->
+<!-- EDIT MODAL -->
 <div class="modal" id="editProfileModal">
   <div class="modal-content">
     <span class="close-btn" id="closeModal">&times;</span>
     <h2>Edit Profile</h2>
+
     <form id="editProfileForm">
       <input type="text" id="editFirstName" placeholder="First Name" required>
       <input type="text" id="editLastName" placeholder="Last Name" required>
       <input type="text" id="editCollege" placeholder="College">
       <input type="text" id="editBio" placeholder="Bio">
-      <label>Change Photo:</label>
+
+      <label style="margin-top:10px;">Change Photo:</label>
       <input type="file" id="editPhoto" accept="image/*">
+
       <button type="submit">Save Changes</button>
     </form>
   </div>
 </div>
 
+<script src="/socket.io/socket.io.js"></script>
 <script>
 document.addEventListener("DOMContentLoaded", async () => {
+
+  const socket = io();
   const baseURL = window.location.hostname === "localhost"
     ? "http://localhost:5001"
     : "https://travelbuddy-hluu.onrender.com";
 
-  const authSection = document.getElementById("auth-section");
-  const user = JSON.parse(localStorage.getItem("user"));
+  let user = JSON.parse(localStorage.getItem("user"));
   const defaultImg = "https://cdn-icons-png.flaticon.com/512/1077/1077114.png";
 
-  // ✅ Navbar toggle
-  const mobileMenu = document.getElementById("mobileMenu");
-  const navMenu = document.getElementById("nav-menu");
-  mobileMenu.addEventListener("click", () => {
-    navMenu.classList.toggle("active");
-    mobileMenu.innerHTML = navMenu.classList.contains("active")
-      ? '<i class="fas fa-times"></i>'
-      : '<i class="fas fa-bars"></i>';
-  });
+  /* NAV MENU */
+  document.getElementById("mobileMenu").onclick = () =>
+    document.getElementById("nav-menu").classList.toggle("active");
 
-  // ✅ Navbar user
+  /* NAVBAR USER DROPDOWN */
+  const authSection = document.getElementById("auth-section");
+
   if (user) {
     authSection.innerHTML = `
       <div class="user-profile-dropdown" id="userDropdown">
-        <img src="${user.img || defaultImg}" class="user-avatar" id="navUserImg">
-        <span class="user-name" id="profileToggle">
-          ${user.firstName || user.email.split('@')[0]} <i class="fas fa-caret-down"></i>
+        <img src="${user.img || defaultImg}" class="user-avatar">
+        <span class="user-name">${user.firstName || user.email.split('@')[0]}
+          <i class="fas fa-caret-down"></i>
         </span>
-        <div class="dropdown-content" id="profileDropdown">
+
+        <div class="dropdown-content" id="dropdownMenu">
           <a href="profile.html">My Profile</a>
           <a href="trips.html">Trips</a>
-          <a href="blogs.html">Blogs</a>
-          <a href="settings.html">Settings</a>
-          <a href="#" id="dropdownLogout">Logout</a>
+          <a href="blog.html">Blogs</a>
+          <a href="#" id="logoutDropdown">Logout</a>
         </div>
-      </div>`;
-    document.getElementById("profileToggle").addEventListener("click", () => {
-      const dd = document.getElementById("profileDropdown");
+      </div>
+    `;
+
+    document.querySelector(".user-name").onclick = () => {
+      const dd = document.getElementById("dropdownMenu");
       dd.style.display = dd.style.display === "block" ? "none" : "block";
-    });
-    document.getElementById("dropdownLogout").addEventListener("click", e => {
-      e.preventDefault();
+    };
+
+    document.getElementById("logoutDropdown").onclick = () => {
       localStorage.removeItem("user");
       window.location.href = "index.html";
-    });
+    };
   }
 
+  /* JOIN SOCKET ROOM */
+  if (user?.email) socket.emit("join", { email: user.email });
+
+  /* FETCH PROFILE */
   async function fetchProfileData() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const emailParam = urlParams.get("email");
-    const loggedEmail = user?.email;
-    const targetEmail = emailParam || loggedEmail;
-
-    if (!targetEmail) {
-      alert("Please log in to view profile.");
-      window.location.href = "signin.html";
-      return;
-    }
-
-    try {
-      const res = await fetch(`${baseURL}/api/user-profile?email=${targetEmail}`);
-      const data = await res.json();
-      if (data.success && data.user) {
-        populateProfile(data.user);
-        const isOwnProfile = loggedEmail === targetEmail;
-        document.getElementById("editProfileBtn").style.display = isOwnProfile ? "inline-block" : "none";
-        document.getElementById("writeBlogBtn").style.display = isOwnProfile ? "inline-block" : "none";
-        document.getElementById("logoutBtn").style.display = isOwnProfile ? "inline-block" : "none";
-        if (!isOwnProfile) document.querySelector(".page-hero h1").innerText = `${data.user.firstName}'s Profile`;
-      } else populateProfile(user);
-    } catch (err) {
-      console.error("Profile fetch error:", err);
-      populateProfile(user);
-    }
+    const res = await fetch(`${baseURL}/api/user-profile?email=${user.email}`);
+    const data = await res.json();
+    if (data.success) populateProfile(data.user);
   }
 
+  /* POPULATE UI */
   function populateProfile(u) {
-    document.getElementById("profileName").innerText = `${u.firstName || ""} ${u.lastName || ""}`;
+    document.getElementById("profileName").innerText = `${u.firstName} ${u.lastName}`;
     document.getElementById("profileEmail").innerText = u.email;
     document.getElementById("profileCollege").innerText = "College: " + (u.college || "N/A");
     document.getElementById("profileBio").innerText = u.bio || "Traveler and explorer!";
     document.getElementById("profilePhoto").src = u.img || defaultImg;
+
     document.getElementById("totalTrips").innerText = u.trips?.length || 0;
     document.getElementById("totalDistance").innerText = (u.totalDistance || 0) + " km";
     document.getElementById("avgRating").innerText = u.rating || "N/A";
 
-    document.getElementById("recentTrips").innerHTML = u.trips?.length
-      ? u.trips.map(t => `<div class="card"><h4>${t.destination}</h4><p>${t.date || ""}</p><p>${t.details || ""}</p></div>`).join("")
-      : `<div class="card"><p>No trips yet</p></div>`;
+    /* RECENT TRIPS */
+    document.getElementById("recentTrips").innerHTML =
+      u.trips?.length
+        ? u.trips
+            .map(t => `<div class="card"><h4>${t.destination}</h4><p>${t.date}</p></div>`)
+            .join("")
+        : `<div class="card"><p>No trips yet</p></div>`;
 
-    document.getElementById("recentBlogs").innerHTML = u.blogs?.length
-      ? u.blogs.map(b => `<div class="card"><h4>${b.title}</h4><p>${b.snippet || b.content?.slice(0,60)+'...'}</p></div>`).join("")
-      : `<div class="card"><p>No blogs yet</p></div>`;
+    /* REQUESTS */
+    const reqArea = document.getElementById("requestsArea");
+    reqArea.innerHTML = "";
+    (u.requests || []).forEach(r => {
+      reqArea.innerHTML += `
+        <div class="card">
+          <p><strong>${r.fromName}</strong> (${r.fromEmail})</p>
+          <p class="small-muted">Status: ${r.status}</p>
 
-    document.getElementById("badges").innerHTML = u.badges?.length
-      ? u.badges.map(b => `<div class="card"><p>${b}</p></div>`).join("")
-      : `<div class="card"><p>No badges yet</p></div>`;
+          ${
+            r.status === "pending"
+              ? `<button class="btn acceptBtn" data-from="${r.fromEmail}">Accept</button>
+                 <button class="btn rejectBtn" data-from="${r.fromEmail}" style="background:#e74c3c">Reject</button>`
+              : ""
+          }
+        </div>
+      `;
+    });
+
+    /* CONNECTIONS */
+    const conn = document.getElementById("connectionsArea");
+    conn.innerHTML = (u.connections || [])
+      .map(email => `
+        <div class="card">
+          <p>${email}</p>
+          <a class="view-btn" href="chat.html?to=${email}">Chat</a>
+          <a class="view-btn" href="companion-profile.html?email=${email}" style="margin-left:10px;">View</a>
+        </div>
+      `)
+      .join("");
   }
 
+  /* INITIAL LOAD */
   fetchProfileData();
 
-  // ✅ Edit Modal
-  const modal = document.getElementById("editProfileModal");
-  document.getElementById("editProfileBtn").onclick = () => {
-    modal.style.display = "flex";
-    document.getElementById("editFirstName").value = user.firstName || "";
-    document.getElementById("editLastName").value = user.lastName || "";
-    document.getElementById("editCollege").value = user.college || "";
-    document.getElementById("editBio").value = user.bio || "";
-  };
-  document.getElementById("closeModal").onclick = () => modal.style.display = "none";
+  /* ACCEPT / REJECT */
+  document.addEventListener("click", async (e) => {
+    if (e.target.matches(".acceptBtn")) {
+      const fromEmail = e.target.dataset.from;
 
-  document.getElementById("editProfileForm").addEventListener("submit", async e => {
-    e.preventDefault();
-    const file = document.getElementById("editPhoto").files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = async () => {
-        user.img = reader.result;
-        await saveProfile();
-      };
-      reader.readAsDataURL(file);
-    } else await saveProfile();
+      const res = await fetch(`${baseURL}/api/respond-request`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ toEmail: user.email, fromEmail, action: "accept" })
+      });
+
+      const out = await res.json();
+      if (out.success) {
+        alert("Request accepted!");
+        fetchProfileData();   // no redirect
+      }
+    }
+
+    if (e.target.matches(".rejectBtn")) {
+      const fromEmail = e.target.dataset.from;
+
+      await fetch(`${baseURL}/api/respond-request`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ toEmail: user.email, fromEmail, action: "reject" })
+      });
+
+      alert("Request rejected.");
+      fetchProfileData();
+    }
   });
 
-  async function saveProfile() {
-    const updated = {
-      ...user,
-      firstName: document.getElementById("editFirstName").value,
-      lastName: document.getElementById("editLastName").value,
-      college: document.getElementById("editCollege").value,
-      bio: document.getElementById("editBio").value,
-    };
-    localStorage.setItem("user", JSON.stringify(updated));
-    await fetch(`${baseURL}/api/update-profile`, {
-      method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify(updated)
-    });
-    modal.style.display = "none";
-    populateProfile(updated);
-  }
-
-  document.getElementById("logoutBtn").onclick = () => {
-    localStorage.removeItem("user");
-    window.location.href = "index.html";
-  };
-  document.getElementById("writeBlogBtn").onclick = () => window.location.href = "write-blog.html";
+  /* SOCKET: update profile silently */
+  socket.on("request-accepted", () => fetchProfileData());
 });
 </script>
+
 </body>
 </html>

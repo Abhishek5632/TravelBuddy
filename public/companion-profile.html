@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Companion Profile | TravelBuddy</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+/* GLOBAL */
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Poppins',sans-serif;background:#f4f9f9;color:#2D3436;overflow-x:hidden;}
+a{text-decoration:none;color:inherit;}
+ul{list-style:none;}
+
+/* NAVBAR */
+.navbar{background:#fff;position:fixed;top:0;width:100%;z-index:1000;box-shadow:0 2px 10px rgba(0,0,0,0.1);}
+.nav-container{max-width:1200px;margin:0 auto;padding:0 20px;display:flex;justify-content:space-between;align-items:center;height:70px;}
+.nav-logo h2{color:#00BFA6;font-size:1.9rem;font-weight:700;}
+.menu-toggle{display:none;font-size:1.8rem;color:#00BFA6;cursor:pointer;}
+
+.nav-menu{display:flex;gap:2rem;align-items:center;}
+.nav-menu li a{color:#2D3436;font-weight:500;transition:0.3s;}
+.nav-menu li a:hover{color:#00BFA6;}
+
+@media(max-width:900px){
+  .menu-toggle{display:block;}
+  .nav-menu{
+    position:fixed;top:70px;left:-100%;width:100%;background:#fff;
+    padding:2rem;flex-direction:column;transition:0.3s;
+  }
+  .nav-menu.active{left:0;}
+}
+
+/* HERO */
+.page-hero{
+  background:linear-gradient(135deg,#00BFA6,#FDCB6E);
+  padding:150px 20px 80px;text-align:center;color:white;
+  border-bottom-left-radius:50px;border-bottom-right-radius:50px;
+}
+.page-hero h1{font-size:3rem;font-weight:700;margin-bottom:1rem;}
+
+/* CONTENT */
+.page-content{max-width:1000px;margin:0 auto;padding:80px 20px;}
+.profile-card{
+  background:white;padding:40px;border-radius:20px;
+  box-shadow:0 8px 25px rgba(0,0,0,0.08);text-align:center;
+}
+.profile-card img{
+  width:160px;height:160px;border-radius:50%;
+  object-fit:cover;margin-bottom:20px;border:4px solid #00BFA6;
+}
+.profile-card h2{color:#00BFA6;font-size:2rem;margin-bottom:10px;}
+.profile-card p{margin:6px 0;color:#555;font-weight:500;}
+.profile-card hr{margin:25px 0;border:0;border-top:1px solid #eee;}
+
+.btn{
+  margin:10px;padding:12px 28px;border:none;border-radius:12px;
+  background:linear-gradient(135deg,#00BFA6,#FDCB6E);
+  color:white;font-size:1rem;font-weight:600;cursor:pointer;transition:0.3s;
+}
+.btn:hover{opacity:0.9;transform:translateY(-2px);}
+
+.section{text-align:left;margin-bottom:40px;}
+.section h3{color:#00BFA6;margin-bottom:15px;font-size:1.3rem;}
+
+.stats-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:15px;margin-top:10px;
+}
+.stat-card{
+  background:linear-gradient(135deg,#00BFA6,#FDCB6E);
+  color:white;padding:15px;border-radius:15px;text-align:center;
+}
+
+.card{
+  background:white;padding:15px;border-radius:15px;
+  box-shadow:0 4px 15px rgba(0,0,0,0.05);
+  margin-top:10px;
+}
+
+.small-muted{font-size:0.85rem;color:#666;}
+</style>
+
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="nav-container">
+    <div class="nav-logo"><h2>TravelBuddy</h2></div>
+
+    <div class="menu-toggle" id="mobileMenu"><i class="fas fa-bars"></i></div>
+
+    <ul class="nav-menu" id="navMenu">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="find-companion.html">Find Companion</a></li>
+      <li><a href="explore.html">Plan a Trip</a></li>
+      <li><a href="profile.html">My Profile</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="page-hero">
+  <h1>Companion Profile</h1>
+  <p>View and connect with your travel buddy</p>
+</section>
+
+<!-- CONTENT -->
+<section class="page-content">
+
+  <div class="profile-card">
+
+    <img id="companionImg">
+    <h2 id="companionName">Loading...</h2>
+    <p id="companionEmail"></p>
+    <p id="companionCollege"></p>
+    <p id="companionBio"></p>
+    <hr>
+
+    <!-- TRAVEL STATS -->
+    <div class="section">
+      <h3>Travel Stats</h3>
+      <div class="stats-grid">
+        <div class="stat-card"><h4>Total Trips</h4><p id="trips">0</p></div>
+        <div class="stat-card"><h4>Total Distance</h4><p id="distance">0 km</p></div>
+        <div class="stat-card"><h4>Rating</h4><p id="rating">N/A</p></div>
+      </div>
+    </div>
+
+    <!-- REQUEST SECTION -->
+    <div id="requestSection">
+      <button class="btn" id="requestBtn">Send Connect Request</button>
+      <p class="small-muted" id="requestInfo"></p>
+    </div>
+
+    <!-- TRIPS -->
+    <div class="section">
+      <h3>Trips</h3>
+      <div class="card" id="tripsList">No trips added.</div>
+    </div>
+
+  </div>
+</section>
+
+<script>
+/* MOBILE NAV */
+document.getElementById("mobileMenu").onclick = () =>
+  document.getElementById("navMenu").classList.toggle("active");
+
+(async function(){
+
+  const params = new URLSearchParams(window.location.search);
+  let compEmail = params.get("email");
+
+  const dataParam = params.get("data");
+  if (!compEmail && dataParam) {
+    try {
+      compEmail = JSON.parse(decodeURIComponent(dataParam)).email;
+    } catch(e){}
+  }
+
+  if (!compEmail) {
+    alert("Invalid profile link");
+    window.location.href = "find-companion.html";
+  }
+
+  const baseURL = window.location.hostname === "localhost"
+    ? "http://localhost:5001"
+    : "https://travelbuddy-hluu.onrender.com";
+
+  const user = JSON.parse(localStorage.getItem("user"));
+  const myEmail = user?.email;
+  const defaultImg = "https://cdn-icons-png.flaticon.com/512/1077/1077114.png";
+
+
+  /* FETCH COMPANION */
+  const res = await fetch(`${baseURL}/api/user-profile?email=${compEmail}`);
+  const out = await res.json();
+  const u = out.user;
+
+  /* POPULATE */
+  document.getElementById("companionImg").src = u.img || defaultImg;
+  document.getElementById("companionName").innerText = `${u.firstName} ${u.lastName}`;
+  document.getElementById("companionEmail").innerText = u.email;
+  document.getElementById("companionCollege").innerText = "College: " + (u.college || "N/A");
+  document.getElementById("companionBio").innerText = u.bio || "";
+
+  document.getElementById("trips").innerText = u.trips?.length || 0;
+  document.getElementById("distance").innerText = (u.totalDistance || 0) + " km";
+  document.getElementById("rating").innerText = u.rating || "N/A";
+
+  /* TRIP LIST */
+  const tl = document.getElementById("tripsList");
+  if (u.trips?.length){
+    tl.innerHTML = u.trips.map(t => `
+      <p><b>${t.destination}</b> — ${t.date}</p>
+    `).join("");
+  } else {
+    tl.innerHTML = "<p>No trips added.</p>";
+  }
+
+  /* REQUEST BUTTON LOGIC */
+  const requestBtn = document.getElementById("requestBtn");
+  const requestInfo = document.getElementById("requestInfo");
+
+  if (!myEmail) {
+    requestBtn.disabled = true;
+    requestInfo.innerText = "Login to send requests.";
+  }
+
+  if (u.connections?.includes(myEmail)){
+    requestBtn.style.display = "none";
+    requestInfo.innerText = "You are already connected ✔";
+  }
+
+  const outgoing = user?.sentRequests || [];
+  if (outgoing.some(r => r.toEmail === compEmail && r.status === "pending")) {
+    requestBtn.disabled = true;
+    requestInfo.innerText = "Request already sent — waiting for acceptance.";
+  }
+
+  /* SEND REQUEST */
+  requestBtn.onclick = async () => {
+    requestBtn.disabled = true;
+
+    const res = await fetch(`${baseURL}/api/send-request`, {
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body: JSON.stringify({ fromEmail: myEmail, toEmail: compEmail })
+    });
+
+    const data = await res.json();
+    if (data.success) {
+      requestInfo.innerText = "Request sent! Waiting for acceptance.";
+    } else {
+      requestInfo.innerText = data.message || "Error.";
+      requestBtn.disabled = false;
+    }
+  };
+
+})();
+</script>
+
+</body>
+</html>

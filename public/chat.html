@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Chat | TravelBuddy</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+body{background:#f4f9f9;}
+
+.chat-header{
+  background:linear-gradient(135deg,#00BFA6,#FDCB6E);
+  padding:20px;
+  color:white;
+  font-size:1.4rem;
+  font-weight:600;
+  text-align:center;
+  position:relative;
+}
+
+.back-btn{
+  position:absolute;
+  left:15px;
+  top:20px;
+  color:white;
+  font-size:1.2rem;
+  text-decoration:none;
+  font-weight:500;
+}
+
+.chat-box{
+  max-width:700px;
+  margin:20px auto;
+  background:white;
+  border-radius:12px;
+  padding:15px;
+  box-shadow:0 4px 20px rgba(0,0,0,0.08);
+}
+
+.messages{
+  height:65vh;
+  overflow-y:auto;
+  padding-right:10px;
+}
+
+.msg{
+  margin:10px 0;
+  padding:10px 14px;
+  border-radius:10px;
+  max-width:70%;
+  font-size:0.95rem;
+}
+
+.me{
+  background:#d1fff3;
+  margin-left:auto;
+  border:1px solid #8efce0;
+}
+
+.them{
+  background:#e8e8e8;
+  margin-right:auto;
+  border:1px solid #dcdcdc;
+}
+
+.time{
+  display:block;
+  font-size:0.7rem;
+  opacity:0.6;
+  margin-top:4px;
+}
+
+.input-area{
+  display:flex;
+  gap:10px;
+  padding:15px 0;
+}
+
+input{
+  flex:1;
+  padding:12px;
+  border:1px solid #ccc;
+  border-radius:10px;
+}
+
+button{
+  padding:12px 22px;
+  background:linear-gradient(135deg,#00BFA6,#FDCB6E);
+  border:none;
+  color:white;
+  font-weight:600;
+  border-radius:10px;
+  cursor:pointer;
+  transition:0.3s;
+}
+button:hover{opacity:0.85;}
+</style>
+
+</head>
+<body>
+
+<div class="chat-header">
+  <a id="backLink" href="profile.html" class="back-btn">← Back</a>
+  Chat with <span id="chatName">...</span>
+</div>
+
+<div class="chat-box">
+  <div class="messages" id="messages"></div>
+
+  <div class="input-area">
+    <input type="text" id="msgInput" placeholder="Type a message..." />
+    <button id="sendBtn">Send</button>
+  </div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+
+<script>
+(async function(){
+
+  const params = new URLSearchParams(window.location.search);
+  const to = params.get("to");
+
+  if(!to){
+    alert("Invalid chat link");
+    window.location.href = "profile.html";
+  }
+
+  const user = JSON.parse(localStorage.getItem("user"));
+  if(!user){
+    alert("Please login first");
+    window.location.href = "signin.html";
+  }
+
+  const myEmail = user.email;
+  const baseURL = window.location.hostname === "localhost"
+    ? "http://localhost:5001"
+    : "https://travelbuddy-hluu.onrender.com";
+
+  document.getElementById("chatName").innerText = to;
+  // back link goes to the companion's profile
+  document.getElementById("backLink").href = `companion-profile.html?data=${encodeURIComponent(JSON.stringify({ email: to }))}`;
+
+  // connect socket and join room
+  const socket = io();
+  socket.emit("join", { email: myEmail });
+
+  const messagesBox = document.getElementById("messages");
+
+  function addMessage(text, sender, time){
+    const div = document.createElement("div");
+    div.className = "msg " + (sender === myEmail ? "me" : "them");
+    div.innerHTML = `${escapeHtml(text)}<span class="time">${new Date(time).toLocaleString()}</span>`;
+    messagesBox.appendChild(div);
+    messagesBox.scrollTop = messagesBox.scrollHeight;
+  }
+
+  function escapeHtml(unsafe) {
+    return unsafe
+     .replaceAll("&", "&amp;")
+     .replaceAll("<", "&lt;")
+     .replaceAll(">", "&gt;")
+     .replaceAll('"', "&quot;")
+     .replaceAll("'", "&#039;");
+  }
+
+  // Load old chat
+  async function loadChat(){
+    try {
+      const res = await fetch(`${baseURL}/api/get-chat?user1=${encodeURIComponent(myEmail)}&user2=${encodeURIComponent(to)}`);
+      const data = await res.json();
+      if(data.success){
+        data.messages.forEach(m=>{
+          addMessage(m.text, m.sender, m.time);
+        });
+      }
+    } catch (e) {
+      console.error("Failed to load chat:", e);
+    }
+  }
+  await loadChat();
+
+  // Send New Msg
+  document.getElementById("sendBtn").onclick = sendMessage;
+  document.getElementById("msgInput").addEventListener("keypress", e=>{
+    if(e.key === "Enter") sendMessage();
+  });
+
+  async function sendMessage(){
+    const text = document.getElementById("msgInput").value.trim();
+    if(!text) return;
+
+    // send via socket for realtime and server storage
+    socket.emit("send-message", { from: myEmail, to, text });
+    document.getElementById("msgInput").value = "";
+  }
+
+  // Receive realtime msg
+  socket.on("new-message", payload => {
+    const msg = payload.message;
+    const users = payload.users;
+    if(users.includes(myEmail) && users.includes(to)){
+      addMessage(msg.text, msg.sender, msg.time);
+    }
+  });
+
+})();
+</script>
+
+</body>
+</html>

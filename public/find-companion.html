@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Find Your Travel Companion | TravelBuddy</title>
+
   <style>
     * {margin: 0; padding: 0; box-sizing: border-box;}
     body {
@@ -15,7 +16,7 @@
       flex-direction: column;
     }
 
-    /* Navbar */
+    /* ================= NAVBAR ================= */
     .navbar {
       background: rgba(255,255,255,0.95);
       backdrop-filter: blur(10px);
@@ -40,56 +41,49 @@
       text-decoration: none;
       color: #2D3436;
       font-weight: 500;
-      position: relative;
       padding: 5px 0;
-      transition: color 0.3s;
-    }
-    .nav-menu li a:hover {color:#00BFA6;}
-    .nav-menu li a::after {
-      content: '';
-      position: absolute;
-      width: 0;
-      height: 2px;
-      background: #00BFA6;
-      bottom: -5px;
-      left: 0;
       transition: 0.3s;
     }
-    .nav-menu li a:hover::after {width: 100%;}
+    .nav-menu li a:hover {color:#00BFA6;}
+
     .hamburger {display:none;flex-direction:column;cursor:pointer;}
     .hamburger span {width:25px;height:3px;background:#2D3436;margin:3px 0;border-radius:2px;}
-    @media(max-width:768px){
-      .nav-menu {position:fixed;top:70px;left:-100%;flex-direction:column;background:white;width:100%;padding:2rem 0;transition:0.3s;box-shadow:0 10px 27px rgba(0,0,0,0.05);}
-      .nav-menu.active {left:0;}
+
+    @media (max-width: 768px) {
+      .nav-menu {
+        position: fixed;
+        top: 70px;
+        left: -100%;
+        flex-direction: column;
+        background: white;
+        width: 100%;
+        padding: 2rem 0;
+        gap: 1.4rem;
+        transition: 0.3s;
+      }
+      .nav-menu.active {left: 0;}
       .hamburger {display:flex;}
-      .nav-logo h2 {font-size:1.3rem;}
     }
 
 
-    /* Hero */
+    /* ================= HERO ================= */
     .page-hero {
       background: linear-gradient(135deg,#00BFA6,#FDCB6E);
       padding: 130px 20px 70px;
       text-align: center;
       color: white;
-      flex-shrink: 0;
     }
     .page-hero h1 {font-size:3rem;font-weight:700;margin-bottom:1rem;}
-    .page-hero p {font-size:1.25rem;opacity:0.92;}
 
 
-    /* Content */
+    /* ================= CONTENT ================= */
     .page-content {
       flex: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-start;
       max-width:1200px;
       margin:0 auto;
       padding:50px 20px 70px;
       width: 100%;
     }
-
 
     .search-box {
       background:white;border-radius:14px;
@@ -107,16 +101,9 @@
       padding:9px 22px;border:none;border-radius:10px;
       background:linear-gradient(135deg,#00BFA6,#FDCB6E);
       color:white;cursor:pointer;font-weight:600;font-size:16px;
-      transition:0.3s;box-shadow:0 2px 12px rgba(0,191,166,0.08);
+      transition:0.3s;
     }
     .search-box button:hover {transform:scale(1.05);}
-
-
-    #noResults {
-      text-align:center;color:#00BFA6;font-weight:600;
-      margin-top:38px;font-size:1.18rem;
-    }
-
 
     #resultsContainer {
       display:grid;
@@ -125,7 +112,7 @@
       margin-top:20px;
     }
 
-
+    /* ================= USER CARD ================= */
     .card {
       background:white;border-radius:14px;
       box-shadow:0 4px 12px rgba(0,0,0,0.09);
@@ -134,10 +121,11 @@
     }
     .card:hover {transform:scale(1.03);}
     .card img {width:100%;height:175px;object-fit:cover;}
+
     .card-content {padding:17px 16px 14px;}
     .card-content h2 {color:#00BFA6;font-size:1.18rem;font-weight:700;}
     .card-content p {margin:4px 0;color:#444;font-size:0.95rem;}
-    .card-content b {color:#2D3436;}
+
     .view-btn {
       margin-top:10px;
       padding:8px 12px;
@@ -147,236 +135,187 @@
       color:white;
       font-weight:600;
       cursor:pointer;
-      transition:0.3s;
-      text-decoration:none;
-      display:inline-block;
       text-align:center;
+      display:inline-block;
+      transition:0.3s;
     }
+
     .view-btn:hover {transform:scale(1.05);}
 
 
-    /* Footer */
+    /* ================= FOOTER ================= */
     .footer {
       background:#2D3436;
       color:white;
       text-align:center;
       padding:2.5rem 20px;
-      flex-shrink: 0;
     }
-    .footer h3 {color:#00BFA6;}
 
+    #noResults {
+      text-align:center;
+      margin-top:20px;
+      font-size:1.2rem;
+      color:#00BFA6;
+      font-weight:600;
+      display:none;
+    }
 
-    /* Skeleton Loading */
-    .skeleton {
-      position: relative;
-      overflow: hidden;
-    }
-    .skeleton-img {
-      width: 100%;
-      height: 175px;
-      background: #eee;
-      border-radius: 14px 14px 0 0;
-    }
-    .skeleton-line {
-      height: 12px;
-      background: #eee;
-      border-radius: 6px;
-      margin: 8px 0;
-    }
-    .skeleton::after {
-      content: "";
-      position: absolute;
-      top: 0; left: -150px;
-      width: 100px; height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-      animation: shimmer 1.3s infinite;
-    }
-    @keyframes shimmer {
-      100% { left: 100%; }
-    }
   </style>
 </head>
 <body>
 
+  <!-- NAVBAR -->
   <nav class="navbar">
     <div class="nav-container">
       <div class="nav-logo"><h2>TravelBuddy</h2></div>
+
       <ul class="nav-menu">
         <li><a href="index.html">Home</a></li>
         <li><a href="find-companion.html">Find Companion</a></li>
         <li><a href="explore.html">Add Trip</a></li>
         <li><a href="profile.html">Profile</a></li>
       </ul>
+
       <div class="hamburger"><span></span><span></span><span></span></div>
     </div>
   </nav>
 
+  <!-- HERO -->
   <section class="page-hero">
     <h1>Find Your Travel Companion</h1>
     <p>Connect with fellow travelers and make your journeys memorable!</p>
   </section>
 
+  <!-- CONTENT -->
   <section class="page-content">
+
     <div class="search-box">
       <label>Date:</label>
       <input type="date" id="tripDate" />
       <label>Destination:</label>
-      <input type="text" id="destination" placeholder="e.g. Jaipur, Goa, Delhi" />
+      <input type="text" id="destination" placeholder="e.g. Jaipur, Goa" />
       <button onclick="searchTrips()">🔍 Search</button>
     </div>
-    <p id="noResults" style="display:none;">No travelers found for this trip 😔</p>
+
+    <p id="noResults">No travelers found 😔</p>
+
     <div id="resultsContainer"></div>
+
   </section>
 
+  <!-- FOOTER -->
   <footer class="footer">
     <h3>TravelBuddy</h3>
     <p>&copy; 2025 TravelBuddy. All rights reserved.</p>
   </footer>
 
-  <script>
-    // Redirect if user not logged in
-    const user = JSON.parse(localStorage.getItem("user"));
-    if (!user) {
-      alert("Please log in first to access this page.");
-      window.location.href = "signin.html";
-    }
 
-    const hamburger = document.querySelector(".hamburger");
-    const navMenu = document.querySelector(".nav-menu");
-    hamburger.addEventListener("click", () => navMenu.classList.toggle("active"));
+<script>
+/* Ensure user logged in */
+const user = JSON.parse(localStorage.getItem("user"));
+if (!user) {
+  alert("Please log in first.");
+  window.location.href = "signin.html";
+}
 
-    const baseURL = window.location.hostname === "localhost"
-      ? "http://localhost:5001"
-      : "https://travelbuddy-hluu.onrender.com";
+/* Mobile Menu */
+document.querySelector(".hamburger").onclick = () =>
+  document.querySelector(".nav-menu").classList.toggle("active");
 
-    const container = document.getElementById("resultsContainer");
-    const noResults = document.getElementById("noResults");
+/* Backend URL */
+const baseURL = window.location.hostname === "localhost"
+  ? "http://localhost:5001"
+  : "https://travelbuddy-hluu.onrender.com";
 
-    // Fetch early to wake backend
-    fetch(`${baseURL}/api/ping`).catch(() => {});
+const container = document.getElementById("resultsContainer");
+const noResults = document.getElementById("noResults");
 
-    // Show skeleton placeholders
-    function showSkeletons(count = 6) {
-      container.innerHTML = "";
-      for (let i = 0; i < count; i++) {
-        container.innerHTML += `
-          <div class="card skeleton">
-            <div class="skeleton-img"></div>
-            <div class="card-content">
-              <div class="skeleton-line" style="width:60%"></div>
-              <div class="skeleton-line" style="width:80%"></div>
-              <div class="skeleton-line" style="width:70%"></div>
-            </div>
-          </div>`;
-      }
-    }
+/* Render Users */
+function renderUsers(users) {
+  let html = "";
+  users.forEach(u => {
+    const trip = u.trips?.[0] || { date:"N/A", destination:"Not Added" };
+    const img = u.img || "https://cdn-icons-png.flaticon.com/512/1077/1077114.png";
 
-    // Improved user render: build HTML string once
-    function renderUsers(users) {
-      let html = "";
-      users.forEach(user => {
-        const trip = user.trips && user.trips[0] ? user.trips[0] : { date: "N/A", destination: "Not Added" };
-        const img = user.img || "https://images.unsplash.com/photo-1511367461989-f85a21fda167?auto=format&fit=facearea&w=400&h=300&facepad=2";
-        html += `
-          <div class="card">
-            <img src="${img}" alt="${user.firstName}" loading="lazy">
-            <div class="card-content">
-              <h2>${user.firstName || "Unknown"} ${user.lastName || ""}</h2>
-              <p><b>College:</b> ${user.college || "Not Mentioned"}</p>
-              <p><b>Date:</b> ${trip.date}</p>
-              <p><b>Destination:</b> ${trip.destination}</p>
-              <a class="view-btn" href="profile.html?email=${encodeURIComponent(user.email)}">View Profile</a>
-            </div>
-          </div>`;
-      });
-      container.innerHTML = html;
-    }
+    html += `
+      <div class="card">
+        <img src="${img}" alt="${u.firstName}">
+        <div class="card-content">
+          <h2>${u.firstName} ${u.lastName}</h2>
+          <p><b>College:</b> ${u.college || "Not shared"}</p>
+          <p><b>Date:</b> ${trip.date}</p>
+          <p><b>Destination:</b> ${trip.destination}</p>
 
-    // Load all users with retry on page load
-    window.addEventListener("load", async () => {
-      showSkeletons();
+          <!-- ✔ Correct page -->
+          <a class="view-btn" href="companion-profile.html?email=${encodeURIComponent(u.email)}">
+            View Profile
+          </a>
+        </div>
+      </div>
+    `;
+  });
+
+  container.innerHTML = html;
+}
+
+/* Load All Users On Page Load */
+window.addEventListener("load", async () => {
+  noResults.style.display = "block";
+  noResults.textContent = "Loading travellers...";
+
+  try {
+    const res = await fetch(`${baseURL}/api/get-all-users`);
+    const data = await res.json();
+
+    if (data.success && data.users.length > 0) {
+      noResults.style.display = "none";
+      renderUsers(data.users);
+    } else {
       noResults.style.display = "block";
-      noResults.textContent = "⏳ Connecting to server... please wait";
+      noResults.textContent = "No travelers found 😔";
+    }
 
-      let attempt = 0;
-      let loaded = false;
+  } catch (err) {
+    noResults.textContent = "Unable to connect to server.";
+  }
+});
 
-      while (attempt < 2 && !loaded) {
-        try {
-          const res = await fetch(`${baseURL}/api/get-all-users`);
-          const data = await res.json();
+/* Search Trips */
+async function searchTrips() {
+  const date = document.getElementById("tripDate").value;
+  const destination = document.getElementById("destination").value.trim();
 
-          if (data.success && data.users?.length > 0) {
-            renderUsers(data.users.slice(0, 10));
-            noResults.style.display = "none";
-            loaded = true;
-          } else {
-            noResults.style.display = "block";
-            noResults.textContent = "No travelers found 😔";
-          }
-        } catch (err) {
-          attempt++;
-          console.warn(`Attempt ${attempt} failed, retrying...`);
-          noResults.style.display = "block";
-          noResults.textContent = "⚙️ Server waking up... retrying in 3 seconds";
+  if (!date || !destination) {
+    alert("Please enter both fields.");
+    return;
+  }
 
-          if (attempt < 2) {
-            await new Promise(resolve => setTimeout(resolve, 3000)); // wait 3 sec
-          } else {
-            noResults.textContent = "❌ Unable to reach server. Please refresh after a few seconds.";
-          }
-        }
-      }
+  container.innerHTML = "";
+  noResults.style.display = "none";
+
+  try {
+    const res = await fetch(`${baseURL}/api/find-users-by-trip`, {
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body: JSON.stringify({ date, destination })
     });
 
-    // Fetch with timeout utility to prevent hanging
-    async function fetchWithTimeout(url, options = {}, timeout = 5000) {
-      const controller = new AbortController();
-      const id = setTimeout(() => controller.abort(), timeout);
-      try {
-        const response = await fetch(url, { ...options, signal: controller.signal });
-        clearTimeout(id);
-        return response;
-      } catch (e) {
-        clearTimeout(id);
-        throw e;
-      }
+    const data = await res.json();
+
+    if (data.success && data.users.length > 0) {
+      renderUsers(data.users);
+    } else {
+      container.innerHTML = "";
+      noResults.style.display = "block";
+      noResults.textContent = "No travelers found 😔";
     }
 
-    // Search trips optimized
-    async function searchTrips() {
-      const date = document.getElementById("tripDate").value;
-      const destination = document.getElementById("destination").value.trim();
-      if (!date || !destination) {
-        alert("Please enter both date and destination.");
-        return;
-      }
-      showSkeletons(4);
-      noResults.style.display = "none";
+  } catch (err) {
+    noResults.style.display = "block";
+    noResults.textContent = "Error reaching server.";
+  }
+}
+</script>
 
-      try {
-        const res = await fetchWithTimeout(`${baseURL}/api/find-users-by-trip`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ date, destination }),
-        }, 5000);
-
-        const data = await res.json();
-        if (!data.success || !data.users?.length) {
-          container.innerHTML = "";
-          noResults.style.display = "block";
-          noResults.textContent = "No travelers found for this trip 😔";
-        } else {
-          noResults.style.display = "none";
-          renderUsers(data.users);
-        }
-      } catch (err) {
-        console.error("❌ Fetch Error:", err);
-        container.innerHTML = "";
-        noResults.style.display = "block";
-        noResults.textContent = "❌ Unable to connect. Please try again later.";
-      }
-    }
-  </script>
 </body>
 </html>
