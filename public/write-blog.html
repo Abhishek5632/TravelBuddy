@@ -4,68 +4,64 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Write Blog | TravelBunk</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
   <style>
     *{margin:0; padding:0; box-sizing:border-box;}
     body{font-family:'Poppins',sans-serif; background:#f4f9f9; color:#2D3436; line-height:1.6;}
-    a{text-decoration:none; color:inherit;}
-    ul{list-style:none; padding-left:0;}
 
     /* Navbar */
-    .navbar{background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); position: fixed; top:0; width:100%; z-index:1000; box-shadow:0 2px 10px rgba(0,0,0,0.05);}
-    .nav-container{max-width:1200px; margin:0 auto; padding:0 20px; display:flex; justify-content:space-between; align-items:center; height:70px;}
+    .navbar{background:#fff; position:fixed; top:0; width:100%; z-index:1000;
+      box-shadow:0 2px 10px rgba(0,0,0,0.1);}
+    .nav-container{max-width:1200px; margin:auto; height:70px; padding:0 20px;
+      display:flex; justify-content:space-between; align-items:center;}
     .nav-logo h2{color:#00BFA6; font-size:1.9rem; font-weight:700;}
-    .nav-menu{display:flex; list-style:none; gap:2rem; align-items:center;}
-    .nav-menu li a{text-decoration:none; color:#2D3436; font-weight:500; transition:0.3s;}
-    .nav-menu li a:hover{color:#00BFA6;}
+    .nav-menu{display:flex; gap:2rem;}
+    .nav-menu a{color:#222; text-decoration:none; font-weight:500;}
+    .nav-menu a:hover{color:#00BFA6;}
 
-    /* Hero Section */
-    .page-hero{background: linear-gradient(135deg,#00BFA6,#FDCB6E); padding:120px 20px 80px; text-align:center; color:white; border-bottom-left-radius:50px; border-bottom-right-radius:50px;}
-    .page-hero h1{font-size:3rem; font-weight:700; margin-bottom:1rem;}
-    .page-hero p{font-size:1.2rem; font-weight:500; opacity:0.9;}
+    /* Hero */
+    .page-hero{
+      background:linear-gradient(135deg,#00BFA6,#FDCB6E);
+      padding:120px 20px 80px; text-align:center; color:white;
+      border-bottom-left-radius:50px; border-bottom-right-radius:50px;
+    }
+    .page-hero h1{font-size:2.8rem; font-weight:700;}
 
-    /* Page Content */
+    /* Form Section */
     .page-content{max-width:900px; margin:0 auto; padding:60px 20px;}
-    .blog-form{background:white; padding:30px; border-radius:20px; box-shadow:0 8px 25px rgba(0,0,0,0.08); transition:0.3s;}
-    .blog-form:hover{box-shadow:0 12px 30px rgba(0,0,0,0.12);}
-    .blog-form h2{color:#00BFA6; margin-bottom:20px; text-align:center;}
+    .blog-form{
+      background:white; padding:30px; border-radius:20px;
+      box-shadow:0 8px 20px rgba(0,0,0,0.08);
+    }
+    .blog-form input, .blog-form textarea{
+      width:100%; padding:12px 15px; margin:10px 0;
+      border-radius:10px; border:1px solid #ccc; font-size:16px;
+    }
+    .blog-form textarea{min-height:160px; resize:vertical;}
 
-    .blog-form input[type="text"], 
-    .blog-form input[type="file"],
-    .blog-form textarea{
-      width:100%; padding:12px 15px; margin:10px 0; border-radius:10px; border:1px solid #ddd; outline:none; font-size:16px; transition:0.3s;
+    /* Editor */
+    .editor-box{
+      min-height:200px; background:#fff;
+      border:1px solid #ddd; border-radius:10px;
+      padding:15px; margin-bottom:15px;
+    }
+    .toolbar{display:flex; gap:10px; margin-bottom:10px;}
+    .toolbar button{
+      padding:6px 12px; border:none; border-radius:6px;
+      background:#00BFA6; color:white; cursor:pointer;
     }
 
-    .blog-form input[type="text"]:focus,
-    .blog-form textarea:focus{border-color:#00BFA6;}
-
-    .blog-form textarea{
-      resize: vertical; min-height:200px; font-family:'Poppins', sans-serif;
+    .submit-btn{
+      width:100%; padding:14px; margin-top:20px;
+      border:none; border-radius:12px;
+      background:linear-gradient(135deg,#00BFA6,#FDCB6E);
+      color:white; font-size:18px; font-weight:600;
+      cursor:pointer;
     }
-
-    .blog-form .toolbar{
-      display:flex; gap:10px; margin-bottom:10px;
-    }
-    .blog-form .toolbar button{
-      padding:8px 12px; border:none; background:#00BFA6; color:white; border-radius:8px; cursor:pointer; transition:0.3s;
-    }
-    .blog-form .toolbar button:hover{opacity:0.9;}
-
-    .blog-form button.submit-btn{
-      background: linear-gradient(135deg,#00BFA6,#FDCB6E); color:white; font-size:18px; padding:12px; border:none; border-radius:12px; cursor:pointer; margin-top:15px; font-weight:600; transition:0.3s;
-    }
-    .blog-form button.submit-btn:hover{opacity:0.9; transform:translateY(-2px);}
-
-    .preview-container{margin-top:20px; border:1px solid #ddd; padding:15px; border-radius:12px; background:#f9f9f9; min-height:150px;}
-
-    @media(max-width:768px){
-      .nav-menu{gap:1rem; flex-wrap:wrap;}
-      .page-hero h1{font-size:2rem;}
-      .blog-form{padding:20px;}
-    }
+    .submit-btn:hover{opacity:0.9;}
   </style>
 </head>
 <body>
@@ -76,26 +72,27 @@
       <div class="nav-logo"><h2>TravelBunk</h2></div>
       <ul class="nav-menu">
         <li><a href="index.html">Home</a></li>
-        <li><a href="find-companion.html">Find Companion</a></li>
-        <!-- <li><a href="explore.html">Explore Trips</a></li> -->
+        <li><a href="blog.html">Community</a></li>
         <li><a href="profile.html">Profile</a></li>
       </ul>
     </div>
   </nav>
 
-  <!-- Hero -->
+  <!-- Hero Section -->
   <section class="page-hero">
-    <h1>Write a New Blog</h1>
-    <p>Share your travel stories, experiences, and tips with the world</p>
+    <h1>Write a Blog</h1>
+    <p>Share your travel story with the world 🌍</p>
   </section>
 
   <!-- Blog Form -->
   <section class="page-content">
     <form class="blog-form" id="blogForm">
-      <h2>Create Blog</h2>
-      <input type="text" id="blogTitle" placeholder="Blog Title" required>
+      
+      <h2 style="text-align:center; color:#00BFA6;">Create Your Blog</h2>
 
-      <!-- Toolbar for rich text formatting -->
+      <input type="text" id="blogTitle" placeholder="Enter Blog Title" required>
+
+      <!-- Rich text toolbar -->
       <div class="toolbar">
         <button type="button" onclick="format('bold')"><b>B</b></button>
         <button type="button" onclick="format('italic')"><i>I</i></button>
@@ -104,85 +101,81 @@
         <button type="button" onclick="format('insertOrderedList')">1. List</button>
       </div>
 
-      <!-- Content editable div -->
-      <div id="blogContent" contenteditable="true" class="preview-container" placeholder="Write your blog here..."></div>
+      <!-- Editable container -->
+      <div id="blogContent" class="editor-box" contenteditable="true"></div>
 
-      <!-- Media upload -->
+      <label>Upload Image(s)</label>
       <input type="file" id="blogImage" accept="image/*" multiple>
+
+      <label>Upload Video(s)</label>
       <input type="file" id="blogVideo" accept="video/*" multiple>
-      <input type="text" id="blogDestination" placeholder="Destination (e.g. Paris)" required>
+
+      <input type="text" id="blogDestination" placeholder="Destination (e.g. Goa)" required>
 
       <button type="submit" class="submit-btn">Publish Blog</button>
     </form>
   </section>
 
+  <!-- Script -->
   <script>
-    const blogForm = document.getElementById("blogForm");
-    
-    blogForm.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  let user = JSON.parse(localStorage.getItem("user"));
-  if (!user) { alert("Please login first!"); return; }
+    function format(cmd){
+      document.execCommand(cmd, false, null);
+    }
 
-  const blogImageFiles = document.getElementById("blogImage").files;
-const blogVideoFiles = document.getElementById("blogVideo").files;
+    // Convert File → Base64
+    const toBase64 = file =>
+      new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+      });
 
-const toBase64 = file => new Promise((resolve, reject) => {
-  if(!file) return resolve(null);
-  const reader = new FileReader();
-  reader.readAsDataURL(file);
-  reader.onload = () => resolve(reader.result);
-  reader.onerror = error => reject(error);
-});
+    document.getElementById("blogForm").addEventListener("submit", async (e)=>{
+      e.preventDefault();
 
-const imageBase64Array = [];
-for(let i=0; i<blogImageFiles.length; i++){
-  const base64 = await toBase64(blogImageFiles[i]);
-  if(base64) imageBase64Array.push(base64);
-}
+      let user = JSON.parse(localStorage.getItem("user"));
+      if(!user){ alert("Please login first!"); return; }
 
-const videoBase64Array = [];
-for(let i=0; i<blogVideoFiles.length; i++){
-  const base64 = await toBase64(blogVideoFiles[i]);
-  if(base64) videoBase64Array.push(base64);
-}
+      // Collect images
+      const imgFiles = document.getElementById("blogImage").files;
+      const imgArr = [];
+      for(const f of imgFiles){ imgArr.push(await toBase64(f)); }
 
-const newBlog = {
-  title: document.getElementById("blogTitle").value,
-  content: document.getElementById("blogContent").innerHTML,
-  image: imageBase64Array.length ? imageBase64Array : null,
-  video: videoBase64Array.length ? videoBase64Array : null,
-  date: new Date().toLocaleString()
-};
+      // Collect videos
+      const vidFiles = document.getElementById("blogVideo").files;
+      const vidArr = [];
+      for(const f of vidFiles){ vidArr.push(await toBase64(f)); }
 
-  try {
-    const response = await fetch("/api/add-blog", {
+      // Blog object
+      const blogPayload = {
+        title: document.getElementById("blogTitle").value,
+        content: document.getElementById("blogContent").innerHTML,
+        image: imgArr,
+        video: vidArr,
+        author: `${user.firstName} ${user.lastName}`,
+        authorEmail: user.email,
+        destination: document.getElementById("blogDestination").value
+      };
 
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: user.email, blog: newBlog })
+      // Send to backend
+      const res = await fetch("/api/add-blog", {
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify(blogPayload)
+      });
+
+      const data = await res.json();
+      console.log(data);
+      
+      if(data.success){
+        alert("Blog published successfully!");
+        window.location.href = "blog.html";  // Go to community page
+      } else {
+        alert("Error publishing blog");
+      }
     });
+  </script>
 
-    const data = await response.json();
-    if (data.success) {
-      user.blogs = data.blogs;
-      localStorage.setItem("user", JSON.stringify(user));
-      alert("Blog uploaded successfully!");
-      window.location.href = "profile.html";
-    } else {
-      alert(data.error || "Error saving blog");
-    }
-  } catch (err) {
-    console.error(err);
-    alert("Error connecting to server.");
-  }
-});
-
-    // Rich text formatting toolbar
-    function format(command) {
-      document.execCommand(command, false, null);
-    }
-    </script>
-    
 </body>
 </html>

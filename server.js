@@ -1,3 +1,4 @@
+// server.js
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
@@ -15,12 +16,12 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 app.use(cors());
-app.use(express.json({ limit: "10mb" }));
-app.use(express.urlencoded({ limit: "10mb", extended: true }));
-app.use(bodyParser.json({ limit: "10mb" }));
-app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
+app.use(express.json({ limit: "30mb" }));
+app.use(express.urlencoded({ limit: "30mb", extended: true }));
+app.use(bodyParser.json({ limit: "30mb" }));
+app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
 
-// Serve static frontend files
+// Serve static frontend files (public/)
 app.use(express.static(path.join(__dirname, "public")));
 
 // HTTP + Socket.io
@@ -34,6 +35,8 @@ const uri = process.env.MONGO_URI;
 const client = new MongoClient(uri);
 let usersCollection;
 let chatsCollection;
+let blogsCollection;
+let photosCollection;
 
 async function connectDB() {
   try {
@@ -41,10 +44,18 @@ async function connectDB() {
     const db = client.db("travel_bunk");
     usersCollection = db.collection("users");
     chatsCollection = db.collection("chats");
+    blogsCollection = db.collection("blogs");
+    photosCollection = db.collection("photos");
+
     console.log("✅ Connected to MongoDB Atlas (travel_bunk)");
 
+    // indexes
     await usersCollection.createIndex({ email: 1 }, { unique: true });
     await chatsCollection.createIndex({ users: 1 });
+    await blogsCollection.createIndex({ createdAt: -1 });
+    await blogsCollection.createIndex({ authorEmail: 1 });
+    await photosCollection.createIndex({ createdAt: -1 });
+    await photosCollection.createIndex({ authorEmail: 1 });
 
   } catch (err) {
     console.error("❌ MongoDB connection failed:", err);
@@ -52,7 +63,16 @@ async function connectDB() {
 }
 connectDB();
 
-// ----------------- Aadhaar Verhoeff -----------------
+// ----------------- Socket.IO -----------------
+io.on("connection", (socket) => {
+  socket.on("join", ({ email }) => {
+    if (email) socket.join(email);
+  });
+
+  socket.on("disconnect", () => {});
+});
+
+// ----------------- Aadhaar Verhoeff (same as before) -----------------
 function verhoeffCheck(aadhaar) {
   const d = [
     [0,1,2,3,4,5,6,7,8,9],
@@ -85,7 +105,7 @@ function verhoeffCheck(aadhaar) {
   return c === 0;
 }
 
-// ----------------- SIGNUP API -----------------
+// ----------------- AUTH / USERS (signup/login/update) -----------------
 app.post("/api/signup", async (req, res) => {
   try {
     const data = req.body;
@@ -115,6 +135,7 @@ app.post("/api/signup", async (req, res) => {
       college: data.college || "",
       trips: data.trips || [],
       blogs: data.blogs || [],
+      photos: data.photos || [],
       totalDistance: 0,
       rating: (Math.random() * (5 - 3.8) + 3.8).toFixed(1),
       badges: ["🎒 New Explorer", "🧭 Joined TravelBuddy"],
@@ -131,20 +152,26 @@ app.post("/api/signup", async (req, res) => {
 
   } catch (err) {
     console.error("❌ Signup error:", err);
+    if (err?.code === 11000) {
+      return res.json({ success: false, message: "Email already exists" });
+    }
     res.status(500).json({ success: false, message: "Server error" });
   }
 });
 
-// ----------------- LOGIN API -----------------
 app.post("/api/login", async (req, res) => {
-  const { email, password } = req.body;
-  if (!email || !password) return res.json({ success: false, message: "Missing fields" });
-  const user = await usersCollection.findOne({ email, password });
-  if (!user) return res.json({ success: false, message: "Invalid email or password" });
-  res.json({ success: true, user });
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) return res.json({ success: false, message: "Missing fields" });
+    const user = await usersCollection.findOne({ email, password });
+    if (!user) return res.json({ success: false, message: "Invalid email or password" });
+    res.json({ success: true, user });
+  } catch (err) {
+    console.error("❌ Login error:", err);
+    res.json({ success: false, message: "Server error" });
+  }
 });
 
-// ----------------- UPDATE PROFILE API -----------------
 app.post("/api/update-profile", async (req, res) => {
   try {
     const { email, ...updates } = req.body;
@@ -161,7 +188,7 @@ app.post("/api/update-profile", async (req, res) => {
   }
 });
 
-// ----------------- FIND USERS BY TRIP -----------------
+// ----------------- Requests, chats, trips, etc. (kept intact) -----------------
 app.post("/api/find-users-by-trip", async (req, res) => {
   const { date, destination } = req.body;
   if (!date || !destination) return res.json({ success: false, message: "Missing date or destination" });
@@ -197,18 +224,15 @@ app.post("/api/find-users-by-trip", async (req, res) => {
   }
 });
 
-// ----------------- SEND REQUEST -----------------
 app.post("/api/send-request", async (req, res) => {
   try {
     const { fromEmail, toEmail } = req.body;
-    if (!fromEmail || !toEmail)
-      return res.json({ success: false, message: "Missing fields" });
+    if (!fromEmail || !toEmail) return res.json({ success: false, message: "Missing fields" });
 
     const fromUser = await usersCollection.findOne({ email: fromEmail });
     const toUser = await usersCollection.findOne({ email: toEmail });
 
-    if (!fromUser || !toUser)
-      return res.json({ success: false, message: "User(s) not found" });
+    if (!fromUser || !toUser) return res.json({ success: false, message: "User(s) not found" });
 
     // prevent duplicate pending requests
     const pending = (toUser.requests || []).some(
@@ -242,7 +266,6 @@ app.post("/api/send-request", async (req, res) => {
   }
 });
 
-// ----------------- GET REQUESTS -----------------
 app.get("/api/requests", async (req, res) => {
   const { email } = req.query;
   try {
@@ -253,17 +276,16 @@ app.get("/api/requests", async (req, res) => {
       sentRequests: user.sentRequests || [],
     });
   } catch (err) {
+    console.error("❌ /api/requests error:", err);
     res.json({ success: false });
   }
 });
 
-// ----------------- RESPOND TO REQUEST -----------------
 app.post("/api/respond-request", async (req, res) => {
   try {
     const { toEmail, fromEmail, action } = req.body;
 
-    if (action !== "accept" && action !== "reject")
-      return res.json({ success: false });
+    if (action !== "accept" && action !== "reject") return res.json({ success: false });
 
     await usersCollection.updateOne(
       { email: toEmail, "requests.fromEmail": fromEmail },
@@ -288,11 +310,12 @@ app.post("/api/respond-request", async (req, res) => {
 
     res.json({ success: true });
   } catch (err) {
+    console.error("❌ /api/respond-request error:", err);
     res.json({ success: false });
   }
 });
 
-// ----------------- GET CHAT -----------------
+// ----------------- Chats -----------------
 app.get("/api/get-chat", async (req, res) => {
   try {
     const { user1, user2 } = req.query;
@@ -304,16 +327,15 @@ app.get("/api/get-chat", async (req, res) => {
       chatId: chat ? chat._id : null,
     });
   } catch (err) {
+    console.error("❌ /api/get-chat error:", err);
     res.json({ success: false });
   }
 });
 
-// ----------------- SEND MESSAGE -----------------
 app.post("/api/send-message", async (req, res) => {
   try {
     const { from, to, text } = req.body;
-    if (!from || !to || !text)
-      return res.json({ success: false, message: "Missing fields" });
+    if (!from || !to || !text) return res.json({ success: false, message: "Missing fields" });
 
     const usersPair = [from, to].sort();
     const msg = {
@@ -339,11 +361,12 @@ app.post("/api/send-message", async (req, res) => {
 
     res.json({ success: true });
   } catch (err) {
+    console.error("❌ /api/send-message error:", err);
     res.json({ success: false });
   }
 });
 
-// ----------------- GET USER PROFILE -----------------
+// ----------------- User profile / utilities -----------------
 app.get("/api/user-profile", async (req, res) => {
   try {
     const email = req.query.email;
@@ -351,54 +374,161 @@ app.get("/api/user-profile", async (req, res) => {
     if (!user) return res.json({ success: false, message: "Not found" });
     res.json({ success: true, user });
   } catch (err) {
+    console.error("❌ /api/user-profile error:", err);
     res.json({ success: false });
   }
 });
 
-// ----------------- GET ALL USERS -----------------
 app.get("/api/get-all-users", async (req, res) => {
   try {
     const users = await usersCollection.find().toArray();
     res.json({ success: true, users });
   } catch (err) {
+    console.error("❌ /api/get-all-users error:", err);
     res.json({ success: false });
   }
 });
 
-// ----------------- ADD MISSING ROUTES -----------------
-
-// ⭐ GET USER TRIPS
 app.get("/api/user-trips/:email", async (req, res) => {
   try {
     const email = req.params.email;
     const user = await usersCollection.findOne({ email });
-
-    if (!user) {
-      return res.status(404).json({ success: false, message: "User not found" });
-    }
-
+    if (!user) return res.status(404).json({ success: false, message: "User not found" });
     res.json({ success: true, trips: user.trips || [] });
-
   } catch (err) {
     console.error("❌ /api/user-trips error:", err);
     res.status(500).json({ success: false, message: "Server error" });
   }
 });
 
-// ⭐ GET USER BLOGS
 app.get("/api/blogs/:email", async (req, res) => {
   try {
     const email = req.params.email;
     const user = await usersCollection.findOne({ email });
-
-    if (!user) {
-      return res.status(404).json({ success: false, message: "User not found" });
-    }
-
+    if (!user) return res.status(404).json({ success: false, message: "User not found" });
     res.json({ success: true, blogs: user.blogs || [] });
-
   } catch (err) {
     console.error("❌ /api/user-blogs error:", err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
+// ----------------- BLOGS (global) -----------------
+/*
+POST /api/add-blog
+body: { title, content, image (array or string), video (array or string), author, authorEmail, destination }
+*/
+app.post("/api/add-blog", async (req, res) => {
+  try {
+    const { title, content, image, video, author, authorEmail, destination } = req.body;
+    if (!title || !content) return res.json({ success: false, message: "Missing title or content" });
+
+    const blogDoc = {
+      title,
+      content,
+      image: image || [],
+      video: video || [],
+      author: author || "Anonymous",
+      authorEmail: authorEmail || null,
+      destination: destination || "",
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    const insertRes = await blogsCollection.insertOne(blogDoc);
+    blogDoc._id = insertRes.insertedId;
+
+    // push to user's profile summary if authorEmail is present
+    if (authorEmail) {
+      await usersCollection.updateOne(
+        { email: authorEmail },
+        {
+          $push: {
+            blogs: {
+              id: blogDoc._id,
+              title: blogDoc.title,
+              content: blogDoc.content,
+              image: Array.isArray(blogDoc.image) ? blogDoc.image[0] || "" : blogDoc.image,
+              date: blogDoc.createdAt,
+              destination: blogDoc.destination || ""
+            }
+          }
+        }
+      );
+    }
+
+    // emit to all clients
+    io.emit("new-blog", blogDoc);
+
+    res.json({ success: true, blog: blogDoc });
+  } catch (err) {
+    console.error("❌ /api/add-blog error:", err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
+app.get("/api/all-blogs", async (req, res) => {
+  try {
+    const blogs = await blogsCollection.find().sort({ createdAt: -1 }).toArray();
+    res.json({ success: true, blogs });
+  } catch (err) {
+    console.error("❌ /api/all-blogs error:", err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
+app.get("/api/blog/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const blog = await blogsCollection.findOne({ _id: new ObjectId(id) });
+    if (!blog) return res.status(404).json({ success: false, message: "Blog not found" });
+    res.json({ success: true, blog });
+  } catch (err) {
+    console.error("❌ /api/blog/:id error:", err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
+// ----------------- PHOTOS (global) -----------------
+/*
+POST /api/add-photo
+body: { image, author, authorEmail }
+*/
+app.post("/api/add-photo", async (req, res) => {
+  try {
+    const { image, author, authorEmail } = req.body;
+    if (!image || !authorEmail) return res.json({ success: false, message: "Missing fields" });
+
+    const photoDoc = {
+      image,
+      author: author || "Unknown",
+      authorEmail,
+      createdAt: new Date().toISOString(),
+    };
+
+    const insertRes = await photosCollection.insertOne(photoDoc);
+    photoDoc._id = insertRes.insertedId;
+
+    // add to user's profile
+    await usersCollection.updateOne(
+      { email: authorEmail },
+      { $push: { photos: { id: photoDoc._id, image: photoDoc.image, date: photoDoc.createdAt } } }
+    );
+
+    io.emit("new-photo", photoDoc);
+    res.json({ success: true, photo: photoDoc });
+  } catch (err) {
+    console.error("❌ /api/add-photo error:", err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
+app.get("/api/all-photos", async (req, res) => {
+  try {
+    const photos = await photosCollection.find().sort({ createdAt: -1 }).toArray();
+    res.json({ success: true, photos });
+  } catch (err) {
+    console.error("❌ /api/all-photos error:", err);
     res.status(500).json({ success: false, message: "Server error" });
   }
 });
@@ -406,7 +536,7 @@ app.get("/api/blogs/:email", async (req, res) => {
 // ----------------- PING -----------------
 app.get("/api/ping", (req, res) => res.json({ success: true }));
 
-// ----------------- PAGE ROUTES -----------------
+// ----------------- Page routes (static) -----------------
 const pages = [
   "index",
   "find-companion",

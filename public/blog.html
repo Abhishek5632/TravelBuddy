@@ -1,281 +1,316 @@
+<!-- public/blog.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Blog | TravelBuddy</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Community Blogs & Photos | TravelBuddy</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
   <style>
-    *{margin:0;padding:0;box-sizing:border-box;}
-    body{font-family:'Poppins',sans-serif;line-height:1.6;background:#f9f9f9;}
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Poppins',sans-serif;background:#f7f9f9;color:#223;}
+    a{text-decoration:none;color:inherit}
 
     /* Navbar */
-    .navbar{
-      background:rgba(255,255,255,0.95);
-      backdrop-filter:blur(10px);
-      position:fixed;top:0;width:100%;z-index:1000;
-      box-shadow:0 2px 20px rgba(0,191,166,0.1);
-    }
-    .nav-container{
-      max-width:1200px;margin:0 auto;padding:0 20px;
-      display:flex;justify-content:space-between;align-items:center;height:70px;
-    }
-    .nav-logo h2{color:#00BFA6;font-size:1.8rem;font-weight:700;}
-    .nav-menu{display:flex;list-style:none;gap:2rem;}
-    .nav-menu li a{
-      text-decoration:none;color:#2D3436;font-weight:500;
-      font-size:1rem;position:relative;
-    }
-    .nav-menu li a:hover{color:#00BFA6;}
-    .nav-menu li a::after{
-      content:'';position:absolute;width:0;height:2px;background:#00BFA6;
-      bottom:-5px;left:0;transition:0.3s;
-    }
-    .nav-menu li a:hover::after{width:100%;}
-    .hamburger{display:none;flex-direction:column;cursor:pointer;}
-    .hamburger span{width:25px;height:3px;background:#2D3436;margin:3px 0;border-radius:2px;}
-    @media(max-width:768px){
-      .nav-menu{
-        position:fixed;top:70px;left:-100%;
-        flex-direction:column;background:white;
-        width:100%;padding:2rem 0;transition:0.3s;
-        box-shadow:0 10px 27px rgba(0,0,0,0.05);
-      }
-      .nav-menu.active{left:0;}
-      .hamburger{display:flex;}
-    }
+    .navbar{position:fixed;top:0;left:0;right:0;background:#fff;box-shadow:0 4px 18px rgba(0,0,0,0.06);z-index:1000}
+    .nav-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:15px 20px}
+    .logo{color:#00BFA6;font-weight:700;font-size:1.4rem}
 
     /* Hero */
-    .blog-header{
-      padding:120px 20px 50px;
-      text-align:center;
-      background:#00BFA6;color:white;
-    }
-    .blog-header h1{font-size:2.5rem;margin-bottom:10px;}
-    .blog-header p{font-size:1.1rem;}
+    .hero{background:linear-gradient(135deg,#00BFA6,#30DFA6);color:#fff;padding:120px 20px 40px;text-align:center}
+    .hero h1{font-size:2.4rem;margin-bottom:6px}
+    .hero p{opacity:0.95}
 
-    .floating-icons{margin-top:20px;display:flex;gap:25px;justify-content:center;font-size:2rem;}
-    .floating-icons span{animation:float 6s ease-in-out infinite;}
-    .floating-icons span:nth-child(2){animation-delay:1s;}
-    .floating-icons span:nth-child(3){animation-delay:2s;}
-    .floating-icons span:nth-child(4){animation-delay:3s;}
-    @keyframes float{0%{transform:translateY(0);}50%{transform:translateY(-15px);}100%{transform:translateY(0);}}
+    /* Switch */
+    .switch-wrap{display:flex;justify-content:center;gap:10px;margin:20px auto;max-width:1100px;padding:0 20px}
+    .seg-btn{border-radius:999px;padding:10px 22px;border:none;background:#eee;font-weight:600;cursor:pointer}
+    .seg-btn.active{background:#00BFA6;color:#fff;transform:scale(1.03)}
 
-    /* Tabs */
-    .tabs{text-align:center;margin:40px 0;}
-    .tab-btn{
-      padding:10px 20px;margin:0 10px;
-      border:none;border-radius:20px;
-      background:#eee;cursor:pointer;font-size:1rem;
-      transition:0.3s;
-    }
-    .tab-btn.active{background:#00BFA6;color:white;}
-    .hidden{display:none;}
+    /* layout */
+    .container{max-width:1100px;margin:18px auto;padding:0 20px 60px;display:block}
+    .top-actions{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:10px}
+    .write-btn, .upload-btn{background:#00BFA6;color:white;border:none;padding:10px 16px;border-radius:10px;cursor:pointer;font-weight:600}
 
-    /* Blogs */
-    .blog-grid{
-      max-width:1100px;margin:0 auto;display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-      gap:20px;padding:20px;
-    }
-    .post{
-      background:white;border-radius:12px;overflow:hidden;
-      box-shadow:0 4px 12px rgba(0,0,0,0.1);
-      transition:0.3s;
-    }
-    .post:hover{transform:translateY(-5px);}
-    .post img{width:100%;height:180px;object-fit:cover;}
-    .post-content{padding:15px;}
-    .post-content h3{color:#00BFA6;margin-bottom:8px;}
-    .post-content p{color:#555;margin-bottom:12px;}
-    .post-content a{text-decoration:none;color:#00BFA6;font-weight:600;font-size:0.9rem;}
+    /* Blog grid */
+    .blog-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px}
+    .card{background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 6px 22px rgba(17,17,17,0.06);transition:transform .18s}
+    .card:hover{transform:translateY(-6px)}
+    .card .thumb{height:200px;width:100%;object-fit:cover;background:#ddd}
+    .card .body{padding:14px}
+    .card h3{color:#00BFA6;font-size:1.1rem;margin-bottom:6px}
+    .meta{font-size:0.85rem;color:#666;margin-bottom:8px}
+    .desc{color:#333;font-size:0.95rem;height:64px;overflow:hidden}
+    .read-more{display:inline-block;margin-top:10px;color:#00BFA6;font-weight:600}
 
-    .button-group{text-align:center;margin:20px;}
-    .button-group button{
-      padding:10px 20px;margin:5px;border:none;border-radius:6px;
-      background:#00BFA6;color:white;font-size:1rem;cursor:pointer;transition:0.3s;
-    }
-    .button-group button:hover{background:#01967f;}
-    .button-group button:disabled{background:#ccc;cursor:not-allowed;}
+    /* Photos grid */
+    .photo-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-top:10px}
+    .photo-card{background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 6px 18px rgba(0,0,0,0.06)}
+    .photo-card img{width:100%;height:160px;object-fit:cover;display:block}
 
-    /* Photos */
-    .gallery-grid{
-      max-width:1100px;margin:0 auto;
-      display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-      gap:15px;padding:20px;
-    }
-    .photo-card{
-      background:white;border-radius:12px;overflow:hidden;
-      box-shadow:0 4px 12px rgba(0,0,0,0.1);
-    }
-    .photo-card img{width:100%;height:200px;object-fit:cover;}
+    /* small */
+    .small{font-size:0.9rem;color:#666}
 
-    /* Footer */
-    .footer{
-      background:#2D3436;color:white;text-align:center;padding:3rem 20px;margin-top:40px;
+    /* responsive */
+    @media(max-width:640px){
+      .hero h1{font-size:1.6rem}
+      .card .desc{height:80px}
     }
-    .footer p{color:#ccc;margin-top:1rem;}
   </style>
 </head>
 <body>
 
-  <!-- Navbar -->
   <nav class="navbar">
-    <div class="nav-container">
-      <div class="nav-logo"><h2>TravelBuddy</h2></div>
-      <ul class="nav-menu">
-        <li><a href="index.html">Home</a></li>
-        <li><a href="find-companion.html">Find Companion</a></li>
-        <li><a href="contact.html">Contact</a></li>
-        <li><a href="about.html">About</a></li>
-      </ul>
-      <div class="hamburger"><span></span><span></span><span></span></div>
+    <div class="nav-inner">
+      <div class="logo">TravelBuddy</div>
+      <div>
+        <a href="index.html" style="margin-right:14px">Home</a>
+        <a href="profile.html">Profile</a>
+      </div>
     </div>
   </nav>
 
-  <!-- Blog Hero -->
-  <section class="blog-header">
+  <header class="hero">
     <h1>TravelBuddy Community</h1>
-    <p>Read blogs, view gallery, and explore destinations</p>
-    <div class="floating-icons">
-      <span>✈️</span>
-      <span>🏔️</span>
-      <span>🌊</span>
-      <span>🏛️</span>
-    </div>
-  </section>
+    <p>Latest travel blogs and photos from people like you</p>
+  </header>
 
-  <!-- Page Content -->
-  <section class="page-content">
-    <div class="tabs">
-      <button class="tab-btn active" data-tab="blogs">Blogs</button>
-      <button class="tab-btn" data-tab="photos">Photos</button>
+  <div class="switch-wrap">
+    <button id="btnBlogs" class="seg-btn active">📝 Blogs</button>
+    <button id="btnPhotos" class="seg-btn">📸 Photos</button>
+  </div>
+
+  <main class="container">
+    <div class="top-actions">
+      <div>
+        <button id="writeBtn" class="write-btn">✍️ Write Blog</button>
+      </div>
+      <div>
+        <input id="photoUpload" type="file" accept="image/*" style="display:none" />
+        <button id="uploadBtn" class="upload-btn">📤 Upload Photo</button>
+      </div>
     </div>
 
-    <!-- Blogs Tab -->
-    <div id="blogsTab">
+    <!-- BLOGS SECTION -->
+    <section id="blogsSection">
       <div class="blog-grid" id="blogGrid"></div>
-      <div class="button-group">
-        <button class="write-blog-btn" id="writeBlogBtn">✍️ Write a Blog</button>
-        <button class="view-more-btn" id="loadMoreBlogs">👁️ View More Blogs</button>
-      </div>
-      <p id="blogMsg" style="text-align:center;color:red;font-weight:500;"></p>
-    </div>
+    </section>
 
-    <!-- Photos Tab -->
-    <div id="photosTab" class="hidden">
-      <div class="gallery-grid" id="photoGrid"></div>
-      <div class="button-group">
-        <input type="file" id="photoUpload" accept="image/*" style="display:none;">
-        <button class="upload-photo-btn" id="uploadPhotoBtn">📤 Upload Photo</button>
-      </div>
-      <p id="photoMsg" style="text-align:center;color:red;font-weight:500;"></p>
-    </div>
-  </section>
+    <!-- PHOTOS SECTION (hidden initially) -->
+    <section id="photosSection" style="display:none;">
+      <div class="photo-grid" id="photoGrid"></div>
+    </section>
+  </main>
 
-  <!-- Footer -->
-  <footer class="footer">
-    <h3>TravelBuddy</h3>
-    <p>&copy; 2025 TravelBuddy. All rights reserved.</p>
+  <footer style="text-align:center;padding:40px 20px;color:#777">
+    © 2025 TravelBuddy
   </footer>
 
+  <script src="/socket.io/socket.io.js"></script>
   <script>
-    // Navbar toggle
-    const hamburger=document.querySelector(".hamburger");
-    const navMenu=document.querySelector(".nav-menu");
-    hamburger.addEventListener("click",()=>{ navMenu.classList.toggle("active"); });
+    const socket = io();
 
-    // Tabs
-    const tabs = document.querySelectorAll(".tab-btn");
-    const blogsTab = document.getElementById("blogsTab");
-    const photosTab = document.getElementById("photosTab");
-    tabs.forEach(tab=>{
-      tab.addEventListener("click",()=>{
-        tabs.forEach(t=>t.classList.remove("active"));
-        tab.classList.add("active");
-        if(tab.dataset.tab==="blogs"){
-          blogsTab.classList.remove("hidden");
-          photosTab.classList.add("hidden");
-        } else {
-          blogsTab.classList.add("hidden");
-          photosTab.classList.remove("hidden");
-        }
-      });
-    });
+    const baseURL = window.location.hostname === "localhost"
+      ? "http://localhost:5001"
+      : "";
 
-    // Check Login
-    const user = JSON.parse(localStorage.getItem("user"));
-    const writeBtn = document.getElementById("writeBlogBtn");
-    const uploadBtn = document.getElementById("uploadPhotoBtn");
-    const blogMsg = document.getElementById("blogMsg");
-    const photoMsg = document.getElementById("photoMsg");
-
-    if(!user){
-      writeBtn.disabled = true;
-      uploadBtn.disabled = true;
-      blogMsg.textContent = "❌ Please log in to write a blog.";
-      photoMsg.textContent = "❌ Please log in to upload photos.";
-    } else {
-      writeBtn.addEventListener("click", ()=> window.location.href = "write-blog.html");
-      uploadBtn.addEventListener("click", ()=> document.getElementById("photoUpload").click());
-    }
-
-    // Demo Blogs
-    let allBlogs = [
-      {title:"🌍 Backpacking Through Europe", content:"Experience Paris, Rome & Amsterdam in one journey.", image:"https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80"},
-      {title:"🏔️ 5 Best Hiking Trails in Asia", content:"From Himalayas to Mount Fuji, explore breathtaking trails.", image:"https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=800&q=80"},
-      {title:"🏖️ Budget-Friendly Beach Destinations", content:"Relax by the sea without breaking the bank.", image:"https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&w=800&q=80"},
-      {title:"🏕️ Camping in the Rockies", content:"Connect with nature in stunning locations.", image:"https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=800&q=80"},
-      {title:"🏝️ Tropical Paradise Guide", content:"Explore hidden islands & turquoise waters.", image:"https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&w=800&q=80"}
-    ];
-    let blogIndex=0;
+    // UI elements
+    const btnBlogs = document.getElementById("btnBlogs");
+    const btnPhotos = document.getElementById("btnPhotos");
+    const blogsSection = document.getElementById("blogsSection");
+    const photosSection = document.getElementById("photosSection");
     const blogGrid = document.getElementById("blogGrid");
-    function loadBlogs(count=3){
-      const end = Math.min(blogIndex + count, allBlogs.length);
-      for(let i=blogIndex;i<end;i++){
-        const b = allBlogs[i];
-        const div = document.createElement("div");
-        div.className="post";
-        div.innerHTML=`<img src="${b.image}"><div class="post-content"><h3>${b.title}</h3><p>${b.content}</p><a class="read-more">Read More</a></div>`;
-        blogGrid.appendChild(div);
+    const photoGrid = document.getElementById("photoGrid");
+    const writeBtn = document.getElementById("writeBtn");
+    const uploadBtn = document.getElementById("uploadBtn");
+    const photoUpload = document.getElementById("photoUpload");
+
+    // Simple auth check from localStorage
+    const user = JSON.parse(localStorage.getItem("user") || "null");
+
+    writeBtn.addEventListener("click", ()=> {
+      if(!user) return alert("Please log in to write a blog.");
+      window.location.href = "write-blog.html";
+    });
+
+    uploadBtn.addEventListener("click", ()=> {
+      if(!user) return alert("Please log in to upload photos.");
+      photoUpload.click();
+    });
+
+    photoUpload.addEventListener("change", async (e) => {
+      const file = e.target.files[0];
+      if(!file) return;
+      const base64 = await toBase64(file);
+
+      const payload = {
+        image: base64,
+        author: `${user?.firstName || 'Unknown'}`,
+        authorEmail: user?.email || null
+      };
+
+      try {
+        const res = await fetch("/api/add-photo", {
+          method: "POST",
+          headers: {"Content-Type":"application/json"},
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if(data.success){
+          // prepend
+          prependPhotoCard(data.photo);
+          alert("Photo uploaded to community.");
+        } else {
+          alert("Upload failed.");
+        }
+      } catch(err){
+        console.error(err);
+        alert("Upload error");
       }
-      blogIndex=end;
-      if(blogIndex>=allBlogs.length) document.getElementById("loadMoreBlogs").style.display="none";
+      photoUpload.value = "";
+    });
+
+    // Switch UI
+    btnBlogs.onclick = () => {
+      btnBlogs.classList.add("active");
+      btnPhotos.classList.remove("active");
+      blogsSection.style.display = "";
+      photosSection.style.display = "none";
+    };
+    btnPhotos.onclick = () => {
+      btnPhotos.classList.add("active");
+      btnBlogs.classList.remove("active");
+      blogsSection.style.display = "none";
+      photosSection.style.display = "";
+    };
+
+    // UTIL: base64
+    function toBase64(file){
+      return new Promise((res, rej) => {
+        const r = new FileReader();
+        r.readAsDataURL(file);
+        r.onload = () => res(r.result);
+        r.onerror = rej;
+      });
     }
-    loadBlogs();
-    document.getElementById("loadMoreBlogs").addEventListener("click",()=>{ loadBlogs(2); });
 
-    // Demo Photos
-    const demoPhotos=[
-      "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
-      "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=800&q=80",
-      "https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&w=800&q=80",
-      "https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&w=800&q=80"
-    ];
-    const photoGrid=document.getElementById("photoGrid");
-    demoPhotos.forEach(src=>{
-      const div=document.createElement("div");
-      div.className="photo-card";
-      div.innerHTML=`<img src="${src}">`;
-      photoGrid.appendChild(div);
-    });
+    // Format date
+    function niceDate(iso){
+      try {
+        const d = new Date(iso);
+        return d.toLocaleString();
+      } catch(e){ return iso; }
+    }
 
-    // Upload Photo
-    const photoInput = document.getElementById("photoUpload");
-    photoInput.addEventListener("change", () => {
-      if(photoInput.files.length){
-        const file = photoInput.files[0];
-        const reader = new FileReader();
-        reader.onload = function(e){
-          const div=document.createElement("div");
-          div.className="photo-card";
-          div.innerHTML=`<img src="${e.target.result}">`;
-          photoGrid.prepend(div);
-        };
-        reader.readAsDataURL(file);
-        photoInput.value="";
+    // RENDER blog card (Rich: image, title, destination, author+date, short description)
+    function renderBlogCard(b){
+      const img = Array.isArray(b.image) ? (b.image[0] || '') : (b.image || '');
+      const destination = b.destination ? `<div class="meta">📍 ${escapeHtml(b.destination)}</div>` : '';
+      const authorLine = `<div class="meta">✍️ ${escapeHtml(b.author || 'Anonymous')} • ${niceDate(b.createdAt)}</div>`;
+      const short = stripHtml(b.content || '').slice(0,180);
+
+      const card = document.createElement("article");
+      card.className = "card";
+      card.innerHTML = `
+        <img class="thumb" src="${img || 'https://cdn-icons-png.flaticon.com/512/564/564619.png'}" alt="thumb" />
+        <div class="body">
+          <h3>${escapeHtml(b.title || 'Untitled')}</h3>
+          ${destination}
+          ${authorLine}
+          <div class="desc">${escapeHtml(short)}...</div>
+          <a class="read-more" href="blog-view.html?id=${b._id || b.id || ''}">Read full</a>
+        </div>
+      `;
+      return card;
+    }
+
+    // strip html
+    function stripHtml(html){
+      const tmp = document.createElement("div");
+      tmp.innerHTML = html || '';
+      return tmp.textContent || tmp.innerText || '';
+    }
+
+    function escapeHtml(s){
+      if(!s) return '';
+      return s.replaceAll('&', '&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;');
+    }
+
+    // Prepend helper
+    function prependBlogCard(b){
+      const card = renderBlogCard(b);
+      blogGrid.prepend(card);
+    }
+    function prependPhotoCard(p){
+      const div = document.createElement("div");
+      div.className = "photo-card";
+      div.innerHTML = `<img src="${p.image}"><div style="padding:8px;font-size:0.85rem;color:#444">📸 ${escapeHtml(p.author)}</div>`;
+      photoGrid.prepend(div);
+    }
+
+    // LOAD blogs & photos from server (with demo fallback for blogs < 10)
+    async function loadCommunity(){
+      // blogs
+      try {
+        const res = await fetch("/api/all-blogs");
+        const data = await res.json();
+        let blogs = [];
+        if(data.success && Array.isArray(data.blogs)) blogs = data.blogs;
+        // demo fallback if less than 10
+        const demo = [
+          { title:"Backpacking Europe", content:"Paris, Rome & Amsterdam in one trip.", image:["https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?auto=format&fit=crop&w=900&q=80"], author:"Demo User", createdAt:new Date().toISOString(), destination:"Europe" },
+          { title:"Himalayan Trek", content:"Breathtaking trails & views.", image:["https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=900&q=80"], author:"Demo", createdAt:new Date().toISOString(), destination:"Himalayas" },
+          { title:"Beach Escapes", content:"Relax and unwind on the sands.", image:["https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=900&q=80"], author:"Demo", createdAt:new Date().toISOString(), destination:"Goa" }
+        ];
+        if(blogs.length < 10){
+          const need = 10 - blogs.length;
+          blogs = [...blogs, ...demo.slice(0, need)];
+        }
+        // render
+        blogGrid.innerHTML = "";
+        blogs.slice(0,10).forEach(b => {
+          const card = renderBlogCard(b);
+          blogGrid.appendChild(card);
+        });
+      } catch(err){
+        console.error("load blogs error", err);
       }
-    });
-  </script>
 
+      // photos
+      try {
+        const res2 = await fetch("/api/all-photos");
+        const data2 = await res2.json();
+        if(data2.success && Array.isArray(data2.photos)){
+          photoGrid.innerHTML = "";
+          data2.photos.forEach(p => {
+            const div = document.createElement("div");
+            div.className = "photo-card";
+            div.innerHTML = `<img src="${p.image}"><div style="padding:8px;font-size:0.85rem;color:#444">📸 ${escapeHtml(p.author)}</div>`;
+            photoGrid.appendChild(div);
+          });
+        } else {
+          photoGrid.innerHTML = "";
+        }
+      } catch(err){
+        console.error("load photos error", err);
+      }
+    }
+
+    loadCommunity();
+
+    // socket real-time updates
+    socket.on("new-blog", (blog) => {
+      // prepend directly
+      prependBlogCard(blog);
+    });
+
+    socket.on("new-photo", (photo) => {
+      prependPhotoCard(photo);
+    });
+
+    // join socket room for personal events (if user exists)
+    if(user?.email) socket.emit("join", { email: user.email });
+  </script>
 </body>
 </html>
