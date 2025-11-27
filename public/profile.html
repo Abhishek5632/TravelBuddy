@@ -100,29 +100,7 @@ ul{list-style:none;}
   box-shadow:0 4px 15px rgba(0,0,0,0.05);
 }
 .small-muted{font-size:0.85rem;color:#666;}
-
-/* MODAL */
-.modal{
-  display:none;position:fixed;z-index:1000;left:0;top:0;width:100%;height:100%;
-  background:rgba(0,0,0,0.5);justify-content:center;align-items:center;
-}
-.modal-content{
-  background:#1e1e2f;padding:20px;border-radius:12px;
-  width:90%;max-width:400px;color:white;position:relative;
-}
-.close-btn{
-  position:absolute;top:10px;right:15px;font-size:24px;
-  cursor:pointer;color:white;
-}
-.modal-content input{
-  width:100%;padding:10px;margin:8px 0;border:none;border-radius:8px;
-}
-.modal-content button{
-  width:100%;padding:10px;margin-top:12px;border:none;border-radius:8px;
-  background:#4CAF50;color:white;font-weight:600;cursor:pointer;
-}
 </style>
-
 </head>
 
 <body>
@@ -141,7 +119,6 @@ ul{list-style:none;}
       <li><a href="blog.html">Blog</a></li>
       <li id="auth-section"></li>
     </ul>
-
   </div>
 </nav>
 
@@ -172,6 +149,7 @@ ul{list-style:none;}
       </div>
     </div>
 
+    <!-- RECENT TRIPS -->
     <div class="section">
       <h3>Recent Trips</h3>
       <div class="cards-grid" id="recentTrips">
@@ -179,6 +157,15 @@ ul{list-style:none;}
       </div>
     </div>
 
+    <!-- RECENT BLOGS -->
+    <div class="section">
+      <h3>Recent Blogs</h3>
+      <div class="cards-grid" id="recentBlogs">
+        <div class="card"><p>Loading...</p></div>
+      </div>
+    </div>
+
+    <!-- REQUESTS -->
     <div class="section">
       <h3>Requests</h3>
       <div class="cards-grid" id="requestsArea">
@@ -186,6 +173,7 @@ ul{list-style:none;}
       </div>
     </div>
 
+    <!-- CONNECTIONS -->
     <div class="section">
       <h3>Connections</h3>
       <div class="cards-grid" id="connectionsArea">
@@ -200,25 +188,6 @@ ul{list-style:none;}
   </div>
 </section>
 
-<!-- EDIT MODAL -->
-<div class="modal" id="editProfileModal">
-  <div class="modal-content">
-    <span class="close-btn" id="closeModal">&times;</span>
-    <h2>Edit Profile</h2>
-
-    <form id="editProfileForm">
-      <input type="text" id="editFirstName" placeholder="First Name" required>
-      <input type="text" id="editLastName" placeholder="Last Name" required>
-      <input type="text" id="editCollege" placeholder="College">
-      <input type="text" id="editBio" placeholder="Bio">
-
-      <label style="margin-top:10px;">Change Photo:</label>
-      <input type="file" id="editPhoto" accept="image/*">
-
-      <button type="submit">Save Changes</button>
-    </form>
-  </div>
-</div>
 
 <script src="/socket.io/socket.io.js"></script>
 <script>
@@ -297,6 +266,26 @@ document.addEventListener("DOMContentLoaded", async () => {
             .join("")
         : `<div class="card"><p>No trips yet</p></div>`;
 
+    /* RECENT BLOGS */
+    const blogArea = document.getElementById("recentBlogs");
+
+    if (u.blogs && u.blogs.length > 0) {
+      const latestBlogs = u.blogs.slice(-5).reverse(); // last 5 only
+
+      blogArea.innerHTML = latestBlogs
+        .map(b => `
+          <div class="card">
+            <h4>${b.title}</h4>
+            <p class="small-muted">${b.date || "Unknown Date"}</p>
+            <p>${b.content.substring(0, 80)}...</p>
+            
+          </div>
+        `)
+        .join("");
+    } else {
+      blogArea.innerHTML = `<div class="card"><p>No blogs posted yet</p></div>`;
+    }
+
     /* REQUESTS */
     const reqArea = document.getElementById("requestsArea");
     reqArea.innerHTML = "";
@@ -346,7 +335,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       const out = await res.json();
       if (out.success) {
         alert("Request accepted!");
-        fetchProfileData();   // no redirect
+        fetchProfileData();
       }
     }
 
@@ -364,7 +353,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 
-  /* SOCKET: update profile silently */
+  /* SOCKET UPDATE */
   socket.on("request-accepted", () => fetchProfileData());
 });
 </script>
