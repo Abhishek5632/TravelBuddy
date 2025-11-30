@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Edit Profile | TravelBuddy</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+  font-family:"Poppins",sans-serif;
+  background:#f4f9f9;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
+
+/* BACKDROP */
+.backdrop{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.4);
+  backdrop-filter:blur(3px);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+/* MODAL */
+.modal{
+  width:95%;
+  max-width:450px;
+  background:white;
+  padding:25px;
+  border-radius:20px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.2);
+  animation:pop .3s ease;
+}
+
+@keyframes pop{
+  from{transform:scale(.7);opacity:.3;}
+  to{transform:scale(1);opacity:1;}
+}
+
+/* PHOTO */
+.photo-wrap{
+  text-align:center;
+  margin-bottom:20px;
+}
+
+.photo-wrap img{
+  width:140px;
+  height:140px;
+  object-fit:cover;
+  border-radius:50%;
+  border:4px solid #00BFA6;
+  cursor:pointer;
+  transition:.2s;
+}
+.photo-wrap img:hover{
+  transform:scale(1.05);
+}
+
+/* INPUTS */
+.input-group{
+  margin-bottom:15px;
+}
+.input-group label{
+  font-size:14px;
+  font-weight:600;
+  color:#333;
+}
+.input-group input, .input-group textarea{
+  width:100%;
+  padding:10px;
+  border:2px solid #00BFA6;
+  border-radius:10px;
+  margin-top:5px;
+  font-size:15px;
+}
+
+textarea{resize:none;height:80px;}
+
+/* BUTTONS */
+.btn{
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:12px;
+  font-size:15px;
+  font-weight:600;
+  cursor:pointer;
+  background:linear-gradient(135deg,#00BFA6,#FDCB6E);
+  color:white;
+  transition:.2s;
+}
+.btn:hover{transform:translateY(-2px);opacity:.9;}
+
+.cancel-btn{
+  width:100%;
+  padding:12px;
+  border:none;
+  background:white;
+  border:2px solid #00BFA6;
+  border-radius:12px;
+  color:#00BFA6;
+  font-weight:600;
+  margin-top:10px;
+  cursor:pointer;
+}
+.cancel-btn:hover{
+  background:#00BFA6;
+  color:white;
+}
+</style>
+</head>
+<body>
+
+<div class="backdrop">
+  <div class="modal">
+
+    <div class="photo-wrap">
+      <img id="profileImgPreview" src="">
+      <input type="file" id="photoInput" accept="image/*" style="display:none;">
+      <p style="font-size:13px;margin-top:8px;color:#555;">Click photo to change</p>
+    </div>
+
+    <div class="input-group">
+      <label>Full Name</label>
+      <input type="text" id="fullName">
+    </div>
+
+    <div class="input-group">
+      <label>College</label>
+      <input type="text" id="college">
+    </div>
+
+    <div class="input-group">
+      <label>Bio</label>
+      <textarea id="bio"></textarea>
+    </div>
+
+    <button class="btn" id="saveBtn">Save Changes</button>
+    <button class="cancel-btn" id="cancelBtn">Cancel</button>
+
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+  const baseURL = window.location.hostname === "localhost"
+    ? "http://localhost:5001"
+    : "https://travelbuddy-hluu.onrender.com";
+
+  let user = JSON.parse(localStorage.getItem("user"));
+  if (!user) return window.location.href="signin.html";
+
+  const defaultImg = "https://cdn-icons-png.flaticon.com/512/1077/1077114.png";
+
+  // DOM
+  const profileImgPreview = document.getElementById("profileImgPreview");
+  const photoInput = document.getElementById("photoInput");
+  const fullName = document.getElementById("fullName");
+  const college = document.getElementById("college");
+  const bio = document.getElementById("bio");
+  const saveBtn = document.getElementById("saveBtn");
+  const cancelBtn = document.getElementById("cancelBtn");
+
+  let newImgBase64 = null;
+
+  // Load existing data
+  profileImgPreview.src = user.img || defaultImg;
+  fullName.value = `${user.firstName} ${user.lastName || ""}`.trim();
+  college.value = user.college || "";
+  bio.value = user.bio || "";
+
+  // Clicking photo opens file picker
+  profileImgPreview.onclick = () => photoInput.click();
+
+  photoInput.onchange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      newImgBase64 = ev.target.result;
+      profileImgPreview.src = newImgBase64;
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // SAVE
+  saveBtn.onclick = async () => {
+
+    const nameParts = fullName.value.trim().split(" ");
+    const firstName = nameParts[0] || "";
+    const lastName = nameParts.slice(1).join(" ");
+
+    const payload = {
+      email: user.email,
+      firstName,
+      lastName,
+      college: college.value.trim(),
+      bio: bio.value.trim()
+    };
+
+    if (newImgBase64) payload.img = newImgBase64;
+
+    saveBtn.textContent = "Saving...";
+    saveBtn.disabled = true;
+
+    const res = await fetch(`${baseURL}/api/update-profile`, {
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body:JSON.stringify(payload)
+    });
+
+    const data = await res.json();
+    if (data.success) {
+      localStorage.setItem("user", JSON.stringify(data.user));
+      alert("Profile Updated!");
+      window.location.href = "profile.html";
+    } else {
+      alert(data.message || "Update failed");
+    }
+
+    saveBtn.textContent = "Save Changes";
+    saveBtn.disabled = false;
+  };
+
+  // CANCEL
+  cancelBtn.onclick = () => window.location.href="profile.html";
+
+});
+</script>
+
+</body>
+</html>

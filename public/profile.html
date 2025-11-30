@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Profile | TravelBuddy</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -62,12 +62,15 @@ ul{list-style:none;}
   background:white;padding:40px;border-radius:20px;
   box-shadow:0 8px 25px rgba(0,0,0,0.08);text-align:center;
 }
+
 .profile-card img{
   width:160px;height:160px;border-radius:50%;
   object-fit:cover;margin-bottom:20px;border:4px solid #00BFA6;
 }
+
 .profile-card h2{color:#00BFA6;font-size:2rem;margin-bottom:10px;}
 .profile-card p{margin:6px 0;color:#555;font-weight:500;}
+
 .profile-card hr{margin:25px 0;border:0;border-top:1px solid #eee;}
 
 .btn{
@@ -99,6 +102,7 @@ ul{list-style:none;}
   background:white;padding:15px;border-radius:15px;
   box-shadow:0 4px 15px rgba(0,0,0,0.05);
 }
+
 .small-muted{font-size:0.85rem;color:#666;}
 </style>
 </head>
@@ -133,6 +137,7 @@ ul{list-style:none;}
   <div class="profile-card">
 
     <img id="profilePhoto">
+
     <h2 id="profileName">User Name</h2>
     <p id="profileEmail"></p>
     <p id="profileCollege"></p>
@@ -165,29 +170,12 @@ ul{list-style:none;}
       </div>
     </div>
 
-    <!-- REQUESTS -->
-    <div class="section">
-      <h3>Requests</h3>
-      <div class="cards-grid" id="requestsArea">
-        <div class="card"><p>Loading...</p></div>
-      </div>
-    </div>
-
-    <!-- CONNECTIONS -->
-    <div class="section">
-      <h3>Connections</h3>
-      <div class="cards-grid" id="connectionsArea">
-        <div class="card"><p>Loading...</p></div>
-      </div>
-    </div>
-
     <button class="btn" id="editProfileBtn">Edit Profile ✏️</button>
     <button class="btn" id="writeBlogBtn">Write Blog 📝</button>
     <button class="btn" id="logoutBtn">Logout</button>
 
   </div>
 </section>
-
 
 <script src="/socket.io/socket.io.js"></script>
 <script>
@@ -201,160 +189,105 @@ document.addEventListener("DOMContentLoaded", async () => {
   let user = JSON.parse(localStorage.getItem("user"));
   const defaultImg = "https://cdn-icons-png.flaticon.com/512/1077/1077114.png";
 
-  /* NAV MENU */
-  document.getElementById("mobileMenu").onclick = () =>
-    document.getElementById("nav-menu").classList.toggle("active");
+  if (!user) {
+    window.location.href = "signin.html";
+    return;
+  }
 
-  /* NAVBAR USER DROPDOWN */
+  /* NAV MENU */
+  document.getElementById("mobileMenu").onclick =
+    () => document.getElementById("nav-menu").classList.toggle("active");
+
+  /* NAVBAR user */
   const authSection = document.getElementById("auth-section");
 
-  if (user) {
-    authSection.innerHTML = `
-      <div class="user-profile-dropdown" id="userDropdown">
-        <img src="${user.img || defaultImg}" class="user-avatar">
-        <span class="user-name">${user.firstName || user.email.split('@')[0]}
-          <i class="fas fa-caret-down"></i>
-        </span>
+  authSection.innerHTML = `
+    <div class="user-profile-dropdown" id="userDropdown">
+      <img src="${user.img || defaultImg}" class="user-avatar">
+      <span class="user-name">${user.firstName || user.email.split('@')[0]}
+        <i class="fas fa-caret-down"></i>
+      </span>
 
-        <div class="dropdown-content" id="dropdownMenu">
-          <a href="profile.html">My Profile</a>
-          <a href="trips.html">Trips</a>
-          <a href="blogs.html">Blogs</a>
-          <a href="#" id="logoutDropdown">Logout</a>
-        </div>
+      <div class="dropdown-content" id="dropdownMenu">
+        <a href="profile.html">My Profile</a>
+        <a href="trips.html">Trips</a>
+        <a href="blogs.html">Blogs</a>
+        <a href="#" id="logoutDropdown">Logout</a>
       </div>
-    `;
+    </div>
+  `;
 
-    document.querySelector(".user-name").onclick = () => {
-      const dd = document.getElementById("dropdownMenu");
-      dd.style.display = dd.style.display === "block" ? "none" : "block";
-    };
+  document.querySelector(".user-name").onclick = () => {
+    const dd = document.getElementById("dropdownMenu");
+    dd.style.display = dd.style.display === "block" ? "none" : "block";
+  };
 
-    document.getElementById("logoutDropdown").onclick = () => {
-      localStorage.removeItem("user");
-      window.location.href = "index.html";
-    };
-  }
+  document.getElementById("logoutDropdown").onclick = () => {
+    localStorage.removeItem("user");
+    window.location.href = "index.html";
+  };
 
   /* JOIN SOCKET ROOM */
-  if (user?.email) socket.emit("join", { email: user.email });
+  socket.emit("join", { email: user.email });
 
-  /* FETCH PROFILE */
-  async function fetchProfileData() {
+  /* FETCH PROFILE DATA */
+  async function fetchProfile() {
     const res = await fetch(`${baseURL}/api/user-profile?email=${user.email}`);
     const data = await res.json();
-    if (data.success) populateProfile(data.user);
+    if (data.success) {
+      user = data.user;
+      localStorage.setItem("user", JSON.stringify(user));
+      renderProfile(data.user);
+    }
   }
 
-  /* POPULATE UI */
-  function populateProfile(u) {
+  function renderProfile(u) {
+    document.getElementById("profilePhoto").src = u.img || defaultImg;
     document.getElementById("profileName").innerText = `${u.firstName} ${u.lastName}`;
     document.getElementById("profileEmail").innerText = u.email;
     document.getElementById("profileCollege").innerText = "College: " + (u.college || "N/A");
     document.getElementById("profileBio").innerText = u.bio || "Traveler and explorer!";
-    document.getElementById("profilePhoto").src = u.img || defaultImg;
 
     document.getElementById("totalTrips").innerText = u.trips?.length || 0;
     document.getElementById("totalDistance").innerText = (u.totalDistance || 0) + " km";
     document.getElementById("avgRating").innerText = u.rating || "N/A";
 
-    /* RECENT TRIPS */
     document.getElementById("recentTrips").innerHTML =
-      u.trips?.length
-        ? u.trips
-            .map(t => `<div class="card"><h4>${t.destination}</h4><p>${t.date}</p></div>`)
-            .join("")
+      u.trips && u.trips.length
+        ? u.trips.map(t =>
+            `<div class="card">
+               <h4>${t.destination}</h4>
+               <p class="small-muted">${t.date}</p>
+             </div>`
+          ).join("")
         : `<div class="card"><p>No trips yet</p></div>`;
 
-    /* RECENT BLOGS */
-    const blogArea = document.getElementById("recentBlogs");
-
-    if (u.blogs && u.blogs.length > 0) {
-      const latestBlogs = u.blogs.slice(-5).reverse(); // last 5 only
-
-      blogArea.innerHTML = latestBlogs
-        .map(b => `
-          <div class="card">
-            <h4>${b.title}</h4>
-            <p class="small-muted">${b.date || "Unknown Date"}</p>
-            <p>${b.content.substring(0, 80)}...</p>
-            
-          </div>
-        `)
-        .join("");
-    } else {
-      blogArea.innerHTML = `<div class="card"><p>No blogs posted yet</p></div>`;
-    }
-
-    /* REQUESTS */
-    const reqArea = document.getElementById("requestsArea");
-    reqArea.innerHTML = "";
-    (u.requests || []).forEach(r => {
-      reqArea.innerHTML += `
-        <div class="card">
-          <p><strong>${r.fromName}</strong> (${r.fromEmail})</p>
-          <p class="small-muted">Status: ${r.status}</p>
-
-          ${
-            r.status === "pending"
-              ? `<button class="btn acceptBtn" data-from="${r.fromEmail}">Accept</button>
-                 <button class="btn rejectBtn" data-from="${r.fromEmail}" style="background:#e74c3c">Reject</button>`
-              : ""
-          }
-        </div>
-      `;
-    });
-
-    /* CONNECTIONS */
-    const conn = document.getElementById("connectionsArea");
-    conn.innerHTML = (u.connections || [])
-      .map(email => `
-        <div class="card">
-          <p>${email}</p>
-          <a class="view-btn" href="chat.html?to=${email}">Chat</a>
-          <a class="view-btn" href="companion-profile.html?email=${email}" style="margin-left:10px;">View</a>
-        </div>
-      `)
-      .join("");
+    document.getElementById("recentBlogs").innerHTML =
+      u.blogs && u.blogs.length
+        ? u.blogs.slice(-5).reverse().map(b =>
+            `<div class="card">
+               <h4>${b.title}</h4>
+               <p class="small-muted">${b.date}</p>
+               <p>${b.content.substring(0,80)}...</p>
+             </div>`
+          ).join("")
+        : `<div class="card"><p>No blogs posted yet</p></div>`;
   }
 
-  /* INITIAL LOAD */
-  fetchProfileData();
+  fetchProfile();
 
-  /* ACCEPT / REJECT */
-  document.addEventListener("click", async (e) => {
-    if (e.target.matches(".acceptBtn")) {
-      const fromEmail = e.target.dataset.from;
+  /* BUTTONS */
+  document.getElementById("editProfileBtn").onclick =
+    () => window.location.href = "edit-profile.html";
 
-      const res = await fetch(`${baseURL}/api/respond-request`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ toEmail: user.email, fromEmail, action: "accept" })
-      });
+  document.getElementById("writeBlogBtn").onclick =
+    () => window.location.href = "write-blog.html";
 
-      const out = await res.json();
-      if (out.success) {
-        alert("Request accepted!");
-        fetchProfileData();
-      }
-    }
+  document.getElementById("logoutBtn").onclick = () => {
+    localStorage.removeItem("user");
+    window.location.href = "index.html";
+  };
 
-    if (e.target.matches(".rejectBtn")) {
-      const fromEmail = e.target.dataset.from;
-
-      await fetch(`${baseURL}/api/respond-request`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ toEmail: user.email, fromEmail, action: "reject" })
-      });
-
-      alert("Request rejected.");
-      fetchProfileData();
-    }
-  });
-
-  /* SOCKET UPDATE */
-  socket.on("request-accepted", () => fetchProfileData());
 });
 </script>
 
