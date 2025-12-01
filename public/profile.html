@@ -9,142 +9,88 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <style>
-/* GLOBAL */
 *{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:'Poppins',sans-serif;background:#f4f9f9;color:#2D3436;overflow-x:hidden;}
+body{font-family:'Poppins',sans-serif;background:#f4f9f9;color:#2D3436;overflow-x:hidden;min-height:100vh;display:flex;flex-direction:column;}
 a{text-decoration:none;color:inherit;}
-ul{list-style:none;}
-
-/* NAVBAR */
-.navbar{background:#fff;position:fixed;top:0;width:100%;z-index:1000;box-shadow:0 2px 10px rgba(0,0,0,0.1);}
-.nav-container{max-width:1200px;margin:0 auto;padding:0 20px;display:flex;justify-content:space-between;align-items:center;height:70px;}
-.nav-logo h2{color:#00BFA6;font-size:1.9rem;font-weight:700;}
-
-.nav-menu{display:flex;gap:2rem;align-items:center;}
-.nav-menu li a{color:#2D3436;font-weight:500;transition:0.3s;}
-.nav-menu li a:hover{color:#00BFA6;}
-
-.menu-toggle{display:none;font-size:1.8rem;color:#00BFA6;cursor:pointer;}
-
-.user-profile-dropdown{position:relative;display:flex;align-items:center;gap:8px;cursor:pointer;}
-.user-avatar{width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid #00BFA6;}
-.user-name{font-weight:600;color:#00BFA6;display:flex;align-items:center;gap:5px;}
-
-.dropdown-content{
-  display:none;position:absolute;right:0;top:55px;background:white;border-radius:10px;
-  box-shadow:0 5px 25px rgba(0,0,0,0.15);min-width:180px;overflow:hidden;
-}
-.dropdown-content a{
-  display:block;padding:10px 15px;color:#333;font-weight:500;transition:0.3s;
-}
-.dropdown-content a:hover{background:linear-gradient(135deg,#00BFA6,#FDCB6E);color:white;}
-
-@media(max-width:900px){
-  .menu-toggle{display:block;}
-  .nav-menu{
-    position:fixed;top:70px;left:-100%;width:100%;background:#fff;
-    padding:2rem;flex-direction:column;transition:0.3s;
-  }
-  .nav-menu.active{left:0;}
-}
+/* UNIVERSAL NAVBAR */
+.tb-navbar{width:100%;position:fixed;top:0;left:0;z-index:10000;background:linear-gradient(135deg,#00BFA6,#00D2A6,#00E3A0);padding:12px 0;box-shadow:0 6px 25px rgba(0,0,0,0.15);animation:gradientMove 6s infinite alternate ease;}
+@keyframes gradientMove{0%{background:linear-gradient(135deg,#00BFA6,#00D2A6,#00E3A0);}100%{background:linear-gradient(135deg,#00E3A0,#00D2A6,#00BFA6);}}
+.tb-nav-container{max-width:1250px;margin:auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;}
+.tb-logo{font-size:1.9rem;font-weight:700;color:white;}
+.tb-links{display:flex;align-items:center;gap:26px;}
+.tb-links a{color:white;font-weight:500;transition:.2s;}
+.tb-links a:hover{opacity:.85;transform:translateY(-2px);}
+.tb-right{display:flex;align-items:center;gap:14px;}
+.tb-burger{font-size:1.9rem;color:white;cursor:pointer;display:none;}
+.tb-profile{display:flex;align-items:center;gap:10px;cursor:pointer;color:white;position:relative;}
+.tb-profile img{width:42px;height:42px;border-radius:50%;border:2px solid white;object-fit:cover;}
+.tb-dropdown{position:absolute;top:58px;right:0;background:white;width:200px;border-radius:12px;display:none;overflow:hidden;box-shadow:0 8px 25px rgba(0,0,0,0.15);}
+.tb-dropdown a{display:block;padding:12px 15px;color:#333;font-weight:500;}
+.tb-dropdown a:hover{background:linear-gradient(135deg,#00BFA6,#FDCB6E);color:white;}
+.tb-mobile-menu{display:none;flex-direction:column;background:white;width:100%;padding:18px 0;text-align:center;box-shadow:0 8px 20px rgba(0,0,0,0.15);}
+.tb-mobile-menu a{padding:10px 0;color:#00BFA6;font-weight:600;border-bottom:1px solid #eee;}
+@media(max-width:900px){.tb-links{display:none}.tb-burger{display:block}}
 
 /* HERO */
-.page-hero{
-  background:linear-gradient(135deg,#00BFA6,#FDCB6E);
-  padding:150px 20px 80px;text-align:center;color:white;
-  border-bottom-left-radius:50px;border-bottom-right-radius:50px;
-}
-.page-hero h1{font-size:3rem;font-weight:700;margin-bottom:1rem;}
+.page-hero{background:linear-gradient(135deg,#00BFA6,#FDCB6E);padding:150px 20px 80px;text-align:center;color:white;border-bottom-left-radius:50px;border-bottom-right-radius:50px;}
+.page-hero h1{font-size:3rem;font-weight:700;margin-bottom:0.5rem;}
+.page-hero p{opacity:.95}
 
 /* CONTENT */
-.page-content{max-width:1000px;margin:0 auto;padding:80px 20px;}
-.profile-card{
-  background:white;padding:40px;border-radius:20px;
-  box-shadow:0 8px 25px rgba(0,0,0,0.08);text-align:center;
-}
-
-.profile-card img{
-  width:160px;height:160px;border-radius:50%;
-  object-fit:cover;margin-bottom:20px;border:4px solid #00BFA6;
-}
-
-.profile-card h2{color:#00BFA6;font-size:2rem;margin-bottom:10px;}
+.page-content{max-width:1000px;margin:0 auto;padding:80px 20px;flex:1;}
+.profile-card{background:white;padding:36px;border-radius:18px;box-shadow:0 8px 25px rgba(0,0,0,0.08);text-align:center;}
+.profile-card img{width:160px;height:160px;border-radius:50%;object-fit:cover;margin-bottom:18px;border:4px solid #00BFA6;}
+.profile-card h2{color:#00BFA6;font-size:2rem;margin-bottom:8px;}
 .profile-card p{margin:6px 0;color:#555;font-weight:500;}
+.profile-card hr{margin:24px 0;border:0;border-top:1px solid #eee;}
+.section{text-align:left;margin-bottom:36px;}
+.section h3{color:#00BFA6;margin-bottom:12px;font-size:1.2rem;}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-top:10px;}
+.stat-card{background:linear-gradient(135deg,#00BFA6,#FDCB6E);color:white;padding:12px;border-radius:12px;text-align:center;}
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:10px;}
+.card{background:white;padding:12px;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,0.06);}
+.btn{margin:8px;padding:10px 20px;border-radius:10px;border:none;background:linear-gradient(135deg,#00BFA6,#FDCB6E);color:white;font-weight:600;cursor:pointer;}
+.btn.secondary{background:#fff;color:#00BFA6;border:2px solid #e6e6e6;}
+.small-muted{font-size:.88rem;color:#666}
 
-.profile-card hr{margin:25px 0;border:0;border-top:1px solid #eee;}
-
-.btn{
-  margin:10px;padding:12px 28px;border:none;border-radius:12px;
-  background:linear-gradient(135deg,#00BFA6,#FDCB6E);
-  color:white;font-size:1rem;font-weight:600;cursor:pointer;transition:0.3s;
-}
-.btn:hover{opacity:0.9;transform:translateY(-2px);}
-
-/* SECTIONS */
-.section{text-align:left;margin-bottom:40px;}
-.section h3{color:#00BFA6;margin-bottom:15px;font-size:1.3rem;}
-
-.stats-grid{
-  display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
-  gap:15px;margin-top:10px;
-}
-.stat-card{
-  background:linear-gradient(135deg,#00BFA6,#FDCB6E);
-  color:white;padding:15px;border-radius:15px;text-align:center;
-}
-
-.cards-grid{
-  display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-  gap:15px;margin-top:10px;
-}
-
-.card{
-  background:white;padding:15px;border-radius:15px;
-  box-shadow:0 4px 15px rgba(0,0,0,0.05);
-}
-
-.small-muted{font-size:0.85rem;color:#666;}
+/* FOOTER */
+.footer{background:#2D3436;color:white;text-align:center;padding:3rem 20px;margin-top:30px;}
+@media(max-width:720px){.page-hero{padding:120px 16px 60px}.page-hero h1{font-size:2rem}.profile-card{padding:22px}}
 </style>
 </head>
-
 <body>
 
-<!-- NAVBAR -->
-<nav class="navbar">
-  <div class="nav-container">
-    <div class="nav-logo"><h2>TravelBuddy</h2></div>
-
-    <div class="menu-toggle" id="mobileMenu"><i class="fas fa-bars"></i></div>
-
-    <ul class="nav-menu" id="nav-menu">
-      <li><a href="index.html">Home</a></li>
-      <li><a href="find-companion.html">Find Companion</a></li>
-      <li><a href="explore.html">Plan a Trip</a></li>
-      <li><a href="blog.html">Blog</a></li>
-      <li id="auth-section"></li>
-    </ul>
+<nav class="tb-navbar">
+  <div class="tb-nav-container">
+    <div class="tb-logo">TravelBuddy</div>
+    <div class="tb-links">
+      <a href="index.html">Home</a>
+      <a href="find-companion.html">Find Companion</a>
+      <a href="explore.html">Plan a Trip</a>
+      <a href="blog.html">Community</a>
+    </div>
+    <div class="tb-right">
+      <div class="tb-burger" id="tb-burger"><i class="fas fa-bars"></i></div>
+      <div class="tb-profile" id="tb-profile"></div>
+    </div>
   </div>
+  <div class="tb-mobile-menu" id="tb-mobile-menu"></div>
 </nav>
 
-<!-- HERO -->
 <section class="page-hero">
   <h1>Your Profile</h1>
   <p>View and manage all your travel info in one place</p>
 </section>
 
-<!-- CONTENT -->
 <section class="page-content">
-  <div class="profile-card">
-
-    <img id="profilePhoto">
-
-    <h2 id="profileName">User Name</h2>
+  <div class="profile-card" id="profileCard">
+    <img id="profilePhoto" src="https://cdn-icons-png.flaticon.com/512/1077/1077114.png" alt="profile">
+    <h2 id="profileName">Loading...</h2>
     <p id="profileEmail"></p>
     <p id="profileCollege"></p>
     <p id="profileBio"></p>
     <hr>
 
-    <!-- TRAVEL STATS -->
     <div class="section">
       <h3>Travel Stats</h3>
       <div class="stats-grid">
@@ -154,140 +100,116 @@ ul{list-style:none;}
       </div>
     </div>
 
-    <!-- RECENT TRIPS -->
     <div class="section">
       <h3>Recent Trips</h3>
-      <div class="cards-grid" id="recentTrips">
-        <div class="card"><p>Loading...</p></div>
-      </div>
+      <div class="cards-grid" id="recentTrips"><div class="card"><p class="small-muted">Loading...</p></div></div>
     </div>
 
-    <!-- RECENT BLOGS -->
     <div class="section">
       <h3>Recent Blogs</h3>
-      <div class="cards-grid" id="recentBlogs">
-        <div class="card"><p>Loading...</p></div>
-      </div>
+      <div class="cards-grid" id="recentBlogs"><div class="card"><p class="small-muted">Loading...</p></div></div>
     </div>
 
-    <button class="btn" id="editProfileBtn">Edit Profile ✏️</button>
-    <button class="btn" id="writeBlogBtn">Write Blog 📝</button>
-    <button class="btn" id="logoutBtn">Logout</button>
-
+    <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:8px;">
+      <button class="btn" id="editProfileBtn">Edit Profile ✏️</button>
+      <button class="btn secondary" id="writeBlogBtn">Write Blog 📝</button>
+      <button class="btn secondary" id="logoutBtn">Logout</button>
+    </div>
   </div>
 </section>
 
-<script src="/socket.io/socket.io.js"></script>
+<footer class="footer">
+  <h3>TravelBuddy</h3>
+  <p>© 2025 TravelBuddy. All rights reserved.</p>
+</footer>
+
 <script>
-document.addEventListener("DOMContentLoaded", async () => {
+document.addEventListener("DOMContentLoaded",()=>{
 
-  const socket = io();
-  const baseURL = window.location.hostname === "localhost"
-    ? "http://localhost:5001"
-    : "https://travelbuddy-hluu.onrender.com";
-
-  let user = JSON.parse(localStorage.getItem("user"));
+  const user = JSON.parse(localStorage.getItem("user"));
   const defaultImg = "https://cdn-icons-png.flaticon.com/512/1077/1077114.png";
+  const profileEl = document.getElementById("tb-profile");
+  const mobileMenu = document.getElementById("tb-mobile-menu");
+  const burger = document.getElementById("tb-burger");
 
-  if (!user) {
+  if(!user){
     window.location.href = "signin.html";
     return;
   }
 
-  /* NAV MENU */
-  document.getElementById("mobileMenu").onclick =
-    () => document.getElementById("nav-menu").classList.toggle("active");
-
-  /* NAVBAR user */
-  const authSection = document.getElementById("auth-section");
-
-  authSection.innerHTML = `
-    <div class="user-profile-dropdown" id="userDropdown">
-      <img src="${user.img || defaultImg}" class="user-avatar">
-      <span class="user-name">${user.firstName || user.email.split('@')[0]}
-        <i class="fas fa-caret-down"></i>
-      </span>
-
-      <div class="dropdown-content" id="dropdownMenu">
-        <a href="profile.html">My Profile</a>
-        <a href="trips.html">Trips</a>
-        <a href="blogs.html">Blogs</a>
-        <a href="#" id="logoutDropdown">Logout</a>
-      </div>
+  profileEl.innerHTML = `
+    <img src="${user.img || defaultImg}" alt="me">
+    <i class="fas fa-caret-down"></i>
+    <div class="tb-dropdown" id="tb-dropdown">
+      <a href="profile.html">My Profile</a>
+      <a href="trips.html">Trips</a>
+      <a href="my-blogs.html">Blogs</a>
+      <a href="#" id="logoutDropdown">Logout</a>
     </div>
   `;
+  mobileMenu.innerHTML = `
+    <a href="index.html">Home</a>
+    <a href="find-companion.html">Find Companion</a>
+    <a href="explore.html">Plan a Trip</a>
+    <a href="blog.html">Community</a>
+    <a href="profile.html">My Profile</a>
+  `;
 
-  document.querySelector(".user-name").onclick = () => {
-    const dd = document.getElementById("dropdownMenu");
-    dd.style.display = dd.style.display === "block" ? "none" : "block";
-  };
+  document.addEventListener("click",(e)=>{
+    if(e.target.closest("#tb-profile")){
+      const dd = document.getElementById("tb-dropdown");
+      dd.style.display = dd.style.display === "block" ? "none" : "block";
+    } else {
+      const dd = document.getElementById("tb-dropdown");
+      if(dd) dd.style.display = "none";
+    }
+  });
 
-  document.getElementById("logoutDropdown").onclick = () => {
-    localStorage.removeItem("user");
-    window.location.href = "index.html";
-  };
+  burger.addEventListener("click",()=>{ mobileMenu.style.display = mobileMenu.style.display === "flex" ? "none" : "flex"; });
 
-  /* JOIN SOCKET ROOM */
-  socket.emit("join", { email: user.email });
+  document.getElementById("logoutDropdown")?.addEventListener("click", ()=>{ localStorage.removeItem("user"); location.href="index.html"; });
 
-  /* FETCH PROFILE DATA */
-  async function fetchProfile() {
-    const res = await fetch(`${baseURL}/api/user-profile?email=${user.email}`);
-    const data = await res.json();
-    if (data.success) {
-      user = data.user;
-      localStorage.setItem("user", JSON.stringify(user));
-      renderProfile(data.user);
+  async function loadProfile(){
+    const baseURL = window.location.hostname === "localhost" ? "http://localhost:5001" : "https://travelbuddy-hluu.onrender.com";
+    try{
+      const res = await fetch(`${baseURL}/api/user-profile?email=${encodeURIComponent(user.email)}`);
+      const data = await res.json();
+      if(data?.user){
+        const u = data.user;
+        localStorage.setItem("user", JSON.stringify(u));
+        renderProfile(u);
+      } else {
+        renderProfile(user);
+      }
+    }catch(err){
+      renderProfile(user);
     }
   }
 
-  function renderProfile(u) {
+  function renderProfile(u){
     document.getElementById("profilePhoto").src = u.img || defaultImg;
-    document.getElementById("profileName").innerText = `${u.firstName} ${u.lastName}`;
-    document.getElementById("profileEmail").innerText = u.email;
+    document.getElementById("profileName").innerText = `${u.firstName || ""} ${u.lastName || ""}`.trim() || u.email.split('@')[0];
+    document.getElementById("profileEmail").innerText = u.email || "";
     document.getElementById("profileCollege").innerText = "College: " + (u.college || "N/A");
-    document.getElementById("profileBio").innerText = u.bio || "Traveler and explorer!";
-
-    document.getElementById("totalTrips").innerText = u.trips?.length || 0;
+    document.getElementById("profileBio").innerText = u.bio || "";
+    document.getElementById("totalTrips").innerText = (u.trips?.length) || 0;
     document.getElementById("totalDistance").innerText = (u.totalDistance || 0) + " km";
     document.getElementById("avgRating").innerText = u.rating || "N/A";
 
-    document.getElementById("recentTrips").innerHTML =
-      u.trips && u.trips.length
-        ? u.trips.map(t =>
-            `<div class="card">
-               <h4>${t.destination}</h4>
-               <p class="small-muted">${t.date}</p>
-             </div>`
-          ).join("")
-        : `<div class="card"><p>No trips yet</p></div>`;
+    const tripsHtml = u.trips && u.trips.length ? u.trips.slice().reverse().slice(0,6).map(t=>`<div class="card"><h4>${escapeHtml(t.destination||"Unknown")}</h4><p class="small-muted">${escapeHtml(t.date||"—")}</p></div>`).join("") : `<div class="card"><p class="small-muted">No trips yet</p></div>`;
+    document.getElementById("recentTrips").innerHTML = tripsHtml;
 
-    document.getElementById("recentBlogs").innerHTML =
-      u.blogs && u.blogs.length
-        ? u.blogs.slice(-5).reverse().map(b =>
-            `<div class="card">
-               <h4>${b.title}</h4>
-               <p class="small-muted">${b.date}</p>
-               <p>${b.content.substring(0,80)}...</p>
-             </div>`
-          ).join("")
-        : `<div class="card"><p>No blogs posted yet</p></div>`;
+    const blogsHtml = u.blogs && u.blogs.length ? u.blogs.slice().reverse().slice(0,6).map(b=>`<div class="card"><h4>${escapeHtml(b.title||"Untitled")}</h4><p class="small-muted">${escapeHtml(b.date||"—")}</p><p>${escapeHtml((b.content||"").slice(0,100))}...</p></div>`).join("") : `<div class="card"><p class="small-muted">No blogs yet</p></div>`;
+    document.getElementById("recentBlogs").innerHTML = blogsHtml;
   }
 
-  fetchProfile();
+  function escapeHtml(s){ if(!s) return ""; return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
 
-  /* BUTTONS */
-  document.getElementById("editProfileBtn").onclick =
-    () => window.location.href = "edit-profile.html";
+  document.getElementById("editProfileBtn").addEventListener("click",()=> location.href="edit-profile.html");
+  document.getElementById("writeBlogBtn").addEventListener("click",()=> location.href="write-blog.html");
+  document.getElementById("logoutBtn").addEventListener("click",()=>{ localStorage.removeItem("user"); location.href="index.html"; });
 
-  document.getElementById("writeBlogBtn").onclick =
-    () => window.location.href = "write-blog.html";
-
-  document.getElementById("logoutBtn").onclick = () => {
-    localStorage.removeItem("user");
-    window.location.href = "index.html";
-  };
-
+  loadProfile();
 });
 </script>
 

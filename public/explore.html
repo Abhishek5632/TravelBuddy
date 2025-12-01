@@ -4,185 +4,401 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Add Trip | TravelBuddy</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+
   <style>
     *{margin:0;padding:0;box-sizing:border-box;}
-    body{font-family:'Poppins',sans-serif;line-height:1.6;background:#f9f9f9;}
-
-    /* Navbar */
-    .navbar{
-      background:rgba(255,255,255,0.95);
-      backdrop-filter:blur(10px);
-      position:fixed;top:0;width:100%;z-index:1000;
-      box-shadow:0 2px 20px rgba(0,191,166,0.1);
-    }
-    .nav-container{
-      max-width:1200px;margin:0 auto;padding:0 20px;
-      display:flex;justify-content:space-between;align-items:center;height:70px;
-    }
-    .nav-logo h2{color:#00BFA6;font-size:1.8rem;font-weight:700;}
-    .nav-menu{display:flex;list-style:none;gap:2rem;}
-    .nav-menu li a{
-      text-decoration:none;color:#2D3436;font-weight:500;
-      font-size:1rem;position:relative;
-    }
-    .nav-menu li a:hover{color:#00BFA6;}
-    .hamburger{display:none;flex-direction:column;cursor:pointer;}
-    .hamburger span{width:25px;height:3px;background:#2D3436;margin:3px 0;border-radius:2px;}
-    @media(max-width:768px){
-      .nav-menu{
-        position:fixed;top:70px;left:-100%;
-        flex-direction:column;background:white;
-        width:100%;padding:2rem 0;transition:0.3s;
-        box-shadow:0 10px 27px rgba(0,0,0,0.05);
-      }
-      .nav-menu.active{left:0;}
-      .hamburger{display:flex;}
+    body{
+      font-family:'Poppins',sans-serif;
+      background:#F4F9F9;
+      color:#333;
+      line-height:1.6;
+      overflow-x:hidden;
     }
 
-    /* Hero Header */
-    .hero{
-      padding:120px 20px 50px;
-      text-align:center;
+    /* ----------------------------------------------------
+       UNIVERSAL TRAVELBUDDY NAVBAR
+    -----------------------------------------------------*/
+    .tb-navbar{
+      width:100%;
+      position:fixed;
+      top:0;left:0;
+      z-index:10000;
+      background:linear-gradient(135deg,#00BFA6,#00D2A6,#00E3A0);
+      padding:12px 0;
+      box-shadow:0 6px 25px rgba(0,0,0,0.15);
+      animation:gradientMove 6s infinite alternate ease-in-out;
+    }
+
+    @keyframes gradientMove{
+      0%{background:linear-gradient(135deg,#00BFA6,#00D2A6,#00E3A0);}
+      100%{background:linear-gradient(135deg,#00E3A0,#00D2A6,#00BFA6);}
+    }
+
+    .tb-nav-container{
+      max-width:1250px;
+      margin:auto;
+      padding:0 24px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+
+    .tb-logo{
+      font-size:1.9rem;
+      font-weight:700;
+      color:white;
+    }
+
+    .tb-links{
+      display:flex;
+      align-items:center;
+      gap:30px;
+    }
+
+    .tb-links a{
+      color:white;
+      font-weight:500;
+      text-decoration:none;
+      transition:.25s;
+    }
+
+    .tb-links a:hover{
+      opacity:.8;
+      transform:translateY(-2px);
+    }
+
+    .tb-profile{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      cursor:pointer;
+      color:white;
+      position:relative;
+    }
+
+    .tb-profile img{
+      width:42px;height:42px;
+      border-radius:50%;
+      border:2px solid white;
+      object-fit:cover;
+    }
+
+    .tb-dropdown{
+      position:absolute;
+      top:58px;
+      right:0;
+      background:white;
+      width:180px;
+      border-radius:12px;
+      overflow:hidden;
+      display:none;
+      box-shadow:0 8px 25px rgba(0,0,0,0.15);
+    }
+
+    .tb-dropdown a{
+      display:block;
+      padding:12px 15px;
+      color:#333;
+      font-weight:500;
+      text-decoration:none;
+    }
+
+    .tb-dropdown a:hover{
       background:linear-gradient(135deg,#00BFA6,#FDCB6E);
       color:white;
     }
-    .hero h1{font-size:2.5rem;margin-bottom:10px;}
-    .hero p{font-size:1.1rem;}
 
-    /* Container */
-    .container{
-      max-width:600px;
-      margin:80px auto 50px;
+    .tb-right{
+      display:flex;
+      align-items:center;
+      gap:14px;
+    }
+
+    .tb-burger{
+      font-size:2rem;
+      color:white;
+      cursor:pointer;
+      display:none;
+    }
+
+    .tb-mobile-menu{
+      display:none;
+      flex-direction:column;
       background:white;
-      border-radius:15px;
-      padding:30px 25px;
-      box-shadow:0 4px 15px rgba(0,0,0,0.1);
+      width:100%;
+      text-align:center;
+      padding:20px 0;
+      box-shadow:0 8px 20px rgba(0,0,0,0.15);
+    }
+
+    .tb-mobile-menu a{
+      padding:12px 0;
+      color:#00BFA6;
+      border-bottom:1px solid #eee;
+      font-weight:600;
+      text-decoration:none;
+    }
+
+    @media(max-width:900px){
+      .tb-links{display:none;}
+      .tb-burger{display:block;}
+    }
+
+    /* HERO */
+    .hero{
+      padding:150px 20px 70px;
+      text-align:center;
+      background:linear-gradient(135deg,#00BFA6,#FDCB6E);
+      color:white;
+      border-bottom-left-radius:50px;
+      border-bottom-right-radius:50px;
+    }
+    .hero h1{
+      font-size:2.8rem;
+      font-weight:700;
+      margin-bottom:10px;
+    }
+
+    /* FORM CARD */
+    .container{
+      max-width:650px;
+      margin:70px auto 60px;
+      background:white;
+      padding:35px 28px;
+      border-radius:18px;
+      box-shadow:0 4px 18px rgba(0,0,0,0.12);
+    }
+
+    .container h2{
+      color:#00BFA6;
+      margin-bottom:15px;
+      font-size:2rem;
       text-align:center;
     }
-    .container h2{color:#00BFA6;margin-bottom:15px;font-size:1.8rem;}
+
     form input, form textarea, form button{
-      width:100%;padding:12px 15px;margin:10px 0;
-      border-radius:8px;border:1px solid #ccc;font-size:1rem;
+      width:100%;
+      padding:14px;
+      margin:10px 0;
+      border-radius:10px;
+      border:2px solid #ddd;
+      font-size:1rem;
     }
-    form textarea{resize:none;height:80px;}
+
+    form textarea{
+      resize:none;
+      min-height:90px;
+    }
+
     form input:focus, form textarea:focus{
-      border-color:#00BFA6;outline:none;
-      box-shadow:0 0 6px rgba(0,191,166,0.3);
+      border-color:#00BFA6;
+      outline:none;
+      box-shadow:0 0 6px rgba(0,191,166,0.25);
     }
+
     form button{
-      background:#00BFA6;color:white;border:none;
-      font-weight:600;cursor:pointer;transition:0.3s;
+      background:#00BFA6;
+      border:none;
+      color:white;
+      font-weight:600;
+      cursor:pointer;
+      transition:.25s;
     }
-    form button:hover{background:#01967f;}
-    #message{margin-top:15px;font-size:0.95rem;font-weight:500;}
-    
-    .footer{
-      background:#2D3436;color:white;text-align:center;padding:3rem 20px;margin-top:40px;
+
+    form button:hover{
+      background:#01967F;
     }
-    .footer p{color:#ccc;margin-top:1rem;}
+
+    #message{
+      margin-top:15px;
+      font-size:1rem;
+      text-align:center;
+      font-weight:500;
+    }
+
+    footer{
+      background:#2D3436;
+      color:white;
+      text-align:center;
+      padding:3rem 20px;
+      margin-top:40px;
+    }
   </style>
 </head>
+
 <body>
 
-  <!-- Navbar -->
-  <nav class="navbar">
-    <div class="nav-container">
-      <div class="nav-logo"><h2>TravelBuddy</h2></div>
-      <ul class="nav-menu">
-        <li><a href="index.html">Home</a></li>
-        <li><a href="find-companion.html">Find Companion</a></li>
-        <li><a href="contact.html">Contact Us</a></li>
-        <li><a href="profile.html">Profile</a></li>
-      </ul>
-      <div class="hamburger"><span></span><span></span><span></span></div>
+<!-- UNIVERSAL NAVBAR -->
+<nav class="tb-navbar">
+  <div class="tb-nav-container">
+
+    <div class="tb-logo">TravelBuddy</div>
+
+    <div class="tb-links">
+      <a href="index.html">Home</a>
+      <a href="find-companion.html">Find Companion</a>
+      <a href="explore.html">Plan a Trip</a>
+      <a href="blog.html">Community</a>
+      <a href="about.html">About</a>
     </div>
-  </nav>
 
-  <!-- Hero -->
-  <section class="hero">
-    <h1>🧳 Plan Your Next Journey</h1>
-    <p>Add your trip details and find perfect companions to travel with!</p>
-  </section>
+    <div class="tb-right">
+      <div class="tb-burger" id="tb-burger"><i class="fas fa-bars"></i></div>
+      <div class="tb-profile" id="tb-profile"></div>
+    </div>
 
-  <!-- Form Section -->
-  <section class="container">
-    <h2>Add a New Trip</h2>
-    <form id="addTripForm">
-      <input type="email" id="email" placeholder="Your Email" required readonly>
-      <input type="text" id="college" placeholder="College (optional)">
-      <input type="date" id="date" required>
-      <input type="text" id="destination" placeholder="Destination" required>
-      <input type="number" id="distance" placeholder="Approx Distance (in km)">
-      <textarea id="description" placeholder="Describe your trip (optional)"></textarea>
-      <button type="submit">Add Trip</button>
-    </form>
-    <p id="message"></p>
-  </section>
+  </div>
 
-  <footer class="footer">
-    <h3>TravelBuddy</h3>
-    <p>&copy; 2025 TravelBuddy. All rights reserved.</p>
-  </footer>
+  <div class="tb-mobile-menu" id="tb-mobile-menu"></div>
+</nav>
 
-  <script>
-    const hamburger = document.querySelector(".hamburger");
-    const navMenu = document.querySelector(".nav-menu");
-    hamburger.addEventListener("click", () => navMenu.classList.toggle("active"));
+<!-- HERO -->
+<section class="hero">
+  <h1>🧳 Plan Your Journey</h1>
+  <p>Add trip details & find the perfect travel companion!</p>
+</section>
 
-    const user = JSON.parse(localStorage.getItem("user"));
-    if (!user) {
-      alert("Please login first to access this page.");
-      window.location.href = "signin.html";
+<!-- FORM SECTION -->
+<section class="container">
+  <h2>Add a New Trip</h2>
+
+  <form id="addTripForm">
+    <input type="email" id="email" placeholder="Your Email" required readonly>
+    <input type="text" id="college" placeholder="College (optional)">
+    <input type="date" id="date" required>
+    <input type="text" id="destination" placeholder="Destination" required>
+    <input type="number" id="distance" placeholder="Approx Distance (in km)">
+    <textarea id="description" placeholder="Describe your trip (optional)"></textarea>
+    <button type="submit">Add Trip</button>
+  </form>
+
+  <p id="message"></p>
+</section>
+
+<footer>
+  <h3>TravelBuddy</h3>
+  <p>© 2025 TravelBuddy. All rights reserved.</p>
+</footer>
+
+<!-- NAVBAR + FORM JS -->
+<script>
+document.addEventListener("DOMContentLoaded",()=>{
+
+  /* Logged-in user check */
+  const user = JSON.parse(localStorage.getItem("user"));
+  if(!user){
+    alert("Please login first.");
+    window.location.href = "signin.html";
+  }
+
+  const emailField = document.getElementById("email");
+  emailField.value = user.email;
+
+  const defaultImg="https://cdn-icons-png.flaticon.com/512/1077/1077114.png";
+
+  /* Navbar elements */
+  const profileEl=document.getElementById("tb-profile");
+  const mobileMenu=document.getElementById("tb-mobile-menu");
+  const burger=document.getElementById("tb-burger");
+
+  if(user){
+    profileEl.innerHTML=`
+      <img src="${user.img || defaultImg}">
+      <i class="fas fa-caret-down"></i>
+      <div class="tb-dropdown" id="tb-dropdown">
+        <a href="profile.html">My Profile</a>
+        <a href="trips.html">Trips</a>
+        <a href="my-blogs.html">My Blogs</a>
+        <a href="#" id="logout1">Logout</a>
+      </div>
+    `;
+    mobileMenu.innerHTML=`
+      <a href="index.html">Home</a>
+      <a href="find-companion.html">Find Companion</a>
+      <a href="explore.html">Plan a Trip</a>
+      <a href="blog.html">Community</a>
+      <a href="about.html">About</a>
+      <a href="profile.html">My Profile</a>
+      <a href="#" id="logout2">Logout</a>
+    `;
+  }
+
+  document.addEventListener("click",e=>{
+    if(e.target.closest("#tb-profile")){
+      const dd=document.getElementById("tb-dropdown");
+      dd.style.display = dd.style.display==="block" ? "none" : "block";
+    } else {
+      const dd=document.getElementById("tb-dropdown");
+      if(dd) dd.style.display="none";
+    }
+  });
+
+  const logout=()=>{
+    localStorage.removeItem("user");
+    window.location.href="index.html";
+  };
+  document.getElementById("logout1")?.addEventListener("click",logout);
+  document.getElementById("logout2")?.addEventListener("click",logout);
+
+  burger.onclick=()=>{
+    mobileMenu.style.display = mobileMenu.style.display==="flex"?"none":"flex";
+  };
+
+});
+
+/* FORM SUBMISSION */
+document.getElementById("addTripForm").onsubmit = async (e)=>{
+  e.preventDefault();
+
+  const user = JSON.parse(localStorage.getItem("user"));
+  const msg=document.getElementById("message");
+
+  const trip={
+    email:user.email,
+    college:document.getElementById("college").value.trim(),
+    date:document.getElementById("date").value,
+    destination:document.getElementById("destination").value.trim(),
+    distance:document.getElementById("distance").value.trim(),
+    description:document.getElementById("description").value.trim()
+  };
+
+  if(!trip.date || !trip.destination){
+    msg.style.color="red";
+    msg.textContent="⚠️ Please fill required fields!";
+    return;
+  }
+
+  try{
+    const res = await fetch("/api/add-trip",{
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body:JSON.stringify(trip)
+    });
+
+    const data=await res.json();
+
+    if(data.success){
+      msg.style.color="green";
+      msg.textContent="✅ Trip added successfully!";
+      user.trips=data.trips;
+      localStorage.setItem("user",JSON.stringify(user));
+      document.getElementById("addTripForm").reset();
+      document.getElementById("email").value=user.email;
+    } else {
+      msg.style.color="red";
+      msg.textContent="❌ " + data.message;
     }
 
-    const emailField = document.getElementById("email");
-    const msg = document.getElementById("message");
-    if (user) emailField.value = user.email;
+  } catch(err){
+    msg.style.color="red";
+    msg.textContent="⚠️ Server error. Try again later.";
+  }
 
-    document.getElementById("addTripForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      if (!user) return;
-
-      const trip = {
-        email: user.email,
-        college: document.getElementById("college").value.trim(),
-        date: document.getElementById("date").value,
-        destination: document.getElementById("destination").value.trim(),
-        distance: document.getElementById("distance").value.trim(),
-        description: document.getElementById("description").value.trim(),
-      };
-
-      if (!trip.date || !trip.destination) {
-        msg.style.color = "red";
-        msg.textContent = "⚠️ Please fill all required fields!";
-        return;
-      }
-
-      try {
-        const res = await fetch("/api/add-trip", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(trip),
-        });
-        const data = await res.json();
-        if (data.success) {
-          msg.style.color = "green";
-          msg.textContent = "✅ Trip added successfully!";
-          user.trips = data.trips;
-          localStorage.setItem("user", JSON.stringify(user));
-          document.getElementById("addTripForm").reset();
-          emailField.value = user.email;
-        } else {
-          msg.style.color = "red";
-          msg.textContent = "❌ " + data.message;
-        }
-      } catch (err) {
-        msg.style.color = "red";
-        msg.textContent = "⚠️ Server error. Try again later!";
-        console.error(err);
-      }
-    });
-  </script>
+};
+</script>
 
 </body>
 </html>

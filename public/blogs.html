@@ -1,193 +1,275 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Blogs | TravelBuddy</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>My Blogs | TravelBuddy</title>
 
-<style>
-*{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:'Poppins',sans-serif;background:#f4f9f9;color:#2D3436;line-height:1.6;overflow-x:hidden;}
-a{text-decoration:none;color:inherit;}
-ul{list-style:none;padding-left:0;}
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-/* Navbar */
-.navbar{background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);position:fixed;top:0;width:100%;z-index:1000;box-shadow:0 2px 10px rgba(0,0,0,0.05);}
-.nav-container{max-width:1200px;margin:0 auto;padding:0 20px;display:flex;justify-content:space-between;align-items:center;height:70px;}
-.nav-logo h2{color:#00BFA6;font-size:1.9rem;font-weight:700;}
-.nav-menu{display:flex;gap:2rem;align-items:center;}
-.nav-menu li a{color:#2D3436;font-weight:500;transition:0.3s;}
-.nav-menu li a:hover{color:#00BFA6;}
-.nav-toggle{display:none;font-size:1.8rem;cursor:pointer;color:#000;}
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Poppins',sans-serif;background:#f4f9f9;color:#2D3436;line-height:1.6;overflow-x:hidden;}
+    a{text-decoration:none;color:inherit;}
+    ul{list-style:none;padding-left:0;}
 
-/* Hero */
-.page-hero{background:linear-gradient(135deg,#00BFA6,#FDCB6E);padding:150px 20px 80px;text-align:center;color:white;border-bottom-left-radius:50px;border-bottom-right-radius:50px;}
-.page-hero h1{font-size:3rem;font-weight:700;margin-bottom:1rem;}
-.page-hero p{font-size:1.2rem;font-weight:500;opacity:0.9;}
-
-/* Blog Section */
-.page-content{max-width:1100px;margin:0 auto;padding:80px 20px;}
-.blogs-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:25px;}
-
-/* Blog Card */
-.blog-card{
-  background:white;
-  border-radius:20px;
-  box-shadow:0 8px 25px rgba(0,0,0,0.08);
-  transition:all 0.3s ease;
-  overflow:hidden;
-  display:flex;
-  flex-direction:column;
-}
-.blog-card:hover{
-  transform:translateY(-5px);
-  box-shadow:0 15px 30px rgba(0,0,0,0.15);
-}
-
-/* Blog Image */
-.blog-card img{
-  width:100%;
-  height:180px;
-  object-fit:cover;
-  border-bottom:3px solid #00BFA6;
-}
-
-/* Blog Content */
-.blog-content{padding:20px;flex-grow:1;}
-.blog-content h3{color:#00BFA6;margin-bottom:10px;font-size:1.3rem;}
-.blog-content p{color:#555;margin-bottom:8px;font-size:0.95rem;}
-.blog-content .date{font-size:0.85rem;color:#777;margin-top:8px;}
-.blog-content span{
-  display:inline-block;
-  background:linear-gradient(135deg,#00BFA6,#FDCB6E);
-  color:white;
-  padding:6px 12px;
-  border-radius:8px;
-  font-size:0.85rem;
-  font-weight:500;
-  margin-top:10px;
-}
-
-/* Loader + No Blogs */
-.loader{text-align:center;margin-top:60px;font-weight:600;color:#00BFA6;}
-.no-blogs{text-align:center;margin-top:50px;font-size:1.2rem;color:#555;}
-
-/* Back Button */
-.back-btn{display:inline-block;margin-top:30px;padding:10px 25px;border-radius:10px;background:linear-gradient(135deg,#00BFA6,#FDCB6E);color:white;font-weight:600;transition:0.3s;}
-.back-btn:hover{opacity:0.9;}
-
-/* Responsive */
-@media(max-width:768px){
-  .nav-menu{display:none;flex-direction:column;background:white;position:absolute;top:70px;right:20px;width:200px;border-radius:12px;box-shadow:0 8px 20px rgba(0,0,0,0.1);}
-  .nav-menu.active{display:flex;}
-  .nav-toggle{display:block;}
-  .page-hero h1{font-size:2.2rem;}
-}
-@media(max-width:480px){
-  .blog-card img{height:150px;}
-  .blog-content h3{font-size:1.1rem;}
-  .page-hero h1{font-size:1.8rem;}
-}
-</style>
-</head>
-
-<body>
-<nav class="navbar">
-  <div class="nav-container">
-    <div class="nav-logo"><h2>TravelBuddy</h2></div>
-    <i class="fas fa-bars nav-toggle" id="menuToggle"></i>
-    <ul class="nav-menu" id="navMenu">
-      <li><a href="index.html">Home</a></li>
-      <li><a href="find-companion.html">Find Companion</a></li>
-      <li><a href="explore-trips.html">Explore Trips</a></li>
-      <li><a href="profile.html">Profile</a></li>
-    </ul>
-  </div>
-</nav>
-
-<section class="page-hero">
-  <h1>My Blogs</h1>
-  <p>Read, share, and relive your travel stories ✍️</p>
-</section>
-
-<section class="page-content">
-  <div id="loader" class="loader">Loading your blogs...</div>
-  <div id="blogsContainer" class="blogs-grid"></div>
-  <div class="no-blogs" id="noBlogsMsg" style="display:none;">No blogs yet. Start writing your first one today!</div>
-  <div style="text-align:center;">
-    <a href="profile.html" class="back-btn">← Back to Profile</a>
-  </div>
-</section>
-
-<script>
-// Navbar toggle
-const menuToggle=document.getElementById("menuToggle");
-const navMenu=document.getElementById("navMenu");
-menuToggle.addEventListener("click",()=>navMenu.classList.toggle("active"));
-
-// Elements
-const user = JSON.parse(localStorage.getItem("user"));
-const blogsContainer = document.getElementById("blogsContainer");
-const noBlogsMsg = document.getElementById("noBlogsMsg");
-const loader = document.getElementById("loader");
-
-// Random blog images
-const blogImages = [
-  "https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=1000&q=60",
-  "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1000&q=60",
-  "https://images.unsplash.com/photo-1497493292307-31c376b6e479?auto=format&fit=crop&w=1000&q=60",
-  "https://images.unsplash.com/photo-1470770903676-69b98201ea1c?auto=format&fit=crop&w=1000&q=60",
-  "https://images.unsplash.com/photo-1513682121497-80211f36a8f1?auto=format&fit=crop&w=1000&q=60",
-  "https://images.unsplash.com/photo-1498887960847-5c0b3d962a6f?auto=format&fit=crop&w=1000&q=60",
-  "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1000&q=60"
-];
-
-// Load blogs from MongoDB
-async function loadBlogs() {
-  if (!user || !user.email) {
-    loader.innerHTML = '<p style="color:red;">Please log in to view your blogs.</p>';
-    return;
-  }
-
-  try {
-    const response = await fetch(`/api/blogs/${encodeURIComponent(user.email)}`);
-    const data = await response.json();
-
-    loader.style.display = "none"; // Hide loader
-
-    if (!data.success || !data.blogs.length) {
-      noBlogsMsg.style.display = "block";
-      return;
+    /* UNIVERSAL NAVBAR */
+    .tb-navbar{
+      width:100%;
+      position:fixed;
+      top:0;
+      left:0;
+      z-index:10000;
+      background:linear-gradient(135deg,#00BFA6,#00D2A6,#00E3A0);
+      padding:12px 0;
+      box-shadow:0 5px 25px rgba(0,0,0,0.18);
+      animation:gradientMove 6s infinite alternate ease-in-out;
     }
+    @keyframes gradientMove{
+      0%{background:linear-gradient(135deg,#00BFA6,#00D2A6,#00E3A0);}
+      100%{background:linear-gradient(135deg,#00E3A0,#00D2A6,#00BFA6);}
+    }
+    .tb-nav-container{
+      max-width:1250px;margin:auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;
+    }
+    .tb-logo{font-size:1.9rem;font-weight:700;color:white;white-space:nowrap;}
+    .tb-links{display:flex;align-items:center;gap:30px;}
+    .tb-links a{color:white;font-weight:500;transition:.2s;}
+    .tb-links a:hover{opacity:.8;transform:translateY(-2px);}
+    .tb-profile{display:flex;align-items:center;gap:10px;cursor:pointer;color:white;position:relative;min-width:50px;}
+    .tb-profile img{width:42px;height:42px;border-radius:50%;border:2px solid white;object-fit:cover;}
+    .tb-dropdown{position:absolute;top:58px;right:0;background:white;width:180px;border-radius:12px;display:none;overflow:hidden;box-shadow:0 8px 25px rgba(0,0,0,0.15);}
+    .tb-dropdown a{display:block;padding:12px 15px;color:#333;font-weight:500;}
+    .tb-dropdown a:hover{background:linear-gradient(135deg,#00BFA6,#FDCB6E);color:white;}
+    .tb-right{display:flex;align-items:center;gap:14px;}
+    .tb-burger{font-size:1.9rem;color:white;cursor:pointer;display:none;}
+    .tb-mobile-menu{display:none;flex-direction:column;background:white;width:100%;padding:20px 0;gap:5px;text-align:center;box-shadow:0 8px 20px rgba(0,0,0,0.15);animation:slideDown .3s ease;}
+    .tb-mobile-menu a{padding:12px 0;color:#00BFA6;font-weight:600;border-bottom:1px solid #eee;}
+    @keyframes slideDown{from{opacity:0;transform:translateY(-10px);}to{opacity:1;transform:translateY(0);}}
+    @media(max-width:900px){.tb-links{display:none}.tb-burger{display:block}.tb-logo{margin-right:auto;}}
 
-    blogsContainer.innerHTML = "";
-    data.blogs.reverse().forEach((blog, index) => {
-      const imgUrl = blogImages[index % blogImages.length];
-      const div = document.createElement("div");
-      div.className = "blog-card";
-      div.innerHTML = `
-        <img src="${imgUrl}" alt="Blog image">
-        <div class="blog-content">
-          <h3>${blog.title || "Untitled Blog"}</h3>
-          <p>${blog.content ? blog.content.slice(0, 120) + "..." : "No content available."}</p>
-          <p class="date">🗓️ ${blog.date || "Unknown Date"}</p>
-          <span>Blog #${index + 1}</span>
+    /* Page header / hero */
+    .page-hero{background:linear-gradient(135deg,#00BFA6,#FDCB6E);padding:140px 20px 80px;text-align:center;color:white;border-bottom-left-radius:50px;border-bottom-right-radius:50px;margin-top:0;}
+    .page-hero h1{font-size:2.6rem;font-weight:700;margin-bottom:0.6rem;}
+    .page-hero p{font-size:1.05rem;font-weight:500;opacity:0.95;}
+
+    /* Main content */
+    .page-content{max-width:1100px;margin:0 auto;padding:60px 20px 80px;}
+    .blogs-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:25px;}
+
+    /* Blog Card */
+    .blog-card{background:white;border-radius:16px;box-shadow:0 8px 25px rgba(0,0,0,0.08);transition:all 0.25s ease;overflow:hidden;display:flex;flex-direction:column;}
+    .blog-card:hover{transform:translateY(-6px);box-shadow:0 16px 38px rgba(0,0,0,0.12);}
+    .blog-card img{width:100%;height:180px;object-fit:cover;border-bottom:4px solid #00BFA6;}
+    .blog-content{padding:18px;flex-grow:1;display:flex;flex-direction:column;}
+    .blog-content h3{color:#00BFA6;margin-bottom:8px;font-size:1.15rem;}
+    .blog-content p{color:#555;margin-bottom:8px;font-size:0.95rem;}
+    .blog-content .date{font-size:0.85rem;color:#777;margin-top:auto;}
+    .blog-content .tag{display:inline-block;background:linear-gradient(135deg,#00BFA6,#FDCB6E);color:white;padding:6px 12px;border-radius:8px;font-size:0.85rem;font-weight:500;margin-top:12px;}
+
+    .loader{text-align:center;margin-top:30px;font-weight:600;color:#00BFA6;}
+    .no-blogs{text-align:center;margin-top:30px;font-size:1.1rem;color:#555;}
+    .back-btn{display:inline-block;margin-top:28px;padding:10px 22px;border-radius:10px;background:linear-gradient(135deg,#00BFA6,#FDCB6E);color:white;font-weight:600;transition:0.2s;}
+    .back-btn:hover{opacity:0.95}
+
+    /* Responsive tweaks */
+    @media(max-width:768px){
+      .page-hero{padding:110px 16px 58px;}
+      .page-hero h1{font-size:2rem;}
+      .tb-profile img{width:40px;height:40px;}
+    }
+    @media(max-width:480px){
+      .blog-card img{height:150px;}
+      .page-hero h1{font-size:1.6rem;}
+      .tb-dropdown{right:6px;}
+    }
+  </style>
+</head>
+<body>
+
+  <!-- UNIVERSAL NAVBAR -->
+  <nav class="tb-navbar">
+    <div class="tb-nav-container">
+      <div class="tb-logo">TravelBuddy</div>
+
+      <div class="tb-links">
+        <a href="index.html">Home</a>
+        <a href="find-companion.html">Find Companion</a>
+        <a href="explore.html">Plan a Trip</a>
+        <a href="blog.html">Community</a>
+      </div>
+
+      <div class="tb-right">
+        <div class="tb-burger" id="tb-burger"><i class="fas fa-bars"></i></div>
+        <div class="tb-profile" id="tb-profile"></div>
+      </div>
+    </div>
+
+    <div class="tb-mobile-menu" id="tb-mobile-menu"></div>
+  </nav>
+
+  <!-- HERO -->
+  <header class="page-hero" role="banner">
+    <h1>My Blogs</h1>
+    <p>Read, share, and relive your travel stories ✍️</p>
+  </header>
+
+  <!-- CONTENT -->
+  <main class="page-content" role="main">
+    <div id="loader" class="loader">Loading your blogs...</div>
+    <div id="blogsContainer" class="blogs-grid" aria-live="polite"></div>
+    <div class="no-blogs" id="noBlogsMsg" style="display:none;">No blogs yet. Start writing your first one today!</div>
+
+    <div style="text-align:center;margin-top:28px;">
+      <a href="profile.html" class="back-btn">← Back to Profile</a>
+    </div>
+  </main>
+
+  <footer style="text-align:center;padding:40px 20px;color:#777">
+    © 2025 TravelBuddy
+  </footer>
+
+  <script>
+  /* All page JS wrapped so nothing runs before DOM ready */
+  document.addEventListener("DOMContentLoaded", () => {
+
+    /* ---------- UNIVERSAL NAVBAR BEHAVIOR ---------- */
+    const user = JSON.parse(localStorage.getItem("user"));
+    const defaultImg = "https://cdn-icons-png.flaticon.com/512/1077/1077114.png";
+
+    const profileEl = document.getElementById("tb-profile");
+    const mobileMenuEl = document.getElementById("tb-mobile-menu");
+    const burgerEl = document.getElementById("tb-burger");
+
+    if (user) {
+      profileEl.innerHTML = `
+        <img src="${user.img || defaultImg}" alt="${(user.firstName||'User') + ' profile'}">
+        <i class="fas fa-caret-down" aria-hidden="true"></i>
+        <div class="tb-dropdown" id="tb-dropdown" role="menu" aria-hidden="true">
+          <a href="profile.html">My Profile</a>
+          <a href="trips.html">Trips</a>
+          <a href="my-blogs.html">My Blogs</a>
+          <a href="#" id="tb-logout">Logout</a>
         </div>
       `;
-      blogsContainer.appendChild(div);
+
+      mobileMenuEl.innerHTML = `
+        <a href="index.html">Home</a>
+        <a href="find-companion.html">Find Companion</a>
+        <a href="explore.html">Plan a Trip</a>
+        <a href="blog.html">Community</a>
+        <hr style="width:60%;margin:auto;border:0;border-top:1px solid #eee;">
+        <a href="profile.html">My Profile</a>
+        <a href="trips.html">Trips</a>
+        <a href="my-blogs.html">My Blogs</a>
+        <a href="#" id="tb-logout2">Logout</a>
+      `;
+    } else {
+      profileEl.innerHTML = `<img src="${defaultImg}" alt="Guest">`;
+      mobileMenuEl.innerHTML = `
+        <a href="index.html">Home</a>
+        <a href="find-companion.html">Find Companion</a>
+        <a href="explore.html">Plan a Trip</a>
+        <a href="blog.html">Community</a>
+      `;
+    }
+
+    /* Profile dropdown toggle (delegated) */
+    document.addEventListener("click", (e) => {
+      if (e.target.closest("#tb-profile")) {
+        const dd = document.getElementById("tb-dropdown");
+        if (dd) dd.style.display = dd.style.display === "block" ? "none" : "block";
+      } else {
+        // click outside -> hide dropdown if present
+        const dd = document.getElementById("tb-dropdown");
+        if (dd && dd.style.display === "block") dd.style.display = "none";
+      }
     });
-  } catch (err) {
-    console.error("Error fetching blogs:", err);
-    loader.innerHTML = '<p style="color:red;">Error loading blogs. Please try again later.</p>';
-  }
-}
 
-loadBlogs();
-</script>
+    /* Logout safe attach (optional chaining) */
+    const logout = () => {
+      localStorage.removeItem("user");
+      window.location.href = "index.html";
+    };
+    document.getElementById("tb-logout")?.addEventListener("click", logout);
+    document.getElementById("tb-logout2")?.addEventListener("click", logout);
 
+    /* Hamburger mobile menu toggle */
+    burgerEl?.addEventListener("click", () => {
+      mobileMenuEl.style.display = mobileMenuEl.style.display === "flex" ? "none" : "flex";
+    });
+
+    /* ---------- MY BLOGS PAGE BEHAVIOR ---------- */
+    const blogsContainer = document.getElementById("blogsContainer");
+    const noBlogsMsg = document.getElementById("noBlogsMsg");
+    const loader = document.getElementById("loader");
+
+    const blogImages = [
+      "https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=1200&q=60",
+      "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=60",
+      "https://images.unsplash.com/photo-1497493292307-31c376b6e479?auto=format&fit=crop&w=1200&q=60",
+      "https://images.unsplash.com/photo-1470770903676-69b98201ea1c?auto=format&fit=crop&w=1200&q=60",
+      "https://images.unsplash.com/photo-1513682121497-80211f36a8f1?auto=format&fit=crop&w=1200&q=60",
+      "https://images.unsplash.com/photo-1498887960847-5c0b3d962a6f?auto=format&fit=crop&w=1200&q=60",
+      "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=60"
+    ];
+
+    async function loadBlogs() {
+      // If user not logged in -> show message
+      if (!user || !user.email) {
+        loader.innerHTML = '<span style="color:#fff;background:#ff6b6b;padding:8px 12px;border-radius:8px;display:inline-block">Please log in to view your blogs.</span>';
+        return;
+      }
+
+      try {
+        const res = await fetch(`/api/blogs/${encodeURIComponent(user.email)}`, { method: "GET" });
+        const data = await res.json();
+        loader.style.display = "none";
+
+        if (!data?.success || !Array.isArray(data.blogs) || data.blogs.length === 0) {
+          noBlogsMsg.style.display = "block";
+          return;
+        }
+
+        // Reverse so newest first (if backend returns oldest first)
+        const blogs = data.blogs.slice().reverse();
+
+        blogsContainer.innerHTML = "";
+        blogs.forEach((blog, idx) => {
+          const img = blog.image?.[0] || blogImages[idx % blogImages.length];
+          const title = blog.title || "Untitled Blog";
+          const content = (blog.content && blog.content.length > 140) ? blog.content.slice(0,140) + "..." : (blog.content || "No content available.");
+          const date = blog.date || blog.createdAt || new Date().toLocaleDateString();
+
+          const card = document.createElement("article");
+          card.className = "blog-card";
+          card.innerHTML = `
+            <img src="${img}" alt="${title}">
+            <div class="blog-content">
+              <h3>${escapeHtml(title)}</h3>
+              <p>${escapeHtml(content)}</p>
+              <div class="date">🗓️ ${escapeHtml(String(date))}</div>
+              <span class="tag">Blog #${idx + 1}</span>
+            </div>
+          `;
+          blogsContainer.appendChild(card);
+        });
+
+      } catch (err) {
+        console.error("Error loading blogs:", err);
+        loader.innerHTML = '<span style="color:#fff;background:#ff6b6b;padding:8px 12px;border-radius:8px;display:inline-block">Error loading blogs. Try again later.</span>';
+      }
+    }
+
+    // small helper to avoid XSS
+    function escapeHtml(s) {
+      if (!s) return "";
+      return String(s).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;");
+    }
+
+    loadBlogs();
+  }); /* DOMContentLoaded end */
+  </script>
 </body>
 </html>

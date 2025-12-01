@@ -5,224 +5,408 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Find Your Travel Companion | TravelBuddy</title>
 
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
   <style>
-    * {margin: 0; padding: 0; box-sizing: border-box;}
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    /* REMOVE ALL UNDERLINES GLOBALLY */
+    a { text-decoration: none !important; }
+
     body {
-      font-family: 'Poppins', sans-serif;
+      font-family: "Poppins", sans-serif;
       background: #F4F9F9;
       color: #2D3436;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
     }
 
-    /* ================= NAVBAR ================= */
-    .navbar {
-      background: rgba(255,255,255,0.95);
-      backdrop-filter: blur(10px);
+    /* =====================================================
+        LUXURY NAVBAR (Your Option A)
+    ===================================================== */
+    .tb-navbar {
+      width: 100%;
       position: fixed;
       top: 0;
-      width: 100%;
-      z-index: 1000;
-      box-shadow: 0 2px 20px rgba(0,191,166,0.07);
+      left: 0;
+      z-index: 10000;
+      padding: 12px 0;
+      background: linear-gradient(135deg, #00BFA6, #00D2A6, #00E3A0);
+      box-shadow: 0 5px 25px rgba(0, 0, 0, 0.18);
+      animation: gradientMove 6s infinite alternate ease-in-out;
     }
-    .nav-container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 20px;
+
+    @keyframes gradientMove {
+      0% { background: linear-gradient(135deg, #00BFA6, #00D2A6, #00E3A0); }
+      100% { background: linear-gradient(135deg, #00E3A0, #00D2A6, #00BFA6); }
+    }
+
+    .tb-nav-container {
+      max-width: 1250px;
+      margin: auto;
+      padding: 0 24px;
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      height: 70px;
+      justify-content: space-between;
     }
-    .nav-logo h2 {color:#00BFA6;font-size:1.7rem;font-weight:700;}
-    .nav-menu {display:flex;list-style:none;gap:2rem;}
-    .nav-menu li a {
-      text-decoration: none;
-      color: #2D3436;
+
+    .tb-logo {
+      font-size: 1.9rem;
+      font-weight: 700;
+      color: white;
+    }
+
+    .tb-links {
+      display: flex;
+      align-items: center;
+      gap: 30px;
+    }
+
+    .tb-links a {
+      color: white;
       font-weight: 500;
-      padding: 5px 0;
-      transition: 0.3s;
+      transition: 0.2s;
     }
-    .nav-menu li a:hover {color:#00BFA6;}
-
-    .hamburger {display:none;flex-direction:column;cursor:pointer;}
-    .hamburger span {width:25px;height:3px;background:#2D3436;margin:3px 0;border-radius:2px;}
-
-    @media (max-width: 768px) {
-      .nav-menu {
-        position: fixed;
-        top: 70px;
-        left: -100%;
-        flex-direction: column;
-        background: white;
-        width: 100%;
-        padding: 2rem 0;
-        gap: 1.4rem;
-        transition: 0.3s;
-      }
-      .nav-menu.active {left: 0;}
-      .hamburger {display:flex;}
+    .tb-links a:hover {
+      opacity: 0.8;
+      transform: translateY(-2px);
     }
 
+    .tb-right { display: flex; align-items: center; gap: 14px; }
+    .tb-burger { display: none; font-size: 1.9rem; color: white; cursor: pointer; }
 
-    /* ================= HERO ================= */
+    .tb-profile {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      position: relative;
+      color: white;
+    }
+    .tb-profile img {
+      width: 42px; height: 42px;
+      border-radius: 50%;
+      border: 2px solid white;
+      object-fit: cover;
+    }
+
+    .tb-dropdown {
+      position: absolute;
+      top: 58px; right: 0;
+      background: white; width: 180px;
+      border-radius: 12px; overflow: hidden;
+      display: none;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+    .tb-dropdown a {
+      padding: 12px 15px;
+      display: block;
+      font-weight: 500;
+      color: #333;
+    }
+    .tb-dropdown a:hover {
+      background: linear-gradient(135deg, #00BFA6, #FDCB6E);
+      color: white;
+    }
+
+    .tb-mobile-menu {
+      display: none;
+      flex-direction: column;
+      background: white;
+      width: 100%;
+      padding: 20px 0;
+      text-align: center;
+      gap: 6px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+    .tb-mobile-menu a {
+      padding: 12px 0;
+      color: #00BFA6;
+      border-bottom: 1px solid #eee;
+      font-weight: 600;
+    }
+
+    @media(max-width:900px){
+      .tb-links { display: none; }
+      .tb-burger { display: block; }
+    }
+
+    /* =====================================================
+        HERO
+    ===================================================== */
     .page-hero {
-      background: linear-gradient(135deg,#00BFA6,#FDCB6E);
-      padding: 130px 20px 70px;
+      margin-top: 0;
+      padding: 150px 20px 80px;
+      background: linear-gradient(135deg, #00BFA6, #FDCB6E);
       text-align: center;
       color: white;
     }
-    .page-hero h1 {font-size:3rem;font-weight:700;margin-bottom:1rem;}
 
-
-    /* ================= CONTENT ================= */
-    .page-content {
-      flex: 1;
-      max-width:1200px;
-      margin:0 auto;
-      padding:50px 20px 70px;
-      width: 100%;
+    .page-hero h1 {
+      font-size: 3rem;
+      font-weight: 700;
     }
 
+
+    /* =====================================================
+       SEARCH AREA
+    ===================================================== */
     .search-box {
-      background:white;border-radius:14px;
-      box-shadow:0 4px 16px rgba(0,0,0,0.10);
-      padding:25px;
-      display:flex;flex-wrap:wrap;justify-content:center;align-items:center;
-      gap:20px;max-width:750px;margin:0 auto 30px;
+      background: white;
+      padding: 25px;
+      border-radius: 14px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+      max-width: 800px;
+      margin: -35px auto 40px;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      flex-wrap: wrap;
     }
     .search-box input {
-      padding:9px 14px;border:1px solid #ccc;border-radius:10px;font-size:15px;
-      outline:none;transition:0.3s;
+      padding: 10px 15px;
+      border: 1.8px solid #ccc;
+      border-radius: 10px;
+      font-size: 15px;
+      outline: none;
+      transition: 0.3s;
     }
-    .search-box input:focus {border-color:#00BFA6;box-shadow:0 0 5px #00bfa644;}
+    .search-box input:focus {
+      border-color: #00BFA6;
+      box-shadow: 0 0 5px #00bfa666;
+    }
+
     .search-box button {
-      padding:9px 22px;border:none;border-radius:10px;
-      background:linear-gradient(135deg,#00BFA6,#FDCB6E);
-      color:white;cursor:pointer;font-weight:600;font-size:16px;
-      transition:0.3s;
+      padding: 10px 22px;
+      border: none;
+      border-radius: 10px;
+      background: #00BFA6;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.3s;
     }
-    .search-box button:hover {transform:scale(1.05);}
+    .search-box button:hover {
+      transform: scale(1.05);
+    }
 
+
+    /* =====================================================
+       USER CARD DESIGN
+    ===================================================== */
     #resultsContainer {
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(270px,1fr));
-      gap:22px;
-      margin-top:20px;
+      max-width: 1250px;
+      margin: 60px auto;
+      padding: 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+      gap: 40px;
     }
 
-    /* ================= USER CARD ================= */
     .card {
-      background:white;border-radius:14px;
-      box-shadow:0 4px 12px rgba(0,0,0,0.09);
-      overflow:hidden;transition:0.28s;
-      display:flex;flex-direction:column;
+      background: white;
+      border-radius: 16px;
+      padding-top: 70px;
+      position: relative;
+      text-align: center;
+      padding-bottom: 25px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+      transition: 0.25s;
     }
-    .card:hover {transform:scale(1.03);}
-    .card img {width:100%;height:175px;object-fit:cover;}
-
-    .card-content {padding:17px 16px 14px;}
-    .card-content h2 {color:#00BFA6;font-size:1.18rem;font-weight:700;}
-    .card-content p {margin:4px 0;color:#444;font-size:0.95rem;}
-
-    .view-btn {
-      margin-top:10px;
-      padding:8px 12px;
-      border:none;
-      border-radius:8px;
-      background:linear-gradient(135deg,#00BFA6,#FDCB6E);
-      color:white;
-      font-weight:600;
-      cursor:pointer;
-      text-align:center;
-      display:inline-block;
-      transition:0.3s;
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 28px rgba(0,0,0,0.12);
     }
 
-    .view-btn:hover {transform:scale(1.05);}
+    .profile-pic {
+      width: 90px; height: 90px;
+      border-radius: 50%;
+      border: 4px solid white;
+      object-fit: cover;
+      position: absolute;
+      top: -45px; left: 50%;
+      transform: translateX(-50%);
+      box-shadow: 0 5px 18px rgba(0,0,0,0.15);
+      background: white;
+    }
+
+    .card h2 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #00BFA6;
+      margin-bottom: 5px;
+    }
+
+    .card p {
+      font-size: 0.92rem;
+      color: #444;
+      margin: 3px 0;
+    }
+
+    .view-btn, .connect-btn {
+      margin-top: 12px;
+      padding: 10px 18px;
+      border-radius: 10px;
+      border: 2px solid #00BFA6;
+      background: white;
+      font-weight: 600;
+      color: #00BFA6;
+      cursor: pointer;
+      display: inline-block;
+      transition: 0.3s;
+    }
+    .view-btn:hover, .connect-btn:hover {
+      background: #00BFA6;
+      color: white;
+    }
 
 
-    /* ================= FOOTER ================= */
+    /* FOOTER */
     .footer {
       background:#2D3436;
       color:white;
       text-align:center;
-      padding:2.5rem 20px;
-    }
-
-    #noResults {
-      text-align:center;
-      margin-top:20px;
-      font-size:1.2rem;
-      color:#00BFA6;
-      font-weight:600;
-      display:none;
+      padding:3rem 20px;
+      margin-top: 40px;
     }
 
   </style>
 </head>
 <body>
 
-  <!-- NAVBAR -->
-  <nav class="navbar">
-    <div class="nav-container">
-      <div class="nav-logo"><h2>TravelBuddy</h2></div>
+<!-- LUXURY NAVBAR -->
+<nav class="tb-navbar">
+  <div class="tb-nav-container">
+    <div class="tb-logo">TravelBuddy</div>
 
-      <ul class="nav-menu">
-        <li><a href="index.html">Home</a></li>
-        <li><a href="find-companion.html">Find Companion</a></li>
-        <li><a href="explore.html">Add Trip</a></li>
-        <li><a href="profile.html">Profile</a></li>
-      </ul>
-
-      <div class="hamburger"><span></span><span></span><span></span></div>
-    </div>
-  </nav>
-
-  <!-- HERO -->
-  <section class="page-hero">
-    <h1>Find Your Travel Companion</h1>
-    <p>Connect with fellow travelers and make your journeys memorable!</p>
-  </section>
-
-  <!-- CONTENT -->
-  <section class="page-content">
-
-    <div class="search-box">
-      <label>Date:</label>
-      <input type="date" id="tripDate" />
-      <label>Destination:</label>
-      <input type="text" id="destination" placeholder="e.g. Jaipur, Goa" />
-      <button onclick="searchTrips()">🔍 Search</button>
+    <div class="tb-links">
+      <a href="index.html">Home</a>
+      <a href="find-companion.html">Find Companion</a>
+      <a href="explore.html">Add Trip</a>
+      <a href="blog.html">Community</a>
     </div>
 
-    <p id="noResults">No travelers found 😔</p>
+    <div class="tb-right">
+      <div class="tb-burger" id="tb-burger"><i class="fas fa-bars"></i></div>
+      <div class="tb-profile" id="tb-profile"></div>
+    </div>
+  </div>
 
-    <div id="resultsContainer"></div>
-
-  </section>
-
-  <!-- FOOTER -->
-  <footer class="footer">
-    <h3>TravelBuddy</h3>
-    <p>&copy; 2025 TravelBuddy. All rights reserved.</p>
-  </footer>
+  <div class="tb-mobile-menu" id="tb-mobile-menu"></div>
+</nav>
 
 
+<!-- HERO -->
+<section class="page-hero">
+  <h1>Find Your Travel Companion</h1>
+  <p>Connect with fellow travelers and make your journeys memorable!</p>
+</section>
+
+
+<!-- SEARCH AREA -->
+<section class="search-section">
+  <div class="search-box">
+    <label>Date:</label>
+    <input type="date" id="tripDate">
+
+    <label>Destination:</label>
+    <input type="text" id="destination" placeholder="e.g. Jaipur, Goa">
+
+    <button onclick="searchTrips()">Search</button>
+  </div>
+</section>
+
+
+<!-- USERS -->
+<p id="noResults" style="text-align:center; display:none; font-size:1.2rem; font-weight:600; color:#00BFA6;">
+  No travellers found 😔
+</p>
+
+<div id="resultsContainer"></div>
+
+
+<!-- FOOTER -->
+<footer class="footer">
+  <h3>TravelBuddy</h3>
+  <p>© 2025 TravelBuddy. All rights reserved.</p>
+</footer>
+
+
+<!-- ===========================================
+     NAVBAR JS
+=========================================== -->
 <script>
-/* Ensure user logged in */
+document.addEventListener("DOMContentLoaded", () => {
+  const user = JSON.parse(localStorage.getItem("user"));
+  const defaultImg = "https://cdn-icons-png.flaticon.com/512/1077/1077114.png";
+
+  const profileEl = document.getElementById("tb-profile");
+  const mobileMenuEl = document.getElementById("tb-mobile-menu");
+  const burgerEl = document.getElementById("tb-burger");
+
+  if (user) {
+    profileEl.innerHTML = `
+      <img src="${user.img || defaultImg}">
+      <i class="fas fa-caret-down"></i>
+      <div class="tb-dropdown" id="tb-dropdown">
+        <a href="profile.html">My Profile</a>
+        <a href="trips.html">Trips</a>
+        <a href="my-blogs.html">My Blogs</a>
+        <a href="#" id="tb-logout">Logout</a>
+      </div>
+    `;
+
+    mobileMenuEl.innerHTML = `
+      <a href="index.html">Home</a>
+      <a href="find-companion.html">Find Companion</a>
+      <a href="explore.html">Add Trip</a>
+      <a href="blog.html">Community</a>
+      <hr>
+      <a href="profile.html">My Profile</a>
+      <a href="trips.html">Trips</a>
+      <a href="my-blogs.html">My Blogs</a>
+      <a href="#" id="tb-logout2">Logout</a>
+    `;
+  } else {
+    profileEl.innerHTML = `<img src="${defaultImg}">`;
+
+    mobileMenuEl.innerHTML = `
+      <a href="index.html">Home</a>
+      <a href="find-companion.html">Find Companion</a>
+      <a href="explore.html">Add Trip</a>
+      <a href="blog.html">Community</a>
+    `;
+  }
+
+  // Toggle dropdown
+  document.addEventListener("click", (e) => {
+    if (e.target.closest("#tb-profile")) {
+      const dd = document.getElementById("tb-dropdown");
+      if (dd) dd.style.display = dd.style.display === "block" ? "none" : "block";
+    } else {
+      const dd = document.getElementById("tb-dropdown");
+      if (dd) dd.style.display = "none";
+    }
+  });
+
+  // Burger menu
+  burgerEl.addEventListener("click", () => {
+    mobileMenuEl.style.display =
+      mobileMenuEl.style.display === "flex" ? "none" : "flex";
+  });
+});
+</script>
+
+
+<!-- ===========================================
+     FIND COMPANION JS
+=========================================== -->
+<script>
 const user = JSON.parse(localStorage.getItem("user"));
 if (!user) {
   alert("Please log in first.");
   window.location.href = "signin.html";
 }
 
-/* Mobile Menu */
-document.querySelector(".hamburger").onclick = () =>
-  document.querySelector(".nav-menu").classList.toggle("active");
-
-/* Backend URL */
 const baseURL = window.location.hostname === "localhost"
   ? "http://localhost:5001"
   : "https://travelbuddy-hluu.onrender.com";
@@ -230,35 +414,28 @@ const baseURL = window.location.hostname === "localhost"
 const container = document.getElementById("resultsContainer");
 const noResults = document.getElementById("noResults");
 
-/* Render Users */
 function renderUsers(users) {
-  let html = "";
+  container.innerHTML = "";
+
   users.forEach(u => {
-    const trip = u.trips?.[0] || { date:"N/A", destination:"Not Added" };
+    const trip = u.trips?.[0] || { date: "N/A", destination: "Not Added" };
     const img = u.img || "https://cdn-icons-png.flaticon.com/512/1077/1077114.png";
 
-    html += `
+    container.innerHTML += `
       <div class="card">
-        <img src="${img}" alt="${u.firstName}">
-        <div class="card-content">
-          <h2>${u.firstName} ${u.lastName}</h2>
-          <p><b>College:</b> ${u.college || "Not shared"}</p>
-          <p><b>Date:</b> ${trip.date}</p>
-          <p><b>Destination:</b> ${trip.destination}</p>
+        <img class="profile-pic" src="${img}">
+        <h2>${u.firstName} ${u.lastName}</h2>
+        <p><b>College:</b> ${u.college || "Not shared"}</p>
+        <p><b>Date:</b> ${trip.date}</p>
+        <p><b>Destination:</b> ${trip.destination}</p>
 
-          <!-- ✔ Correct page -->
-          <a class="view-btn" href="companion-profile.html?email=${encodeURIComponent(u.email)}">
-            View Profile
-          </a>
-        </div>
+        <a class="view-btn" href="companion-profile.html?email=${encodeURIComponent(u.email)}">View Profile</a>
+        <a class="connect-btn" href="chat.html?email=${encodeURIComponent(u.email)}">Connect</a>
       </div>
     `;
   });
-
-  container.innerHTML = html;
 }
 
-/* Load All Users On Page Load */
 window.addEventListener("load", async () => {
   noResults.style.display = "block";
   noResults.textContent = "Loading travellers...";
@@ -280,7 +457,6 @@ window.addEventListener("load", async () => {
   }
 });
 
-/* Search Trips */
 async function searchTrips() {
   const date = document.getElementById("tripDate").value;
   const destination = document.getElementById("destination").value.trim();
@@ -296,7 +472,7 @@ async function searchTrips() {
   try {
     const res = await fetch(`${baseURL}/api/find-users-by-trip`, {
       method:"POST",
-      headers:{ "Content-Type":"application/json" },
+      headers:{"Content-Type":"application/json"},
       body: JSON.stringify({ date, destination })
     });
 
@@ -305,7 +481,6 @@ async function searchTrips() {
     if (data.success && data.users.length > 0) {
       renderUsers(data.users);
     } else {
-      container.innerHTML = "";
       noResults.style.display = "block";
       noResults.textContent = "No travelers found 😔";
     }

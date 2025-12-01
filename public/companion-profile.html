@@ -15,30 +15,141 @@ body{font-family:'Poppins',sans-serif;background:#f4f9f9;color:#2D3436;overflow-
 a{text-decoration:none;color:inherit;}
 ul{list-style:none;}
 
-/* NAVBAR */
-.navbar{background:#fff;position:fixed;top:0;width:100%;z-index:1000;box-shadow:0 2px 10px rgba(0,0,0,0.1);}
-.nav-container{max-width:1200px;margin:0 auto;padding:0 20px;display:flex;justify-content:space-between;align-items:center;height:70px;}
-.nav-logo h2{color:#00BFA6;font-size:1.9rem;font-weight:700;}
-.menu-toggle{display:none;font-size:1.8rem;color:#00BFA6;cursor:pointer;}
+/* ----------------------------------------------------
+   UNIVERSAL TRAVELBUDDY NAVBAR
+-----------------------------------------------------*/
+.tb-navbar{
+  width:100%;
+  position:fixed;
+  top:0;
+  left:0;
+  z-index:10000;
+  background:linear-gradient(135deg,#00BFA6,#00D2A6,#00E3A0);
+  padding:12px 0;
+  box-shadow:0 6px 25px rgba(0,0,0,0.15);
+  animation:gradientMove 6s infinite alternate ease-in-out;
+}
+@keyframes gradientMove{
+  0%{background:linear-gradient(135deg,#00BFA6,#00D2A6,#00E3A0);}
+  100%{background:linear-gradient(135deg,#00E3A0,#00D2A6,#00BFA6);}
+}
 
-.nav-menu{display:flex;gap:2rem;align-items:center;}
-.nav-menu li a{color:#2D3436;font-weight:500;transition:0.3s;}
-.nav-menu li a:hover{color:#00BFA6;}
+.tb-nav-container{
+  max-width:1250px;
+  margin:auto;
+  padding:0 24px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+
+.tb-logo{
+  font-size:1.9rem;
+  font-weight:700;
+  color:white;
+}
+
+.tb-links{
+  display:flex;
+  align-items:center;
+  gap:30px;
+}
+
+.tb-links a{
+  color:white;
+  font-weight:500;
+  transition:.2s;
+}
+
+.tb-links a:hover{
+  opacity:.8;
+  transform:translateY(-2px);
+}
+
+.tb-right{
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+
+.tb-burger{
+  font-size:2rem;
+  color:white;
+  cursor:pointer;
+  display:none;
+}
+
+.tb-profile{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  cursor:pointer;
+  color:white;
+  position:relative;
+}
+
+.tb-profile img{
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  border:2px solid white;
+  object-fit:cover;
+}
+
+.tb-dropdown{
+  position:absolute;
+  top:58px;
+  right:0;
+  background:white;
+  width:180px;
+  border-radius:12px;
+  display:none;
+  overflow:hidden;
+  box-shadow:0 8px 25px rgba(0,0,0,0.15);
+}
+
+.tb-dropdown a{
+  display:block;
+  padding:12px 15px;
+  color:#333;
+  font-weight:500;
+}
+
+.tb-dropdown a:hover{
+  background:linear-gradient(135deg,#00BFA6,#FDCB6E);
+  color:white;
+}
+
+.tb-mobile-menu{
+  display:none;
+  flex-direction:column;
+  background:white;
+  width:100%;
+  padding:20px 0;
+  text-align:center;
+  box-shadow:0 8px 20px rgba(0,0,0,0.15);
+}
+
+.tb-mobile-menu a{
+  padding:12px 0;
+  color:#00BFA6;
+  font-weight:600;
+  border-bottom:1px solid #eee;
+}
 
 @media(max-width:900px){
-  .menu-toggle{display:block;}
-  .nav-menu{
-    position:fixed;top:70px;left:-100%;width:100%;background:#fff;
-    padding:2rem;flex-direction:column;transition:0.3s;
-  }
-  .nav-menu.active{left:0;}
+  .tb-links{display:none;}
+  .tb-burger{display:block;}
 }
 
 /* HERO */
 .page-hero{
   background:linear-gradient(135deg,#00BFA6,#FDCB6E);
-  padding:150px 20px 80px;text-align:center;color:white;
-  border-bottom-left-radius:50px;border-bottom-right-radius:50px;
+  padding:160px 20px 80px;
+  text-align:center;
+  color:white;
+  border-bottom-left-radius:50px;
+  border-bottom-right-radius:50px;
 }
 .page-hero h1{font-size:3rem;font-weight:700;margin-bottom:1rem;}
 
@@ -82,26 +193,33 @@ ul{list-style:none;}
 }
 
 .small-muted{font-size:0.85rem;color:#666;}
-</style>
 
+</style>
 </head>
 
 <body>
 
-<!-- NAVBAR -->
-<nav class="navbar">
-  <div class="nav-container">
-    <div class="nav-logo"><h2>TravelBuddy</h2></div>
+<!-- UNIVERSAL NAVBAR -->
+<nav class="tb-navbar">
+  <div class="tb-nav-container">
 
-    <div class="menu-toggle" id="mobileMenu"><i class="fas fa-bars"></i></div>
+    <div class="tb-logo">TravelBuddy</div>
 
-    <ul class="nav-menu" id="navMenu">
-      <li><a href="index.html">Home</a></li>
-      <li><a href="find-companion.html">Find Companion</a></li>
-      <li><a href="explore.html">Plan a Trip</a></li>
-      <li><a href="profile.html">My Profile</a></li>
-    </ul>
+    <div class="tb-links">
+      <a href="index.html">Home</a>
+      <a href="find-companion.html">Find Companion</a>
+      <a href="explore.html">Plan a Trip</a>
+      <a href="blog.html">Community</a>
+    </div>
+
+    <div class="tb-right">
+      <div class="tb-burger" id="tb-burger"><i class="fas fa-bars"></i></div>
+      <div class="tb-profile" id="tb-profile"></div>
+    </div>
+
   </div>
+
+  <div class="tb-mobile-menu" id="tb-mobile-menu"></div>
 </nav>
 
 <!-- HERO -->
@@ -148,12 +266,70 @@ ul{list-style:none;}
 </section>
 
 <script>
-/* MOBILE NAV */
-document.getElementById("mobileMenu").onclick = () =>
-  document.getElementById("navMenu").classList.toggle("active");
+/* UNIVERSAL NAVBAR JS */
+document.addEventListener("DOMContentLoaded", () => {
+  const user = JSON.parse(localStorage.getItem("user"));
+  const defaultImg = "https://cdn-icons-png.flaticon.com/512/1077/1077114.png";
 
+  const profileEl = document.getElementById("tb-profile");
+  const mobileMenu = document.getElementById("tb-mobile-menu");
+  const burger = document.getElementById("tb-burger");
+
+  if(user){
+    profileEl.innerHTML = `
+      <img src="${user.img || defaultImg}">
+      <i class="fas fa-caret-down"></i>
+      <div class="tb-dropdown" id="tb-dropdown">
+        <a href="profile.html">My Profile</a>
+        <a href="trips.html">Trips</a>
+        <a href="my-blogs.html">My Blogs</a>
+        <a href="#" id="logout1">Logout</a>
+      </div>
+    `;
+
+    mobileMenu.innerHTML = `
+      <a href="index.html">Home</a>
+      <a href="find-companion.html">Find Companion</a>
+      <a href="explore.html">Plan a Trip</a>
+      <a href="blog.html">Community</a>
+      <a href="profile.html">My Profile</a>
+      <a href="#" id="logout2">Logout</a>
+    `;
+  } else {
+    profileEl.innerHTML = `<img src="${defaultImg}">`;
+    mobileMenu.innerHTML = `
+      <a href="index.html">Home</a>
+      <a href="find-companion.html">Find Companion</a>
+      <a href="explore.html">Plan a Trip</a>
+      <a href="blog.html">Community</a>
+    `;
+  }
+
+  document.addEventListener("click", (e)=>{
+    if(e.target.closest("#tb-profile")){
+      const dd=document.getElementById("tb-dropdown");
+      dd.style.display = dd.style.display==="block" ? "none" : "block";
+    } else {
+      const dd=document.getElementById("tb-dropdown");
+      if(dd) dd.style.display="none";
+    }
+  });
+
+  const logout = () => {
+    localStorage.removeItem("user");
+    window.location.href="index.html";
+  };
+
+  document.getElementById("logout1")?.addEventListener("click", logout);
+  document.getElementById("logout2")?.addEventListener("click", logout);
+
+  burger.addEventListener("click", ()=>{
+    mobileMenu.style.display = mobileMenu.style.display==="flex" ? "none" : "flex";
+  });
+});
+
+/* COMPANION PROFILE LOGIC (unchanged) */
 (async function(){
-
   const params = new URLSearchParams(window.location.search);
   let compEmail = params.get("email");
 
@@ -177,13 +353,10 @@ document.getElementById("mobileMenu").onclick = () =>
   const myEmail = user?.email;
   const defaultImg = "https://cdn-icons-png.flaticon.com/512/1077/1077114.png";
 
-
-  /* FETCH COMPANION */
   const res = await fetch(`${baseURL}/api/user-profile?email=${compEmail}`);
   const out = await res.json();
   const u = out.user;
 
-  /* POPULATE */
   document.getElementById("companionImg").src = u.img || defaultImg;
   document.getElementById("companionName").innerText = `${u.firstName} ${u.lastName}`;
   document.getElementById("companionEmail").innerText = u.email;
@@ -194,17 +367,13 @@ document.getElementById("mobileMenu").onclick = () =>
   document.getElementById("distance").innerText = (u.totalDistance || 0) + " km";
   document.getElementById("rating").innerText = u.rating || "N/A";
 
-  /* TRIP LIST */
   const tl = document.getElementById("tripsList");
   if (u.trips?.length){
-    tl.innerHTML = u.trips.map(t => `
-      <p><b>${t.destination}</b> — ${t.date}</p>
-    `).join("");
+    tl.innerHTML = u.trips.map(t => `<p><b>${t.destination}</b> — ${t.date}</p>`).join("");
   } else {
     tl.innerHTML = "<p>No trips added.</p>";
   }
 
-  /* REQUEST BUTTON LOGIC */
   const requestBtn = document.getElementById("requestBtn");
   const requestInfo = document.getElementById("requestInfo");
 
@@ -224,7 +393,6 @@ document.getElementById("mobileMenu").onclick = () =>
     requestInfo.innerText = "Request already sent — waiting for acceptance.";
   }
 
-  /* SEND REQUEST */
   requestBtn.onclick = async () => {
     requestBtn.disabled = true;
 

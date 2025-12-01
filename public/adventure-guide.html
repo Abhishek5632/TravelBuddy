@@ -1,320 +1,416 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Adventure Guides | TravelBuddy</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
   <style>
-    * {margin: 0; padding: 0; box-sizing: border-box;}
-    body {
-      font-family: 'Poppins', sans-serif;
-      background: #F4F9F9;
-      color: #2D3436;
-      line-height: 1.6;
+    *{margin:0;padding:0;box-sizing:border-box;}
+    a{text-decoration:none;color:inherit;}
+    body{
+      font-family:'Poppins',sans-serif;
+      background:#F4F9F9;
+      color:#2D3436;
     }
 
-    /* Navbar */
-    .navbar {
-      background: rgba(255,255,255,0.95);
-      backdrop-filter: blur(10px);
-      position: fixed;
-      top: 0;
-      width: 100%;
-      z-index: 1000;
-      box-shadow: 0 2px 20px rgba(0,191,166,0.1);
+    /* ============================================================
+           LUXURY NAVBAR (Same as About Page)
+    ============================================================ */
+    .tb-navbar{
+      width:100%;position:fixed;top:0;left:0;z-index:10000;
+      background:linear-gradient(135deg,#00BFA6,#00D2A6,#00E3A0);
+      padding:12px 0;
+      box-shadow:0 5px 25px rgba(0,0,0,0.18);
+      animation:gradientMove 6s infinite alternate ease;
     }
-    .nav-container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      height: 70px;
-    }
-    .nav-logo h2 {color: #00BFA6; font-size: 1.8rem; font-weight: 700;}
-    .nav-menu {display: flex; list-style: none; gap: 2rem;}
-    .nav-menu li a {
-      text-decoration: none;
-      color: #2D3436;
-      font-weight: 500;
-      position: relative;
-    }
-    .nav-menu li a:hover {color: #00BFA6;}
-    .hamburger {display: none; flex-direction: column; cursor: pointer;}
-    .hamburger span {
-      width: 25px; height: 3px; background: #2D3436;
-      margin: 3px 0; border-radius: 2px;
+    @keyframes gradientMove{
+      0%{background:linear-gradient(135deg,#00BFA6,#00D2A6,#00E3A0);}
+      100%{background:linear-gradient(135deg,#00E3A0,#00D2A6,#00BFA6);}
     }
 
-    /* Hero */
-    .page-hero {
-      background: linear-gradient(135deg, #00BFA6, #FDCB6E);
-      padding: 150px 20px 80px;
-      text-align: center;
-      color: white;
-    }
-    .page-hero h1 {font-size: 3rem; font-weight: 700; margin-bottom: 1rem;}
-    .page-hero p {font-size: 1.2rem; opacity: 0.9;}
-
-    /* Search & Filter */
-    .page-content {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 60px 20px;
-    }
-    .search-box {
-      background: white;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0,191,166,0.1);
-      margin-bottom: 40px;
-    }
-    .search-wrapper {
-      display: flex;
-      gap: 15px;
-      flex-wrap: wrap;
-    }
-    .search-input, .filter-select {
-      flex: 1; min-width: 250px;
-      padding: 15px 20px;
-      border: 2px solid #e0e0e0;
-      border-radius: 8px;
-      font-size: 1rem;
-      font-family: 'Poppins', sans-serif;
-      transition: 0.3s;
-    }
-    .search-input:focus, .filter-select:focus {
-      outline: none; border-color: #00BFA6;
+    .tb-nav-container{
+      max-width:1250px;margin:auto;padding:0 24px;
+      display:flex;align-items:center;justify-content:space-between;
     }
 
-    /* Section Title */
-    .section-title {
-      font-size: 2rem;
-      margin-bottom: 2rem;
-      text-align: center;
-      color: #2D3436;
-      font-weight: 600;
+    .tb-logo{
+      font-size:2rem;font-weight:700;color:white;
     }
 
-    /* Profile Cards */
-    .drivers-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-      gap: 25px;
-      margin-top: 30px;
+    .tb-links{
+      display:flex;align-items:center;gap:30px;
     }
-    .driver-card {
-      background: white;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    .tb-links a{
+      color:white;font-weight:500;transition:.3s;
     }
-    .driver-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 8px 25px rgba(0,191,166,0.15);
+    .tb-links a:hover{
+      opacity:.85;transform:translateY(-2px);
     }
-    .driver-header {
-      background: linear-gradient(135deg, #00BFA6, #FDCB6E);
-      padding: 30px 20px;
-      text-align: center;
-      color: white;
+
+    .tb-right{display:flex;align-items:center;gap:14px;}
+    .tb-burger{
+      display:none;font-size:1.9rem;color:white;cursor:pointer;
     }
-    .driver-photo {
-      width: 100px;
-      height: 100px;
-      border-radius: 50%;
-      border: 4px solid white;
-      margin: 0 auto 15px;
-      object-fit: cover;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+
+    .tb-profile{
+      display:flex;align-items:center;gap:10px;
+      cursor:pointer;position:relative;color:white;
     }
-    .driver-name {font-size: 1.5rem; font-weight: 600;}
-    .driver-rating {
-      display: flex; align-items: center; justify-content: center;
-      gap: 5px; font-size: 0.9rem;
+    .tb-profile img{
+      width:42px;height:42px;border-radius:50%;
+      border:2px solid #fff;object-fit:cover;
     }
-    .stars {color: #FFD700;}
-    .driver-body {padding: 25px;}
-    .badge {
-      display: inline-block; padding: 6px 14px;
-      border-radius: 20px; font-size: 0.85rem;
-      margin-right: 8px; margin-bottom: 8px; font-weight: 500;
+
+    .tb-dropdown{
+      position:absolute;top:58px;right:0;
+      background:white;width:180px;border-radius:12px;
+      overflow:hidden;display:none;z-index:999999;
+      box-shadow:0 8px 25px rgba(0,0,0,0.15);
     }
-    .badge-verified {background: #e8f5e9; color: #2e7d32;}
-    .badge-adventure {background: #fff3e0; color: #D4AF37;}
-    .info-row {
-      display: flex; align-items: center; gap: 10px;
-      margin-bottom: 12px; color: #2D3436; font-size: 0.95rem;
+    .tb-dropdown a{
+      display:block;padding:12px 15px;color:#333;font-weight:500;
     }
-    .info-row i {color: #00BFA6;}
-    .languages {margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px;}
-    .languages span {
-      background: #F4F9F9; padding: 6px 12px; border-radius: 15px;
-      font-size: 0.85rem; margin-right: 8px; display: inline-block;
-      margin-bottom: 8px;
+    .tb-dropdown a:hover{
+      background:linear-gradient(135deg,#00BFA6,#FDCB6E);color:white;
     }
-    .contact-buttons {display: flex; gap: 12px; margin-top: 20px;}
-    .btn {
-      flex: 1; padding: 14px; border: none; border-radius: 8px;
-      cursor: pointer; transition: 0.3s;
-      display: flex; align-items: center; justify-content: center;
-      gap: 8px; text-decoration: none; font-weight: 500; color: white;
+
+    .tb-mobile-menu{
+      display:none;flex-direction:column;background:white;
+      width:100%;padding:20px 0;text-align:center;
+      gap:6px;box-shadow:0 8px 20px rgba(0,0,0,0.15);
     }
-    .btn-call {background: #00BFA6;}
-    .btn-call:hover {background: #009688;}
-    .btn-whatsapp {background: #25D366;}
-    .btn-whatsapp:hover {background: #20ba5a;}
-    .no-results {
-      text-align: center; padding: 60px 20px;
-      background: white; border-radius: 12px;
-      color: #666; box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    .tb-mobile-menu a{
+      padding:12px 0;color:#00BFA6;font-weight:600;
+      border-bottom:1px solid #eee;
     }
-    .footer {
-      background: #2D3436;
-      color: white;
-      text-align: center;
-      padding: 3rem 20px;
-      margin-top: 60px;
+
+    @media(max-width:900px){
+      .tb-links{display:none;}
+      .tb-burger{display:block;}
     }
-    .footer h3 {color: #00BFA6;}
-    @media (max-width:768px){
-      .nav-menu{position:fixed;top:70px;left:-100%;flex-direction:column;background:white;width:100%;padding:2rem 0;transition:0.3s;}
-      .nav-menu.active{left:0;}
-      .hamburger{display:flex;}
+
+    /* ============================================================
+           HERO
+    ============================================================ */
+    .page-hero{
+      padding:160px 20px 90px;text-align:center;color:white;
+      background:linear-gradient(135deg,#00BFA6,#FDCB6E);
     }
+    .page-hero h1{
+      font-size:2.8rem;font-weight:700;margin-bottom:10px;
+    }
+
+    /* ============================================================
+           SEARCH + CARDS
+    ============================================================ */
+    .page-content{
+      max-width:1200px;margin:auto;padding:60px 20px;
+    }
+
+    .search-box{
+      background:white;padding:30px;border-radius:12px;
+      box-shadow:0 4px 20px rgba(0,191,166,0.1);
+    }
+    .search-wrapper{
+      display:flex;gap:15px;flex-wrap:wrap;
+    }
+
+    .search-input,.filter-select{
+      flex:1;min-width:250px;padding:14px 16px;
+      border:2px solid #e0e0e0;border-radius:8px;
+      transition:.3s;font-size:1rem;
+    }
+    .search-input:focus,.filter-select:focus{
+      border-color:#00BFA6;outline:none;
+    }
+
+    .section-title{text-align:center;font-size:2rem;margin-top:40px;}
+
+    .drivers-grid{
+      display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+      gap:25px;margin-top:30px;
+    }
+
+    .driver-card{
+      background:white;border-radius:12px;overflow:hidden;
+      transition:.3s;box-shadow:0 4px 12px rgba(0,0,0,0.05);
+    }
+    .driver-card:hover{
+      transform:translateY(-5px);
+      box-shadow:0 8px 25px rgba(0,191,166,0.18);
+    }
+
+    .driver-header{
+      padding:28px 16px;text-align:center;color:white;
+      background:linear-gradient(135deg,#00BFA6,#FDCB6E);
+    }
+    .driver-photo{
+      width:100px;height:100px;border-radius:50%;
+      border:4px solid white;object-fit:cover;
+    }
+
+    .driver-body{padding:22px;}
+    .info-row{display:flex;margin:8px 0;gap:10px;}
+    .info-row i{color:#00BFA6;}
+
+    .badge{
+      display:inline-block;padding:6px 14px;border-radius:18px;
+      font-weight:600;font-size:.85rem;margin:4px;
+    }
+    .badge-verified{background:#e8f5e9;color:#2e7d32;}
+    .badge-adventure{background:#fff3e0;color:#D4AF37;}
+
+    .languages span{
+      display:inline-block;padding:6px 10px;
+      background:#F4F9F9;border-radius:12px;
+      margin:4px;font-size:.85rem;
+    }
+
+    .contact-buttons{display:flex;gap:10px;margin-top:16px;}
+    .btn{
+      flex:1;padding:12px;border-radius:10px;color:white;
+      display:flex;align-items:center;justify-content:center;
+      gap:8px;font-weight:600;
+    }
+    .btn-call{background:#00BFA6;}
+    .btn-whatsapp{background:#25D366;}
+
+    .footer{
+      background:#2D3436;color:white;text-align:center;
+      padding:3rem 20px;margin-top:60px;
+    }
+    .footer h3{color:#00BFA6;}
   </style>
 </head>
+
 <body>
 
-<nav class="navbar">
-  <div class="nav-container">
-    <div class="nav-logo"><h2>TravelBuddy</h2></div>
-    <ul class="nav-menu">
-      <li><a href="index.html">Home</a></li>
-      <li><a href="blog.html">Blog</a></li>
-      <li><a href="find-companion.html">Find Companion</a></li>
-      <li><a href="contact.html">Contact</a></li>
-    </ul>
-    <div class="hamburger"><span></span><span></span><span></span></div>
+<!-- ============================================================
+           NAVBAR
+============================================================ -->
+<nav class="tb-navbar">
+  <div class="tb-nav-container">
+
+    <div class="tb-logo">TravelBuddy</div>
+
+    <div class="tb-links">
+      <a href="index.html">Home</a>
+      <a href="find-companion.html">Find Companion</a>
+      <a href="explore.html">Plan a Trip</a>
+      <a href="blog.html">Community</a>
+    </div>
+
+    <div class="tb-right">
+      <div class="tb-burger" id="tb-burger">
+        <i class="fas fa-bars"></i>
+      </div>
+
+      <div class="tb-profile" id="tb-profile"></div>
+    </div>
+
   </div>
+
+  <div class="tb-mobile-menu" id="tb-mobile-menu"></div>
 </nav>
 
+<!-- ============================================================
+           HERO
+============================================================ -->
 <section class="page-hero">
   <h1><i class="fas fa-mountain"></i> Adventure Guides</h1>
-  <p>Meet expert adventure guides ready to lead you on unforgettable journeys.</p>
+  <p>Meet expert adventure guides ready to lead unforgettable journeys.</p>
 </section>
 
+<!-- ============================================================
+           PAGE CONTENT
+============================================================ -->
 <section class="page-content">
+
   <div class="search-box">
     <div class="search-wrapper">
-      <input type="text" id="searchInput" class="search-input" placeholder="Search by name, city, or adventure type...">
+      <input id="searchInput" class="search-input" placeholder="Search by name, city or adventure...">
+
       <select id="cityFilter" class="filter-select">
         <option value="">All Cities</option>
-        <option value="Manali">Manali</option>
-        <option value="Rishikesh">Rishikesh</option>
-        <option value="Leh">Leh</option>
-        <option value="Goa">Goa</option>
-        <option value="Shimla">Shimla</option>
+        <option>Manali</option>
+        <option>Rishikesh</option>
+        <option>Leh</option>
+        <option>Goa</option>
+        <option>Shimla</option>
       </select>
+
       <select id="activityFilter" class="filter-select">
         <option value="">All Activities</option>
-        <option value="Trekking">Trekking</option>
-        <option value="Rafting">Rafting</option>
-        <option value="Paragliding">Paragliding</option>
-        <option value="Biking">Biking</option>
-        <option value="Camping">Camping</option>
+        <option>Trekking</option>
+        <option>Rafting</option>
+        <option>Paragliding</option>
+        <option>Biking</option>
+        <option>Camping</option>
       </select>
     </div>
   </div>
 
   <h2 class="section-title">Top Adventure Experts</h2>
 
-  <div class="drivers-grid" id="guidesGrid"></div>
-  <div class="no-results" id="noResults" style="display:none;">
-    <i class="fas fa-search"></i>
+  <div id="guidesGrid" class="drivers-grid"></div>
+
+  <div id="noResults" class="no-results" style="display:none;">
     <h3>No guides found</h3>
-    <p>Try adjusting your search or filters</p>
+    <p>Try adjusting search or filters</p>
   </div>
 </section>
 
 <footer class="footer">
   <h3>TravelBuddy</h3>
-  <p>&copy; 2025 TravelBuddy. All rights reserved.</p>
+  <p>© 2025 TravelBuddy. All rights reserved.</p>
 </footer>
 
+<!-- ============================================================
+           JAVASCRIPT (PROFILE DROPDOWN FIXED)
+============================================================ -->
 <script>
-const hamburger=document.querySelector(".hamburger");
-const navMenu=document.querySelector(".nav-menu");
-hamburger.addEventListener("click",()=>navMenu.classList.toggle("active"));
+document.addEventListener("DOMContentLoaded", () => {
 
+  const user = JSON.parse(localStorage.getItem("user"));
+  const defaultImg = "https://cdn-icons-png.flaticon.com/512/1077/1077114.png";
+
+  const profileEl = document.getElementById("tb-profile");
+  const mobileMenuEl = document.getElementById("tb-mobile-menu");
+  const burgerEl = document.getElementById("tb-burger");
+
+  /* ALWAYS CREATE DROPDOWN (Logged-in or not) */
+  profileEl.innerHTML = `
+    <img src="${user?.img || defaultImg}">
+    <i class="fas fa-caret-down"></i>
+
+    <div class="tb-dropdown" id="tb-dropdown">
+      ${
+        user
+          ? `
+        <a href="profile.html">My Profile</a>
+        <a href="trips.html">Trips</a>
+        <a href="my-blogs.html">My Blogs</a>
+        <a href="#" id="tb-logout">Logout</a>
+        `
+          : `
+        <a href="login.html">Login</a>
+        <a href="signup.html">Create Account</a>
+        `
+      }
+    </div>
+  `;
+
+  /* DROPDOWN CLICK FIX */
+  document.addEventListener("click", (e) => {
+    const dropdown = document.getElementById("tb-dropdown");
+
+    if (e.target.closest("#tb-profile")) {
+      dropdown.style.display =
+        dropdown.style.display === "block" ? "none" : "block";
+    } else {
+      dropdown.style.display = "none";
+    }
+  });
+
+  /* BURGER MENU */
+  burgerEl.addEventListener("click", () => {
+    mobileMenuEl.style.display =
+      mobileMenuEl.style.display === "flex" ? "none" : "flex";
+  });
+
+  /* LOGOUT */
+  document.getElementById("tb-logout")?.addEventListener("click", () => {
+    localStorage.removeItem("user");
+    window.location.href = "index.html";
+  });
+});
+
+
+/* ============================================================
+           ADVENTURE GUIDES LOGIC
+============================================================ */
 const guides = [
   {name:"Amit Rawat",city:"Rishikesh",activity:"Rafting",photo:"https://i.pravatar.cc/150?img=51",rating:4.9,reviews:230,experience:"10 years",languages:["Hindi","English"],verified:true,phone:"1234",whatsapp:"1234"},
   {name:"Priya Thapa",city:"Manali",activity:"Trekking",photo:"https://i.pravatar.cc/150?img=56",rating:4.8,reviews:190,experience:"8 years",languages:["Hindi","English","Nepali"],verified:true,phone:"1234",whatsapp:"1234"},
   {name:"Karan Bisht",city:"Leh",activity:"Biking",photo:"https://i.pravatar.cc/150?img=33",rating:4.9,reviews:250,experience:"12 years",languages:["Hindi","English"],verified:true,phone:"1234",whatsapp:"1234"},
   {name:"Sahil Mehta",city:"Goa",activity:"Paragliding",photo:"https://i.pravatar.cc/150?img=47",rating:4.7,reviews:180,experience:"9 years",languages:["Hindi","English"],verified:true,phone:"1234",whatsapp:"1234"},
   {name:"Anita Rana",city:"Shimla",activity:"Camping",photo:"https://i.pravatar.cc/150?img=48",rating:4.8,reviews:165,experience:"7 years",languages:["Hindi","English"],verified:true,phone:"1234",whatsapp:"1234"},
-  {name:"Rohit Thakur",city:"Manali",activity:"Rafting",photo:"https://i.pravatar.cc/150?img=62",rating:4.6,reviews:140,experience:"6 years",languages:["Hindi","English"],verified:true,phone:"1234",whatsapp:"1234"},
-  {name:"Simran Kaur",city:"Leh",activity:"Camping",photo:"https://i.pravatar.cc/150?img=22",rating:4.9,reviews:205,experience:"9 years",languages:["Hindi","English","Punjabi"],verified:true,phone:"1234",whatsapp:"1234"},
-  {name:"Vikram Joshi",city:"Rishikesh",activity:"Trekking",photo:"https://i.pravatar.cc/150?img=26",rating:4.7,reviews:150,experience:"8 years",languages:["Hindi","English"],verified:true,phone:"1234",whatsapp:"1234"},
-  {name:"Deepa Negi",city:"Shimla",activity:"Biking",photo:"https://i.pravatar.cc/150?img=30",rating:4.8,reviews:175,experience:"9 years",languages:["Hindi","English"],verified:true,phone:"1234",whatsapp:"1234"},
-  {name:"Rahul Saini",city:"Goa",activity:"Paragliding",photo:"https://i.pravatar.cc/150?img=28",rating:4.5,reviews:120,experience:"6 years",languages:["Hindi","English"],verified:true,phone:"1234",whatsapp:"1234"}
 ];
 
 function createGuideCard(g){
   return `
-  <div class="driver-card">
-    <div class="driver-header">
-      <img src="${g.photo}" class="driver-photo" alt="${g.name}">
-      <div class="driver-name">${g.name}</div>
-      <div class="driver-rating">
-        <span class="stars">${'★'.repeat(Math.floor(g.rating))}${'☆'.repeat(5-Math.floor(g.rating))}</span>
-        <span>${g.rating} (${g.reviews} reviews)</span>
+    <div class="driver-card">
+      <div class="driver-header">
+        <img src="${g.photo}" class="driver-photo">
+        <div class="driver-name" style="margin-top:10px;font-size:1.3rem;font-weight:600;">${g.name}</div>
+        <div class="driver-rating" style="margin-top:6px;">
+          <span style="color:#FFD700;">${'★'.repeat(Math.round(g.rating))}</span>
+          ${g.rating} (${g.reviews})
+        </div>
       </div>
-    </div>
-    <div class="driver-body">
-      <div>
-        ${g.verified?'<span class="badge badge-verified"><i class="fas fa-check-circle"></i> Verified</span>':''}
+
+      <div class="driver-body">
+        ${g.verified ? `<span class="badge badge-verified"><i class="fas fa-check-circle"></i> Verified</span>` : ""}
         <span class="badge badge-adventure"><i class="fas fa-mountain"></i> ${g.activity}</span>
-      </div>
-      <div class="info-row"><i class="fas fa-map-marker-alt"></i><span>${g.city}</span></div>
-      <div class="info-row"><i class="fas fa-clock"></i><span>${g.experience} experience</span></div>
-      <div class="languages"><strong>Languages:</strong>${g.languages.map(l=>`<span>${l}</span>`).join('')}</div>
-      <div class="contact-buttons">
-        <a href="tel:${g.phone}" class="btn btn-call"><i class="fas fa-phone"></i> Call</a>
-        <a href="https://wa.me/${g.whatsapp}" target="_blank" class="btn btn-whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+
+        <div class="info-row"><i class="fas fa-map-marker-alt"></i> ${g.city}</div>
+        <div class="info-row"><i class="fas fa-clock"></i> ${g.experience} Experience</div>
+
+        <div class="languages"><strong>Languages:</strong> 
+          ${g.languages.map(l=>`<span>${l}</span>`).join("")}
+        </div>
+
+        <div class="contact-buttons">
+          <a href="tel:${g.phone}" class="btn btn-call"><i class="fas fa-phone"></i> Call</a>
+          <a href="https://wa.me/${g.whatsapp}" class="btn btn-whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+        </div>
       </div>
     </div>
-  </div>`;
+  `;
 }
 
 function renderGuides(list){
-  const grid=document.getElementById("guidesGrid");
-  const noResults=document.getElementById("noResults");
-  if(list.length===0){grid.style.display='none';noResults.style.display='block';}
-  else{grid.style.display='grid';noResults.style.display='none';grid.innerHTML=list.map(createGuideCard).join('');}
+  const grid = document.getElementById("guidesGrid");
+  const noResults = document.getElementById("noResults");
+
+  if(list.length === 0){
+    grid.innerHTML = "";
+    noResults.style.display = "block";
+  } else {
+    noResults.style.display = "none";
+    grid.innerHTML = list.map(createGuideCard).join("");
+  }
 }
 
 function filterGuides(){
-  const search=document.getElementById('searchInput').value.toLowerCase();
-  const city=document.getElementById('cityFilter').value;
-  const act=document.getElementById('activityFilter').value;
-  const filtered=guides.filter(g=>{
-    const matchSearch=g.name.toLowerCase().includes(search)||g.city.toLowerCase().includes(search)||g.activity.toLowerCase().includes(search);
-    const matchCity=!city||g.city===city;
-    const matchAct=!act||g.activity===act;
-    return matchSearch&&matchCity&&matchAct;
+  const q = document.getElementById("searchInput").value.toLowerCase();
+  const city = document.getElementById("cityFilter").value;
+  const act = document.getElementById("activityFilter").value;
+
+  const filtered = guides.filter(g=>{
+    const s = g.name.toLowerCase().includes(q)
+           || g.city.toLowerCase().includes(q)
+           || g.activity.toLowerCase().includes(q);
+
+    const c = !city || g.city === city;
+    const a = !act || g.activity === act;
+
+    return s && c && a;
   });
+
   renderGuides(filtered);
 }
 
-document.getElementById('searchInput').addEventListener('input',filterGuides);
-document.getElementById('cityFilter').addEventListener('change',filterGuides);
-document.getElementById('activityFilter').addEventListener('change',filterGuides);
+document.getElementById("searchInput").addEventListener("input", filterGuides);
+document.getElementById("cityFilter").addEventListener("change", filterGuides);
+document.getElementById("activityFilter").addEventListener("change", filterGuides);
 
 renderGuides(guides);
 </script>
+
 </body>
 </html>

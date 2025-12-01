@@ -4,227 +4,429 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>About | TravelBuddy</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
   <style>
     *{margin:0;padding:0;box-sizing:border-box;}
-    body{font-family:'Poppins',sans-serif;background:#F4F9F9;color:#2D3436;line-height:1.6;}
-    .navbar{background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);position:fixed;top:0;width:100%;z-index:1000;box-shadow:0 2px 20px rgba(0,191,166,0.1);}
-    .nav-container{max-width:1200px;margin:0 auto;padding:0 20px;display:flex;justify-content:space-between;align-items:center;height:70px;}
-    .nav-logo h2{color:#00BFA6;font-size:1.8rem;font-weight:700;}
-    .nav-menu{display:flex;list-style:none;gap:2rem;}
-    .nav-menu li a{text-decoration:none;color:#2D3436;font-weight:500;position:relative;}
-    .nav-menu li a:hover{color:#00BFA6;}
-    .nav-menu li a::after{content:'';position:absolute;width:0;height:2px;background:#00BFA6;bottom:-5px;left:0;transition:0.3s;}
-    .nav-menu li a:hover::after{width:100%;}
-    .hamburger{display:none;flex-direction:column;cursor:pointer;}
-    .hamburger span{width:25px;height:3px;background:#2D3436;margin:3px 0;border-radius:2px;}
-    .page-hero{background:linear-gradient(135deg,#00BFA6,#FDCB6E);padding:150px 20px 80px;text-align:center;color:white;}
-    .page-hero h1{font-size:3rem;font-weight:700;margin-bottom:1rem;}
-    .page-hero p{font-size:1.2rem;opacity:0.9;}
-    .page-content{max-width:1200px;margin:0 auto;padding:80px 20px;}
-    .page-content h2{font-size:2rem;margin-bottom:1rem;color:#00BFA6;}
-    .about-section{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center;margin-bottom:80px;}
-    .about-section img{width:100%;border-radius:15px;box-shadow:0 4px 15px rgba(0,0,0,0.1);}
-    .about-section p{font-size:1.1rem;color:#444;}
-    .features{background:white;padding:60px 20px;border-radius:12px;box-shadow:0 4px 15px rgba(0,0,0,0.05);margin-bottom:60px;}
-    .features h2{text-align:center;margin-bottom:2rem;}
-    .feature-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:30px;}
-    .feature{background:#F9FFFD;padding:25px;border-left:5px solid #00BFA6;border-radius:10px;transition:transform 0.3s;}
-    .feature:hover{transform:translateY(-5px);}
-    .feature h3{color:#00BFA6;margin-bottom:10px;}
-    .team{padding:60px 0;}
-    .team h2{text-align:center;margin-bottom:2rem;}
-
-    /* --- FIXED TEAM LAYOUT --- */
-    .team-members {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 30px;
-      justify-items: center;
-      padding: 0 20px;
+    a{text-decoration:none;color:inherit;}
+    body{
+      font-family:'Poppins',sans-serif;
+      background:#F4F9F9;
+      color:#2D3436;
+      line-height:1.6;
     }
-    .team-member {
-      background:white;
-      padding:25px;
-      border-radius:12px;
-      text-align:center;
+
+    /* ============================================================
+          LUXURY NAVBAR
+    ============================================================ */
+    .tb-navbar{
       width:100%;
-      max-width:260px;
-      box-shadow:0 4px 12px rgba(0,0,0,0.05);
-      transition:transform 0.3s;
+      position:fixed;
+      top:0;
+      left:0;
+      z-index:10000;
+      background:linear-gradient(135deg,#00BFA6,#00D2A6,#00E3A0);
+      padding:12px 0;
+      box-shadow:0 5px 25px rgba(0,0,0,0.18);
+      animation:gradientMove 6s infinite alternate ease-in-out;
     }
-    .team-member:hover{transform:translateY(-8px);}
-    .team-member img{width:120px;height:120px;object-fit:cover;border-radius:50%;margin-bottom:15px;border:4px solid #00BFA6;}
-    .team-member h3{margin-bottom:8px;color:#00BFA6;}
-    .team-member p{font-size:0.95rem;color:#555;}
-
-    .vision{background:#E8FFFB;padding:60px 20px;margin-top:60px;border-radius:12px;text-align:center;}
-    .vision h2{color:#00BFA6;margin-bottom:1rem;}
-    .vision p{max-width:800px;margin:0 auto;font-size:1.1rem;color:#444;}
-
-    .collaboration{padding:80px 20px;background:white;border-radius:12px;margin-top:60px;box-shadow:0 4px 15px rgba(0,0,0,0.05);}
-    .collaboration h2{text-align:center;color:#00BFA6;margin-bottom:1.5rem;}
-    .collaboration p{text-align:center;max-width:900px;margin:0 auto 40px;font-size:1.1rem;color:#555;}
-    .partners{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:30px;text-align:center;}
-    .partner{background:#F4F9F9;padding:25px;border-radius:12px;transition:transform 0.3s;}
-    .partner:hover{transform:translateY(-8px);}
-    .partner img{width:80px;height:80px;object-fit:contain;margin-bottom:15px;}
-    .partner h3{color:#00BFA6;margin-bottom:8px;}
-    .partner p{font-size:0.95rem;color:#444;}
-
-    .footer{background:#2D3436;color:white;text-align:center;padding:3rem 20px;}
-    .footer p{color:#ccc;margin-top:1rem;}
-
-    @media(max-width:1024px){
-      .team-members {
-        grid-template-columns: repeat(2, 1fr);
-      }
+    @keyframes gradientMove{
+      0%{background:linear-gradient(135deg,#00BFA6,#00D2A6,#00E3A0);}
+      100%{background:linear-gradient(135deg,#00E3A0,#00D2A6,#00BFA6);}
     }
-    @media(max-width:600px){
-      .team-members {
-        grid-template-columns: 1fr;
-      }
+    .tb-nav-container{
+      max-width:1250px;
+      margin:auto;
+      padding:0 24px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+    }
+    .tb-logo{
+      font-size:2rem;
+      font-weight:700;
+      color:white;
+      letter-spacing:1px;
+    }
+    .tb-links{
+      display:flex;
+      align-items:center;
+      gap:30px;
+    }
+    .tb-links a{
+      color:white;
+      font-weight:500;
+      transition:0.3s;
+    }
+    .tb-links a:hover{
+      opacity:0.85;
+      transform:translateY(-2px);
+    }
+    .tb-right{display:flex;align-items:center;gap:14px;}
+    .tb-burger{
+      font-size:1.9rem;
+      color:white;
+      cursor:pointer;
+      display:none;
+    }
+    .tb-profile{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      cursor:pointer;
+      position:relative;
+      color:white;
+    }
+    .tb-profile img{
+      width:42px;height:42px;border-radius:50%;
+      border:2px solid #fff;object-fit:cover;
+    }
+    .tb-dropdown{
+      position:absolute;top:58px;right:0;
+      background:white;width:180px;
+      border-radius:12px;overflow:hidden;
+      display:none;
+      z-index:999999 !important;
+      box-shadow:0 8px 25px rgba(0,0,0,0.15);
+    }
+    .tb-dropdown a{
+      display:block;padding:12px 15px;
+      color:#333;font-weight:500;
+    }
+    .tb-dropdown a:hover{
+      background:linear-gradient(135deg,#00BFA6,#FDCB6E);
+      color:white;
+    }
+    .tb-mobile-menu{
+      display:none;
+      flex-direction:column;
+      background:white;
+      width:100%;
+      padding:20px 0;
+      gap:6px;
+      text-align:center;
+      box-shadow:0 8px 20px rgba(0,0,0,0.15);
+    }
+    .tb-mobile-menu a{
+      padding:12px 0;
+      color:#00BFA6;
+      border-bottom:1px solid #eee;
+      font-weight:600;
+    }
+    @media(max-width:900px){
+      .tb-links{display:none;}
+      .tb-burger{display:block;}
     }
 
-    @media(max-width:768px){
-      .nav-menu{position:fixed;top:70px;left:-100%;flex-direction:column;background:white;width:100%;padding:2rem 0;transition:0.3s;box-shadow:0 10px 27px rgba(0,0,0,0.05);}
-      .nav-menu.active{left:0;}
-      .hamburger{display:flex;}
-      .page-hero h1{font-size:2.2rem;}
-      .about-section{grid-template-columns:1fr;}
+    /* ============================================================
+          HERO
+    ============================================================ */
+    .page-hero{
+      background:linear-gradient(135deg,#00BFA6,#FDCB6E);
+      padding:160px 20px 90px;
+      text-align:center;
+      color:white;
     }
-
-    .floating-icons{margin-top:40px;display:flex;gap:25px;justify-content:center;font-size:2rem;}
-    .floating-icons span{animation:float 6s ease-in-out infinite;}
+    .page-hero h1{font-size:3rem;font-weight:700;margin-bottom:1rem;}
+    .floating-icons{
+      margin-top:40px;display:flex;gap:25px;justify-content:center;font-size:2rem;
+    }
+    .floating-icons span{animation:float 6s infinite ease-in-out;}
     .floating-icons span:nth-child(2){animation-delay:1s;}
     .floating-icons span:nth-child(3){animation-delay:2s;}
     .floating-icons span:nth-child(4){animation-delay:3s;}
-    @keyframes float{0%{transform:translateY(0);}50%{transform:translateY(-15px);}100%{transform:translateY(0);}}
+    @keyframes float{
+      0%{transform:translateY(0);}
+      50%{transform:translateY(-15px);}
+      100%{transform:translateY(0);}
+    }
+
+    /* ============================================================
+          MAIN CONTENT
+    ============================================================ */
+    .page-content{
+      max-width:1200px;margin:auto;padding:80px 20px;
+    }
+    .page-content h2{font-size:2rem;margin-bottom:1rem;color:#00BFA6;}
+
+    .about-section{
+      display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center;
+      margin-bottom:80px;
+    }
+    .about-section img{
+      width:100%;border-radius:15px;box-shadow:0 4px 15px rgba(0,0,0,0.1);
+    }
+    .about-section p{font-size:1.1rem;color:#444;}
+
+    .features{
+      background:white;padding:60px 20px;border-radius:12px;
+      box-shadow:0 4px 15px rgba(0,0,0,0.05);margin-bottom:60px;
+    }
+    .features h2{text-align:center;margin-bottom:2rem;}
+
+    .feature-grid{
+      display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:30px;
+    }
+    .feature{
+      background:#F9FFFD;padding:25px;border-left:5px solid #00BFA6;border-radius:10px;
+      transition:0.3s;
+    }
+    .feature:hover{transform:translateY(-5px);}
+    .feature h3{color:#00BFA6;margin-bottom:10px;}
+
+    .vision{
+      background:#E8FFFB;padding:60px 20px;margin-top:60px;border-radius:12px;text-align:center;
+    }
+    .vision h2{color:#00BFA6;margin-bottom:1rem;}
+    .vision p{max-width:800px;margin:auto;font-size:1.1rem;}
+
+    .collaboration{
+      padding:80px 20px;background:white;border-radius:12px;margin-top:60px;
+      box-shadow:0 4px 15px rgba(0,0,0,0.05);
+    }
+    .collaboration h2{text-align:center;color:#00BFA6;margin-bottom:1.5rem;}
+    .collaboration p{text-align:center;max-width:900px;margin:0 auto 40px;font-size:1.1rem;}
+
+    .partners{
+      display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:30px;text-align:center;
+    }
+    .partner{
+      background:#F4F9F9;padding:25px;border-radius:12px;
+      transition:0.3s;
+    }
+    .partner:hover{transform:translateY(-8px);}
+    .partner img{width:80px;height:80px;margin-bottom:15px;}
+
+    .team{
+      padding:60px 0;
+    }
+    .team h2{text-align:center;margin-bottom:2rem;}
+
+    .team-members{
+      display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+      gap:30px;justify-items:center;padding:0 20px;
+    }
+    .team-member{
+      background:white;padding:25px;border-radius:12px;text-align:center;
+      box-shadow:0 4px 12px rgba(0,0,0,0.05);
+      width:100%;
+      max-width:260px;
+      transition:0.3s;
+    }
+    .team-member:hover{transform:translateY(-8px);}
+    .team-member img{
+      width:120px;height:120px;border-radius:50%;
+      border:4px solid #00BFA6;object-fit:cover;margin-bottom:15px;
+    }
+
+    .footer{
+      background:#2D3436;color:white;text-align:center;padding:3rem 20px;margin-top:60px;
+    }
+    .footer p{color:#ccc;margin-top:1rem;}
+
+    @media(max-width:900px){
+      .about-section{grid-template-columns:1fr;}
+    }
   </style>
 </head>
+
 <body>
-  <nav class="navbar">
-    <div class="nav-container">
-      <div class="nav-logo"><h2>TravelBuddy</h2></div>
-      <ul class="nav-menu">
-        <li><a href="index.html">Home</a></li>
-        <li><a href="blog.html">Blog</a></li>
-        <li><a href="find-companion.html">Find Companion</a></li>
-        <li><a href="contact.html">Contact</a></li>
-      </ul>
-      <div class="hamburger"><span></span><span></span><span></span></div>
-    </div>
-  </nav>
 
-  <section class="page-hero">
-    <h1>About TravelBuddy</h1>
-    <p>Connecting travelers, creating memories, and making every trip safer & more meaningful.</p>
-    <div class="floating-icons">
-      <span>🌍</span><span>✈️</span><span>🏖️</span><span>🏔️</span>
-    </div>
-  </section>
+<!-- ============================================================
+            LUXURY NAVBAR
+============================================================ -->
+<nav class="tb-navbar">
+  <div class="tb-nav-container">
+    <div class="tb-logo">TravelBuddy</div>
 
-  <section class="page-content">
-    <div class="about-section">
-      <img src="https://images.unsplash.com/photo-1526772662000-3f88f10405ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Travel">
-      <div>
-        <h2>Who We Are</h2>
-        <p>travelbuddy is your ultimate companion for smarter and more social travel. We believe that traveling is not just about destinations—it’s about experiences, friendships, and stories that stay with you forever. Our platform helps travelers connect with like-minded explorers, discover new routes, and share adventures together.</p>
+    <div class="tb-links">
+      <a href="index.html">Home</a>
+      <a href="find-companion.html">Find Companion</a>
+      <a href="explore.html">Plan a Trip</a>
+      <a href="blog.html">Community</a>
+      <a href="contact.html">Contact</a>
+    </div>
+
+    <div class="tb-right">
+      <div class="tb-burger" id="tb-burger"><i class="fas fa-bars"></i></div>
+      <div class="tb-profile" id="tb-profile"></div>
+    </div>
+  </div>
+
+  <div class="tb-mobile-menu" id="tb-mobile-menu"></div>
+</nav>
+
+<!-- ============================================================
+            HERO SECTION
+============================================================ -->
+<section class="page-hero">
+  <h1>About TravelBuddy</h1>
+  <p>Connecting travelers, creating memories, making every trip meaningful.</p>
+
+  <div class="floating-icons">
+    <span>🌍</span><span>✈️</span><span>🏖️</span><span>🏔️</span>
+  </div>
+</section>
+
+<!-- ============================================================
+            ABOUT CONTENT
+============================================================ -->
+<section class="page-content">
+
+  <div class="about-section">
+    <img src="https://images.unsplash.com/photo-1526772662000-3f88f10405ff?auto=format&fit=crop&w=800&q=80">
+    <div>
+      <h2>Who We Are</h2>
+      <p>travelbuddy is your ultimate companion for smarter, safer & more social travel.</p>
+    </div>
+  </div>
+
+  <div class="features">
+    <h2>What We Do</h2>
+    <div class="feature-grid">
+      <div class="feature">
+        <h3>🧭 Find Travel Companions</h3>
+        <p>Meet travelers who share your interests and journey routes.</p>
+      </div>
+      <div class="feature">
+        <h3>📍 Explore Destinations</h3>
+        <p>Discover hidden gems and personalized experiences.</p>
+      </div>
+      <div class="feature">
+        <h3>💬 Share Experiences</h3>
+        <p>Share your stories with thousands of travelers worldwide.</p>
+      </div>
+      <div class="feature">
+        <h3>🛡️ Safety & Trust</h3>
+        <p>Your safety is our priority.</p>
       </div>
     </div>
+  </div>
 
-    <div class="features">
-      <h2>What We Do</h2>
-      <div class="feature-grid">
-        <div class="feature">
-          <h3>🧭 Find Travel Companions</h3>
-          <p>Meet travelers who share your interests and journey routes. Whether solo or group, find your perfect travel match easily.</p>
-        </div>
-        <div class="feature">
-          <h3>📍 Explore Destinations</h3>
-          <p>Discover hidden gems, local experiences, and personalized routes curated for adventure seekers and peace lovers alike.</p>
-        </div>
-        <div class="feature">
-          <h3>💬 Share Experiences</h3>
-          <p>Post your stories, travel tips, and experiences on our blog to inspire thousands of fellow travelers around the globe.</p>
-        </div>
-        <div class="feature">
-          <h3>🛡️ Safety & Trust</h3>
-          <p>We prioritize your safety by verifying profiles and providing travel insights, ensuring every trip feels secure and reliable.</p>
-        </div>
+  <div class="vision">
+    <h2>Our Vision</h2>
+    <p>We aim to make sure no one travels alone again.</p>
+  </div>
+
+  <div class="collaboration">
+    <h2>Local Service Collaboration</h2>
+    <p>We collaborate with trusted local partners to enhance your journey.</p>
+
+    <div class="partners">
+      <div class="partner">
+        <img src="https://cdn-icons-png.flaticon.com/512/854/854878.png">
+        <h3>Local Guides</h3>
+      </div>
+      <div class="partner">
+        <img src="https://cdn-icons-png.flaticon.com/512/190/190411.png">
+        <h3>Homestays</h3>
+      </div>
+      <div class="partner">
+        <img src="https://cdn-icons-png.flaticon.com/512/3097/3097331.png">
+        <h3>Transport Providers</h3>
+      </div>
+      <div class="partner">
+        <img src="https://cdn-icons-png.flaticon.com/512/535/535188.png">
+        <h3>Cultural Events</h3>
       </div>
     </div>
+  </div>
 
-    <div class="vision">
-      <h2>Our Vision</h2>
-      <p>We aim to build a world where no one travels alone—where each journey brings people closer and creates meaningful connections across cultures. Through technology and community, we’re transforming the way people explore the world.</p>
-    </div>
+  <div class="team">
+    <h2>Meet Our Team</h2>
 
-    <div class="collaboration">
-      <h2>Local Service Collaboration</h2>
-      <p>We proudly collaborate with local partners across the globe to deliver authentic, safe, and enriching experiences for our travelers. From local guides to transport providers and homestays, travelbuddy believes in empowering communities while enhancing your travel journey.</p>
-      <div class="partners">
-        <div class="partner">
-          <img src="https://cdn-icons-png.flaticon.com/512/854/854878.png" alt="Guide">
-          <h3>Local Guides</h3>
-          <p>Experienced guides who share insider stories, secret trails, and cultural insights to make your trip unforgettable.</p>
-        </div>
-        <div class="partner">
-          <img src="https://cdn-icons-png.flaticon.com/512/190/190411.png" alt="Hotels">
-          <h3>Hotels & Homestays</h3>
-          <p>Comfortable stays partnered with trusted accommodations that reflect local charm and hospitality.</p>
-        </div>
-        <div class="partner">
-          <img src="https://cdn-icons-png.flaticon.com/512/3097/3097331.png" alt="Transport">
-          <h3>Transport Providers</h3>
-          <p>Safe and verified local transport options — making sure your journey between destinations is smooth and reliable.</p>
-        </div>
-        <div class="partner">
-          <img src="https://cdn-icons-png.flaticon.com/512/535/535188.png" alt="Cultural Events">
-          <h3>Cultural Partners</h3>
-          <p>We work with local event organizers and communities to give travelers a taste of real traditions and experiences.</p>
-        </div>
+    <div class="team-members">
+      <div class="team-member">
+        <img src="./photos 6.49.47 PM/WhatsApp Image 2025-11-03 at 22.46.31.jpeg">
+        <h3>Abhishek Dixit</h3>
+        <p><strong>Team Lead & Developer</strong></p>
+      </div>
+
+      <div class="team-member">
+        <img src="./photos 6.49.47 PM/WhatsApp Image 2025-11-03 at 22.53.52.jpeg">
+        <h3>Akshay Saini</h3>
+        <p><strong>Frontend Specialist</strong></p>
+      </div>
+
+      <div class="team-member">
+        <img src="./photos 6.49.47 PM/WhatsApp Image 2025-11-03 at 22.41.32.jpeg">
+        <h3>Aditya Sharma</h3>
+        <p><strong>Backend Engineer</strong></p>
+      </div>
+
+      <div class="team-member">
+        <img src="./photos 6.49.47 PM/WhatsApp Image 2025-11-03 at 22.57.29.jpeg">
+        <h3>Abhijeet Kushwaha</h3>
+        <p><strong>Content & Documentation</strong></p>
       </div>
     </div>
+  </div>
 
-    <div class="team">
-      <h2>Meet Our Team</h2>
-      <div class="team-members">
-        <div class="team-member">
-          <img src="./photos 6.49.47 PM/WhatsApp Image 2025-11-03 at 22.46.31.jpeg" alt="Abhishek Dixit">
-          <h3>Abhishek Dixit</h3>
-          <p><strong>Team Lead & Full Stack Developer</strong> — A B.Tech 3rd-year IT student passionate about building impactful web projects. Leads the team with creativity, code precision, and vision for innovation.</p>
-        </div>
+</section>
 
-        <div class="team-member">
-          <img src="./photos 6.49.47 PM/WhatsApp Image 2025-11-03 at 22.53.52.jpeg" alt="Akshay">
-          <h3>Akshay Saini</h3>
-          <p><strong>Frontend Specialist</strong> — A B.Tech 3rd-year student who loves crafting beautiful user interfaces. Focused on smooth design, responsiveness, and creating the perfect user experience.</p>
-        </div>
+<footer class="footer">
+  <h3>travelbuddy</h3>
+  <p>&copy; 2025 travelbuddy. All rights reserved.</p>
+</footer>
 
-        <div class="team-member">
-          <img src="./photos 6.49.47 PM/WhatsApp Image 2025-11-03 at 22.41.32.jpeg" alt="Aditya Sharma">
-          <h3>Aditya Sharma</h3>
-          <p><strong>Backend & Database Engineer</strong> — A B.Tech 3rd-year tech enthusiast who enjoys solving logical problems and optimizing backend systems using Node.js and MongoDB.</p>
-        </div>
+<!-- ============================================================
+            JAVASCRIPT (Profile Dropdown FIXED)
+============================================================ -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const user = JSON.parse(localStorage.getItem("user"));
+  const defaultImg = "https://cdn-icons-png.flaticon.com/512/1077/1077114.png";
 
-        <div class="team-member">
-          <img src="./photos 6.49.47 PM/WhatsApp Image 2025-11-03 at 22.57.29.jpeg" alt="Abhijeet Kushwaha">
-          <h3>Abhijeet Kushwaha</h3>
-          <p><strong>Research & Content Coordinator</strong> — A B.Tech 3rd-year learner who curates engaging content, manages documentation, and ensures the team’s work stays on track and well-organized.</p>
-        </div>
-      </div>
+  const profileEl = document.getElementById("tb-profile");
+  const mobileMenuEl = document.getElementById("tb-mobile-menu");
+  const burgerEl = document.getElementById("tb-burger");
+
+  /* ------- ALWAYS CREATE DROPDOWN EVEN IF USER NOT LOGGED IN ------- */
+  profileEl.innerHTML = `
+    <img src="${user?.img || defaultImg}">
+    <i class="fas fa-caret-down"></i>
+    <div class="tb-dropdown" id="tb-dropdown">
+      ${
+        user
+          ? `
+      <a href="profile.html">My Profile</a>
+      <a href="trips.html">Trips</a>
+      <a href="my-blogs.html">My Blogs</a>
+      <a href="#" id="tb-logout">Logout</a>`
+          : `
+      <a href="login.html">Login</a>
+      <a href="signup.html">Create Account</a>`
+      }
     </div>
-  </section>
+  `;
 
-  <footer class="footer">
-    <h3>travelbuddy</h3>
-    <p>&copy; 2025 travelbuddy. All rights reserved.</p>
-  </footer>
+  /* --------- CLICK DROPDOWN FIX --------- */
+  document.addEventListener("click", (e) => {
+    const dropdown = document.getElementById("tb-dropdown");
 
-  <script>
-    const hamburger=document.querySelector(".hamburger");
-    const navMenu=document.querySelector(".nav-menu");
-    hamburger.addEventListener("click",()=>{ navMenu.classList.toggle("active"); });
-  </script>
+    if (e.target.closest("#tb-profile")) {
+      dropdown.style.display =
+        dropdown.style.display === "block" ? "none" : "block";
+    } else {
+      dropdown.style.display = "none";
+    }
+  });
+
+  /* --------- BURGER MENU --------- */
+  burgerEl.addEventListener("click", () => {
+    mobileMenuEl.style.display =
+      mobileMenuEl.style.display === "flex" ? "none" : "flex";
+  });
+
+  /* --------- LOGOUT --------- */
+  document.getElementById("tb-logout")?.addEventListener("click", () => {
+    localStorage.removeItem("user");
+    window.location.href = "index.html";
+  });
+});
+</script>
+
 </body>
 </html>

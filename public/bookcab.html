@@ -1,465 +1,313 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Luxury Cab Services | TravelBuddy</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Poppins',sans-serif;background:#F4F9F9;color:#2D3436;line-height:1.6;overflow-x:hidden;}
+    a{text-decoration:none;color:inherit;}
+
+    /* UNIVERSAL NAVBAR */
+    .tb-navbar{
+      width:100%;
+      position:fixed;
+      top:0;
+      left:0;
+      z-index:10000;
+      background:linear-gradient(135deg,#00BFA6,#00D2A6,#00E3A0);
+      padding:12px 0;
+      box-shadow:0 5px 25px rgba(0,0,0,0.18);
+      animation:gradientMove 6s infinite alternate ease-in-out;
     }
-
-    body {
-      font-family: 'Poppins', sans-serif;
-      background: #F4F9F9;
-      color: #2D3436;
-      line-height: 1.6;
+    @keyframes gradientMove{
+      0%{background:linear-gradient(135deg,#00BFA6,#00D2A6,#00E3A0);}
+      100%{background:linear-gradient(135deg,#00E3A0,#00D2A6,#00BFA6);}
     }
+    .tb-nav-container{max-width:1250px;margin:auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;}
+    .tb-logo{font-size:1.9rem;font-weight:700;color:white;white-space:nowrap;}
+    .tb-links{display:flex;align-items:center;gap:30px;}
+    .tb-links a{color:white;font-weight:500;transition:.2s;}
+    .tb-links a:hover{opacity:.8;transform:translateY(-2px);}
+    .tb-profile{display:flex;align-items:center;gap:10px;cursor:pointer;color:white;position:relative;min-width:50px;}
+    .tb-profile img{width:42px;height:42px;border-radius:50%;border:2px solid white;object-fit:cover;}
+    .tb-dropdown{position:absolute;top:58px;right:0;background:white;width:180px;border-radius:12px;display:none;overflow:hidden;box-shadow:0 8px 25px rgba(0,0,0,0.15);}
+    .tb-dropdown a{display:block;padding:12px 15px;color:#333;font-weight:500;}
+    .tb-dropdown a:hover{background:linear-gradient(135deg,#00BFA6,#FDCB6E);color:white;}
+    .tb-right{display:flex;align-items:center;gap:14px;}
+    .tb-burger{font-size:1.9rem;color:white;cursor:pointer;display:none;}
+    .tb-mobile-menu{display:none;flex-direction:column;background:white;width:100%;padding:20px 0;gap:5px;text-align:center;box-shadow:0 8px 20px rgba(0,0,0,0.15);animation:slideDown .3s ease;}
+    .tb-mobile-menu a{padding:12px 0;color:#00BFA6;font-weight:600;border-bottom:1px solid #eee;}
+    @keyframes slideDown{from{opacity:0;transform:translateY(-10px);}to{opacity:1;transform:translateY(0);}}
+    @media(max-width:900px){.tb-links{display:none}.tb-burger{display:block}.tb-logo{margin-right:auto;}}
 
-    /* Navbar */
-    .navbar {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(10px);
-      position: fixed;
-      top: 0;
-      width: 100%;
-      z-index: 1000;
-      box-shadow: 0 2px 20px rgba(0, 191, 166, 0.1);
-    }
+    /* HERO */
+    .page-hero{background:linear-gradient(135deg,#00BFA6,#FDCB6E);padding:160px 20px 90px;text-align:center;color:white;margin-top:0;}
+    .page-hero h1{font-size:2.8rem;font-weight:700;margin-bottom:0.6rem;}
+    .page-hero p{font-size:1.05rem;opacity:0.95;max-width:900px;margin:auto;}
 
-    .nav-container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      height: 70px;
-    }
+    /* CONTENT */
+    .page-content{max-width:1200px;margin:0 auto;padding:60px 20px 80px;}
+    .search-box{background:white;padding:24px;border-radius:14px;box-shadow:0 6px 20px rgba(0,191,166,0.08);margin-bottom:36px;}
+    .search-wrapper{display:flex;flex-wrap:wrap;gap:12px;align-items:center;}
+    .search-input,.filter-select{flex:1;min-width:200px;padding:12px 14px;border:2px solid #e6e6e6;border-radius:10px;font-size:1rem;font-family:'Poppins',sans-serif;transition:border-color .2s;}
+    .search-input:focus,.filter-select:focus{outline:none;border-color:#00BFA6;}
 
-    .nav-logo h2 {
-      color: #00BFA6;
-      font-size: 1.8rem;
-      font-weight: 700;
-    }
+    .section-title{font-size:1.9rem;text-align:center;color:#2D3436;font-weight:600;margin-bottom:8px;margin-top:4px;}
+    .section-sub{font-size:0.95rem;color:#666;text-align:center;margin-bottom:18px;}
 
-    .nav-menu {
-      display: flex;
-      list-style: none;
-      gap: 2rem;
-    }
+    .drivers-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:22px;margin-top:18px;}
 
-    .nav-menu li a {
-      text-decoration: none;
-      color: #2D3436;
-      font-weight: 500;
-      position: relative;
-      transition: 0.3s;
-    }
+    .driver-card{background:white;border-radius:12px;overflow:hidden;border:2px solid #00BFA6;box-shadow:0 8px 30px rgba(0,0,0,0.06);transition:transform .25s,box-shadow .25s;}
+    .driver-card:hover{transform:translateY(-8px);box-shadow:0 18px 50px rgba(0,191,166,0.18);}
 
-    .nav-menu li a:hover {
-      color: #00BFA6;
-    }
+    .driver-header{background:linear-gradient(135deg,#00BFA6,#FDCB6E);padding:28px 20px;text-align:center;color:white;}
+    .driver-photo{width:100px;height:100px;border-radius:50%;border:4px solid white;margin:0 auto 10px;object-fit:cover;box-shadow:0 6px 18px rgba(0,0,0,0.12);}
+    .driver-name{font-size:1.4rem;font-weight:700;margin-bottom:6px;}
+    .driver-rating{display:flex;align-items:center;justify-content:center;gap:8px;font-size:0.95rem;color:rgba(255,255,255,0.95);}
 
-    .nav-menu li a::after {
-      content: '';
-      position: absolute;
-      width: 0;
-      height: 2px;
-      background: #00BFA6;
-      bottom: -5px;
-      left: 0;
-      transition: 0.3s;
-    }
+    .driver-body{padding:20px;color:#2D3436;}
+    .badge{display:inline-block;padding:6px 12px;border-radius:18px;font-size:0.85rem;margin-right:8px;margin-bottom:8px;font-weight:600}
+    .badge-verified{background:#e8f5e9;color:#2e7d32}
+    .badge-premium{background:#fff3e0;color:#ff8f00}
 
-    .nav-menu li a:hover::after {
-      width: 100%;
-    }
+    .info-row{display:flex;align-items:center;gap:10px;margin:8px 0;font-size:0.95rem}
+    .info-row i{color:#00BFA6;width:20px}
 
-    .hamburger {
-      display: none;
-      flex-direction: column;
-      cursor: pointer;
-    }
+    .languages{margin-top:10px;padding-top:10px;border-top:1px dashed #eee}
+    .languages span{display:inline-block;background:#F4F9F9;padding:6px 10px;border-radius:12px;margin-right:8px;font-size:0.85rem;color:#2D3436}
 
-    .hamburger span {
-      width: 25px;
-      height: 3px;
-      background: #2D3436;
-      margin: 3px 0;
-      border-radius: 2px;
-    }
+    .contact-buttons{display:flex;gap:10px;margin-top:14px}
+    .btn{flex:1;padding:12px;border-radius:10px;text-align:center;color:white;text-decoration:none;font-weight:600;font-size:0.95rem}
+    .btn-call{background:#00BFA6}
+    .btn-call:hover{background:#019e8e}
+    .btn-whatsapp{background:#25D366}
+    .btn-whatsapp:hover{background:#20ba5a}
 
-    /* Hero Section */
-    .page-hero {
-      background: linear-gradient(135deg, #00BFA6, #FDCB6E);
-      padding: 160px 20px 90px;
-      text-align: center;
-      color: white;
-      margin-top: 70px;
-    }
+    .no-results{text-align:center;padding:40px;background:white;border-radius:12px;color:#666;box-shadow:0 8px 25px rgba(0,0,0,0.05);}
 
-    .page-hero h1 {
-      font-size: 3rem;
-      font-weight: 700;
-      margin-bottom: 1rem;
-      letter-spacing: 0.5px;
-    }
+    footer{margin-top:40px;padding:40px 20px;text-align:center;color:#777}
+    footer .small{font-size:0.9rem;color:#999}
 
-    .page-hero p {
-      font-size: 1.2rem;
-      opacity: 0.95;
-      max-width: 700px;
-      margin: 0 auto;
-    }
-
-    /* Page Content */
-    .page-content {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 80px 20px 50px;
-    }
-
-    .search-box {
-      background: white;
-      padding: 30px;
-      border-radius: 15px;
-      box-shadow: 0 4px 20px rgba(0, 191, 166, 0.15);
-      margin-bottom: 50px;
-    }
-
-    .search-wrapper {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 15px;
-    }
-
-    .search-input,
-    .filter-select {
-      flex: 1;
-      min-width: 250px;
-      padding: 14px 20px;
-      border: 2px solid #e0e0e0;
-      border-radius: 8px;
-      font-size: 1rem;
-      font-family: 'Poppins', sans-serif;
-      transition: border-color 0.3s;
-    }
-
-    .search-input:focus,
-    .filter-select:focus {
-      outline: none;
-      border-color: #00BFA6;
-    }
-
-    .section-title {
-      font-size: 2.2rem;
-      text-align: center;
-      color: #2D3436;
-      font-weight: 600;
-      margin-bottom: 1.5rem;
-      position: relative;
-    }
-
-    .section-title::after {
-      content: '';
-      display: block;
-      width: 80px;
-      height: 3px;
-      background: #00BFA6;
-      margin: 10px auto;
-      border-radius: 2px;
-    }
-
-    .drivers-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-      gap: 25px;
-      margin-top: 30px;
-    }
-
-    .driver-card {
-      background: white;
-      border-radius: 15px;
-      overflow: hidden;
-      border: 2px solid #00BFA6;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-      transition: all 0.3s ease;
-    }
-
-    .driver-card:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 8px 25px rgba(0, 191, 166, 0.25);
-    }
-
-    .driver-header {
-      background: linear-gradient(135deg, #00BFA6, #FDCB6E);
-      padding: 30px 20px;
-      text-align: center;
-      color: white;
-    }
-
-    .driver-photo {
-      width: 100px;
-      height: 100px;
-      border-radius: 50%;
-      border: 4px solid white;
-      margin: 0 auto 10px;
-      object-fit: cover;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    }
-
-    .driver-name {
-      font-size: 1.5rem;
-      font-weight: 600;
-    }
-
-    .driver-rating {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 5px;
-      font-size: 0.9rem;
-    }
-
-    .stars {
-      color: #FDCB6E;
-    }
-
-    .driver-body {
-      padding: 25px;
-      color: #2D3436;
-    }
-
-    .badge {
-      display: inline-block;
-      padding: 6px 14px;
-      border-radius: 20px;
-      font-size: 0.85rem;
-      margin-right: 8px;
-      margin-bottom: 8px;
-      font-weight: 500;
-    }
-
-    .badge-verified {
-      background: #e8f5e9;
-      color: #2e7d32;
-    }
-
-    .badge-premium {
-      background: #e0f7f5;
-      color: #00BFA6;
-    }
-
-    .info-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin: 10px 0;
-      font-size: 0.95rem;
-    }
-
-    .info-row i {
-      color: #00BFA6;
-    }
-
-    .languages {
-      margin-top: 15px;
-      padding-top: 10px;
-      border-top: 1px solid #e0e0e0;
-    }
-
-    .languages span {
-      background: #F4F9F9;
-      padding: 6px 12px;
-      border-radius: 15px;
-      font-size: 0.85rem;
-      margin-right: 8px;
-      display: inline-block;
-      color: #2D3436;
-    }
-
-    .contact-buttons {
-      display: flex;
-      gap: 10px;
-      margin-top: 20px;
-    }
-
-    .btn {
-      flex: 1;
-      padding: 12px;
-      border-radius: 8px;
-      text-align: center;
-      font-size: 1rem;
-      font-weight: 500;
-      cursor: pointer;
-      text-decoration: none;
-      transition: 0.3s;
-      color: white;
-    }
-
-    .btn-call {
-      background: #00BFA6;
-    }
-
-    .btn-call:hover {
-      background: #019E8E;
-    }
-
-    .btn-whatsapp {
-      background: #25D366;
-    }
-
-    .btn-whatsapp:hover {
-      background: #20ba5a;
-    }
-
-    /* Footer */
-    .footer {
-      background: #2D3436;
-      color: white;
-      text-align: center;
-      padding: 3rem 20px;
-      margin-top: 60px;
-    }
-
-    .footer h3 {
-      color: #00BFA6;
-      margin-bottom: 1rem;
-    }
-
-    .footer p {
-      color: #ccc;
-      margin-top: 1rem;
-    }
-
-    @media (max-width: 768px) {
-      .nav-menu {
-        position: fixed;
-        top: 70px;
-        left: -100%;
-        flex-direction: column;
-        background: white;
-        width: 100%;
-        padding: 2rem 0;
-        transition: 0.3s;
-        box-shadow: 0 10px 27px rgba(0, 0, 0, 0.05);
-      }
-
-      .nav-menu.active {
-        left: 0;
-      }
-
-      .hamburger {
-        display: flex;
-      }
-
-      .search-wrapper {
-        flex-direction: column;
-      }
-    }
+    @media(max-width:900px){.page-hero{padding:130px 16px 70px}.page-hero h1{font-size:2rem}.drivers-grid{grid-template-columns:1fr}.contact-buttons{flex-direction:column}}
   </style>
 </head>
 <body>
 
-  <!-- Navbar -->
-  <nav class="navbar">
-    <div class="nav-container">
-      <div class="nav-logo"><h2>TravelBuddy</h2></div>
-      <ul class="nav-menu">
-        <li><a href="index.html">Home</a></li>
-        <li><a href="blog.html">Blog</a></li>
-        <li><a href="find-companion.html">Find Companion</a></li>
-        <li><a href="contact.html">Contact</a></li>
-      </ul>
-      <div class="hamburger"><span></span><span></span><span></span></div>
+  <!-- UNIVERSAL NAVBAR -->
+  <nav class="tb-navbar">
+    <div class="tb-nav-container">
+      <div class="tb-logo">TravelBuddy</div>
+
+      <div class="tb-links">
+        <a href="index.html">Home</a>
+        <a href="find-companion.html">Find Companion</a>
+        <a href="explore.html">Plan a Trip</a>
+        <a href="blog.html">Community</a>
+      </div>
+
+      <div class="tb-right">
+        <div class="tb-burger" id="tb-burger"><i class="fas fa-bars"></i></div>
+        <div class="tb-profile" id="tb-profile"></div>
+      </div>
     </div>
+
+    <div class="tb-mobile-menu" id="tb-mobile-menu"></div>
   </nav>
 
-  <!-- Hero -->
-  <section class="page-hero">
-    <h1><i class="fas fa-crown"></i> Luxury Cab Services</h1>
+  <!-- HERO -->
+  <header class="page-hero" role="banner">
+    <h1><i class="fas fa-crown" aria-hidden="true"></i> Luxury Cab Services</h1>
     <p>Premium rides with verified luxury drivers for an unforgettable journey</p>
-  </section>
+  </header>
 
-  <!-- Search + Driver Cards -->
-  <section class="page-content">
-    <div class="search-box">
+  <!-- CONTENT -->
+  <main class="page-content" role="main">
+    <div class="search-box" aria-label="Search filters">
       <div class="search-wrapper">
-        <input type="text" id="searchInput" class="search-input" placeholder="Search by name, city, or vehicle...">
-        <select id="cityFilter" class="filter-select">
+        <input id="searchInput" class="search-input" placeholder="Search by name, city, vehicle..." aria-label="Search drivers">
+        <select id="cityFilter" class="filter-select" aria-label="Filter by city">
           <option value="">All Cities</option>
-          <option value="Jaipur">Jaipur</option>
-          <option value="Goa">Goa</option>
-          <option value="Manali">Manali</option>
-          <option value="Delhi">Delhi</option>
-          <option value="Mumbai">Mumbai</option>
+          <option>Jaipur</option>
+          <option>Goa</option>
+          <option>Manali</option>
+          <option>Delhi</option>
+          <option>Mumbai</option>
+        </select>
+        <select id="vehicleFilter" class="filter-select" aria-label="Filter by vehicle">
+          <option value="">All Vehicles</option>
+          <option>SUV (Toyota Innova Crysta)</option>
+          <option>SUV (BMW X5)</option>
+          <option>Sedan (Mercedes E-Class)</option>
         </select>
       </div>
     </div>
 
     <h2 class="section-title">Premium Drivers</h2>
-    <div class="drivers-grid" id="driversGrid"></div>
+    <div class="section-sub">Hand-picked luxury drivers with top ratings and excellent service.</div>
 
-    <div class="no-results" id="noResults" style="display:none;">
-      <i class="fas fa-search"></i>
-      <h3>No drivers found</h3>
+    <div id="driversGrid" class="drivers-grid" aria-live="polite"></div>
+
+    <div id="noResults" class="no-results" style="display:none;margin-top:20px;">
+      <i class="fas fa-search" style="font-size:34px;color:#00BFA6"></i>
+      <h3 style="margin-top:12px">No drivers found</h3>
       <p>Try adjusting your search or filters</p>
     </div>
-  </section>
+  </main>
 
-  <!-- Footer -->
-  <footer class="footer">
-    <h3>TravelBuddy</h3>
-    <p>&copy; 2025 TravelBuddy. All rights reserved.</p>
+  <footer>
+    © 2025 TravelBuddy
+    <div class="small">Premium rides • Verified drivers • Secure payments</div>
   </footer>
 
   <script>
-    const hamburger = document.querySelector(".hamburger");
-    const navMenu = document.querySelector(".nav-menu");
-    hamburger.addEventListener("click", () => navMenu.classList.toggle("active"));
+  document.addEventListener("DOMContentLoaded", () => {
+    /* ---------- Universal Navbar Logic ---------- */
+    const user = JSON.parse(localStorage.getItem("user"));
+    const defaultImg = "https://cdn-icons-png.flaticon.com/512/1077/1077114.png";
 
+    const profileEl = document.getElementById("tb-profile");
+    const mobileMenuEl = document.getElementById("tb-mobile-menu");
+    const burgerEl = document.getElementById("tb-burger");
+
+    if (user) {
+      profileEl.innerHTML = `
+        <img src="${user.img || defaultImg}" alt="${(user.firstName||'User') + ' profile'}">
+        <i class="fas fa-caret-down" aria-hidden="true"></i>
+        <div class="tb-dropdown" id="tb-dropdown" role="menu" aria-hidden="true">
+          <a href="profile.html">My Profile</a>
+          <a href="trips.html">Trips</a>
+          <a href="my-blogs.html">My Blogs</a>
+          <a href="#" id="tb-logout">Logout</a>
+        </div>
+      `;
+      mobileMenuEl.innerHTML = `
+        <a href="index.html">Home</a>
+        <a href="find-companion.html">Find Companion</a>
+        <a href="explore.html">Plan a Trip</a>
+        <a href="blog.html">Community</a>
+        <hr style="width:60%;margin:auto;border:0;border-top:1px solid #eee;">
+        <a href="profile.html">My Profile</a>
+        <a href="trips.html">Trips</a>
+        <a href="my-blogs.html">My Blogs</a>
+        <a href="#" id="tb-logout2">Logout</a>
+      `;
+    } else {
+      profileEl.innerHTML = `<img src="${defaultImg}" alt="Guest">`;
+      mobileMenuEl.innerHTML = `
+        <a href="index.html">Home</a>
+        <a href="find-companion.html">Find Companion</a>
+        <a href="explore.html">Plan a Trip</a>
+        <a href="blog.html">Community</a>
+      `;
+    }
+
+    /* Profile dropdown toggle */
+    document.addEventListener("click", (e) => {
+      if (e.target.closest("#tb-profile")) {
+        const dd = document.getElementById("tb-dropdown");
+        if (dd) dd.style.display = dd.style.display === "block" ? "none" : "block";
+      } else {
+        const dd = document.getElementById("tb-dropdown");
+        if (dd && dd.style.display === "block") dd.style.display = "none";
+      }
+    });
+
+    /* Logout */
+    const logout = () => {
+      localStorage.removeItem("user");
+      window.location.href = "index.html";
+    };
+    document.getElementById("tb-logout")?.addEventListener("click", logout);
+    document.getElementById("tb-logout2")?.addEventListener("click", logout);
+
+    /* Hamburger */
+    burgerEl?.addEventListener("click", () => {
+      mobileMenuEl.style.display = mobileMenuEl.style.display === "flex" ? "none" : "flex";
+    });
+
+    /* ---------- Luxury Drivers Logic ---------- */
     const drivers = [
-      { name: "Rajesh Kumar", city: "Jaipur", photo: "https://i.pravatar.cc/150?img=12", rating: 4.9, reviews: 156, experience: "8 years", vehicle: "SUV (Toyota Innova Crysta)", languages: ["Hindi", "English"], verified: true, premium: true, phone: "+9156757", whatsapp: "9156757" },
-      { name: "Suresh Thakur", city: "Manali", photo: "https://i.pravatar.cc/150?img=51", rating: 4.8, reviews: 89, experience: "10 years", vehicle: "SUV (Mahindra Scorpio)", languages: ["Hindi", "English", "Punjabi"], verified: true, premium: true, phone: "+9156757", whatsapp: "9156757" },
-      { name: "Prakash Patil", city: "Mumbai", photo: "https://i.pravatar.cc/150?img=68", rating: 4.9, reviews: 278, experience: "12 years", vehicle: "SUV (Toyota Fortuner)", languages: ["Hindi", "English", "Marathi"], verified: true, premium: true, phone: "+9156757", whatsapp: "9156757" },
-      { name: "Ravi Nair", city: "Goa", photo: "https://i.pravatar.cc/150?img=56", rating: 4.8, reviews: 145, experience: "9 years", vehicle: "SUV (Kia Carnival)", languages: ["Hindi", "English", "Malayalam"], verified: true, premium: true, phone: "+9156757", whatsapp: "9156757" },
-      { name: "Karan Mehta", city: "Delhi", photo: "https://i.pravatar.cc/150?img=14", rating: 4.9, reviews: 312, experience: "15 years", vehicle: "Sedan (Mercedes E-Class)", languages: ["Hindi", "English", "Punjabi"], verified: true, premium: true, phone: "+9156757", whatsapp: "9156757" },
-      { name: "Deepak Joshi", city: "Manali", photo: "https://i.pravatar.cc/150?img=13", rating: 4.8, reviews: 124, experience: "10 years", vehicle: "SUV (BMW X5)", languages: ["Hindi", "English", "Himachali"], verified: true, premium: true, phone: "+9156757", whatsapp: "9156757" }
+      { name: "Rajesh Kumar", city: "Jaipur", photo: "https://i.pravatar.cc/150?img=12", rating: 4.9, reviews: 156, experience: "8 years", vehicle: "SUV (Toyota Innova Crysta)", languages: ["Hindi","English"], verified: true, premium: true, phone: "+919876543210", whatsapp: "919876543210" },
+      { name: "Prakash Patil", city: "Mumbai", photo: "https://i.pravatar.cc/150?img=68", rating: 4.9, reviews: 278, experience: "12 years", vehicle: "SUV (Toyota Fortuner)", languages: ["Hindi","English","Marathi"], verified: true, premium: true, phone: "+919812345678", whatsapp: "919812345678" },
+      { name: "Karan Mehta", city: "Delhi", photo: "https://i.pravatar.cc/150?img=14", rating: 4.9, reviews: 312, experience: "15 years", vehicle: "Sedan (Mercedes E-Class)", languages: ["Hindi","English","Punjabi"], verified: true, premium: true, phone: "+919898989898", whatsapp: "919898989898" },
+      { name: "Deepak Joshi", city: "Manali", photo: "https://i.pravatar.cc/150?img=13", rating: 4.8, reviews: 124, experience: "10 years", vehicle: "SUV (BMW X5)", languages: ["Hindi","English","Himachali"], verified: true, premium: true, phone: "+919777777777", whatsapp: "919777777777" },
+      { name: "Ravi Nair", city: "Goa", photo: "https://i.pravatar.cc/150?img=56", rating: 4.8, reviews: 145, experience: "9 years", vehicle: "SUV (Kia Carnival)", languages: ["Hindi","English","Malayalam"], verified: true, premium: true, phone: "+919666666666", whatsapp: "919666666666" }
     ];
 
-    function createDriverCard(d) {
+    const grid = document.getElementById('driversGrid');
+    const noResults = document.getElementById('noResults');
+    const searchInput = document.getElementById('searchInput');
+    const cityFilter = document.getElementById('cityFilter');
+    const vehicleFilter = document.getElementById('vehicleFilter');
+
+    function createDriverCard(d){
       return `
       <div class="driver-card">
         <div class="driver-header">
-          <img src="${d.photo}" class="driver-photo" alt="${d.name}">
-          <h3 class="driver-name">${d.name}</h3>
-          <div class="driver-rating"><span class="stars">★</span> ${d.rating} (${d.reviews} reviews)</div>
+          <img src="${d.photo}" class="driver-photo" alt="${escapeHtml(d.name)}">
+          <div class="driver-name">${escapeHtml(d.name)}</div>
+          <div class="driver-rating"><span style="color:#FFD700">${'★'.repeat(Math.round(d.rating))}</span> ${d.rating} (${d.reviews})</div>
         </div>
         <div class="driver-body">
-          <div class="badge badge-verified"><i class="fas fa-check-circle"></i> Verified</div>
-          <div class="badge badge-premium"><i class="fas fa-crown"></i> Premium</div>
-          <div class="info-row"><i class="fas fa-map-marker-alt"></i> ${d.city}</div>
-          <div class="info-row"><i class="fas fa-car"></i> ${d.vehicle}</div>
-          <div class="info-row"><i class="fas fa-clock"></i> ${d.experience}</div>
-          <div class="languages"><strong>Languages:</strong> ${d.languages.map(l => `<span>${l}</span>`).join('')}</div>
+          ${d.verified ? '<div class="badge badge-verified"><i class="fas fa-check-circle"></i> Verified</div>' : ''}
+          ${d.premium ? '<div class="badge badge-premium"><i class="fas fa-crown"></i> Premium</div>' : ''}
+          <div class="info-row"><i class="fas fa-map-marker-alt"></i> ${escapeHtml(d.city)}</div>
+          <div class="info-row"><i class="fas fa-car"></i> ${escapeHtml(d.vehicle)}</div>
+          <div class="info-row"><i class="fas fa-clock"></i> ${escapeHtml(d.experience)}</div>
+          <div class="languages"><strong>Languages:</strong> ${d.languages.map(l=>`<span>${escapeHtml(l)}</span>`).join('')}</div>
           <div class="contact-buttons">
-            <a href="tel:${d.phone}" class="btn btn-call"><i class="fas fa-phone"></i> Call</a>
-            <a href="https://wa.me/${d.whatsapp}" class="btn btn-whatsapp" target="_blank"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+            <a class="btn btn-call" href="tel:${encodeURIComponent(d.phone)}"><i class="fas fa-phone"></i> Call</a>
+            <a class="btn btn-whatsapp" href="https://wa.me/${encodeURIComponent(d.whatsapp)}" target="_blank" rel="noopener"><i class="fab fa-whatsapp"></i> WhatsApp</a>
           </div>
         </div>
       </div>`;
     }
 
-    function renderDrivers(list) {
-      const grid = document.getElementById('driversGrid');
+    function renderDrivers(list){
+      if(!list.length){
+        grid.innerHTML = "";
+        noResults.style.display = "block";
+        return;
+      }
+      noResults.style.display = "none";
       grid.innerHTML = list.map(createDriverCard).join('');
     }
 
+    function filterDrivers(){
+      const q = (searchInput.value||'').toLowerCase().trim();
+      const city = cityFilter.value;
+      const vehicle = vehicleFilter.value;
+
+      const filtered = drivers.filter(d => {
+        const matchesSearch = d.name.toLowerCase().includes(q) || d.city.toLowerCase().includes(q) || d.vehicle.toLowerCase().includes(q);
+        const matchesCity = !city || d.city === city;
+        const matchesVehicle = !vehicle || d.vehicle.includes(vehicle);
+        return matchesSearch && matchesCity && matchesVehicle;
+      });
+
+      renderDrivers(filtered);
+    }
+
+    searchInput.addEventListener('input', filterDrivers);
+    cityFilter.addEventListener('change', filterDrivers);
+    vehicleFilter.addEventListener('change', filterDrivers);
+
+    // initial render
     renderDrivers(drivers);
+
+    // helper: escape HTML to avoid injected content
+    function escapeHtml(s){
+      if(!s) return '';
+      return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;');
+    }
+
+  }); // DOMContentLoaded end
   </script>
 </body>
 </html>

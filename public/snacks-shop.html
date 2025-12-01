@@ -4,112 +4,321 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Travel Snacks & Drinks | TravelBuddy</title>
+
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
   <style>
     *{margin:0;padding:0;box-sizing:border-box;}
-    body{font-family:'Poppins',sans-serif;background:#F4F9F9;color:#2D3436;line-height:1.6;}
+    a{text-decoration:none;color:inherit;}
+    body{font-family:'Poppins',sans-serif;background:#F4F9F9;color:#2D3436;}
 
-    /* Navbar */
-    .navbar{background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);position:fixed;top:0;width:100%;z-index:1000;box-shadow:0 2px 20px rgba(0,191,166,0.1);}
-    .nav-container{max-width:1200px;margin:0 auto;padding:0 20px;display:flex;justify-content:space-between;align-items:center;height:70px;}
-    .nav-logo h2{color:#00BFA6;font-size:1.8rem;font-weight:700;}
-    .nav-menu{display:flex;list-style:none;gap:2rem;}
-    .nav-menu li a{text-decoration:none;color:#2D3436;font-weight:500;position:relative;}
-    .nav-menu li a:hover{color:#00BFA6;}
-    .hamburger{display:none;flex-direction:column;cursor:pointer;}
-    .hamburger span{width:25px;height:3px;background:#2D3436;margin:3px 0;border-radius:2px;}
+    /* =====================================================
+       LUXURY NAVBAR (Option A)
+    ===================================================== */
+    .tb-navbar{
+      width:100%;
+      position:fixed;
+      top:0;left:0;
+      z-index:9999;
+      padding:12px 0;
+      background:linear-gradient(135deg,#00BFA6,#00D2A6,#00E3A0);
+      box-shadow:0 5px 25px rgba(0,0,0,0.18);
+      animation:gradientMove 6s infinite alternate ease-in-out;
+    }
+    @keyframes gradientMove{
+      0%{background:linear-gradient(135deg,#00BFA6,#00D2A6,#00E3A0);}
+      100%{background:linear-gradient(135deg,#00E3A0,#00D2A6,#00BFA6);}
+    }
 
-    /* Hero */
-    .page-hero{background:linear-gradient(135deg,#00BFA6,#FDCB6E);padding:150px 20px 80px;text-align:center;color:white;}
+    .tb-nav-container{
+      max-width:1250px;margin:auto;padding:0 24px;
+      display:flex;align-items:center;justify-content:space-between;
+    }
+
+    .tb-logo{
+      font-size:1.9rem;font-weight:700;color:white;
+    }
+
+    .tb-links{
+      display:flex;align-items:center;gap:30px;
+    }
+    .tb-links a{
+      color:white;font-weight:500;transition:.2s;
+    }
+    .tb-links a:hover{opacity:.8;transform:translateY(-2px);}
+
+    .tb-right{display:flex;align-items:center;gap:14px;}
+    .tb-burger{display:none;font-size:1.9rem;color:white;cursor:pointer;}
+
+    .tb-profile{
+      display:flex;align-items:center;cursor:pointer;position:relative;
+    }
+    .tb-profile img{
+      width:42px;height:42px;border-radius:50%;
+      border:2px solid white;object-fit:cover;
+    }
+
+    .tb-dropdown{
+      position:absolute;top:58px;right:0;
+      background:white;width:180px;border-radius:12px;
+      display:none;overflow:hidden;
+      box-shadow:0 8px 25px rgba(0,0,0,0.15);
+    }
+    .tb-dropdown a{
+      display:block;padding:12px 15px;
+      font-weight:500;color:#333;
+    }
+    .tb-dropdown a:hover{
+      background:linear-gradient(135deg,#00BFA6,#FDCB6E);color:white;
+    }
+
+    .tb-mobile-menu{
+      display:none;flex-direction:column;background:white;
+      width:100%;padding:20px 0;text-align:center;gap:6px;
+      box-shadow:0 8px 20px rgba(0,0,0,0.15);
+    }
+    .tb-mobile-menu a{
+      padding:12px 0;color:#00BFA6;border-bottom:1px solid #eee;font-weight:600;
+    }
+
+    @media(max-width:900px){
+      .tb-links{display:none;}
+      .tb-burger{display:block;}
+    }
+
+    /* =====================================================
+       HERO
+    ===================================================== */
+    .page-hero{
+      margin-top:0;
+      padding:150px 20px 80px;
+      background:linear-gradient(135deg,#00BFA6,#FDCB6E);
+      text-align:center;color:white;
+    }
     .page-hero h1{font-size:3rem;font-weight:700;margin-bottom:1rem;}
-    .page-hero p{font-size:1.2rem;opacity:0.9;}
 
-    /* Search Section */
-    .page-content{max-width:1200px;margin:0 auto;padding:60px 20px;}
-    .search-box{background:white;padding:30px;border-radius:12px;box-shadow:0 4px 20px rgba(0,191,166,0.1);margin-bottom:40px;}
-    .search-wrapper{display:flex;gap:15px;flex-wrap:wrap;}
-    .search-input,.filter-select{flex:1;min-width:250px;padding:15px 20px;border:2px solid #e0e0e0;border-radius:8px;font-size:1rem;font-family:'Poppins',sans-serif;transition:0.3s;}
-    .search-input:focus,.filter-select:focus{outline:none;border-color:#00BFA6;}
+    /* =====================================================
+       SEARCH
+    ===================================================== */
+    .page-content{max-width:1200px;margin:auto;padding:60px 20px;}
+    .search-box{
+      background:white;padding:30px;border-radius:12px;
+      box-shadow:0 4px 20px rgba(0,191,166,0.1);
+      margin-bottom:40px;
+    }
+    .search-wrapper{
+      display:flex;gap:15px;flex-wrap:wrap;
+    }
+    .search-input,.filter-select{
+      flex:1;min-width:250px;padding:15px 20px;
+      border:2px solid #e0e0e0;border-radius:8px;
+    }
+    .search-input:focus,.filter-select:focus{
+      outline:none;border-color:#00BFA6;
+    }
 
-    /* Cards */
-    .drivers-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:25px;margin-top:30px;}
-    .driver-card{background:white;border-radius:12px;overflow:hidden;box-shadow:0 4px 10px rgba(0,0,0,0.05);transition:transform 0.3s,box-shadow 0.3s;}
-    .driver-card:hover{transform:translateY(-5px);box-shadow:0 8px 25px rgba(0,191,166,0.15);}
-    .driver-header{background:linear-gradient(135deg,#00BFA6,#FDCB6E);padding:25px 20px;text-align:center;color:white;}
-    .driver-photo{width:100px;height:100px;border-radius:50%;border:4px solid white;margin:0 auto 15px;object-fit:cover;}
-    .driver-name{font-size:1.4rem;font-weight:600;}
-    .driver-rating{display:flex;align-items:center;justify-content:center;gap:5px;font-size:0.9rem;}
-    .stars{color:#FFD700;}
+    /* =====================================================
+       CARDS
+    ===================================================== */
+    .drivers-grid{
+      display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+      gap:25px;
+    }
+    .driver-card{
+      background:white;border-radius:12px;overflow:hidden;
+      box-shadow:0 4px 10px rgba(0,0,0,0.05);
+      transition:.3s;
+    }
+    .driver-card:hover{
+      transform:translateY(-5px);
+      box-shadow:0 8px 25px rgba(0,191,166,0.15);
+    }
+
+    .driver-header{
+      background:linear-gradient(135deg,#00BFA6,#FDCB6E);
+      text-align:center;color:white;padding:25px 20px;
+    }
+    .driver-photo{
+      width:100px;height:100px;border-radius:50%;
+      border:4px solid white;object-fit:cover;margin-bottom:10px;
+    }
     .driver-body{padding:25px;}
-    .badge{display:inline-block;padding:6px 14px;border-radius:20px;font-size:0.85rem;margin-right:8px;margin-bottom:8px;font-weight:500;}
+    .badge{display:inline-block;padding:6px 14px;border-radius:20px;font-size:0.85rem;}
     .badge-verified{background:#e8f5e9;color:#2e7d32;}
     .badge-snack{background:#fff3e0;color:#d17c00;}
-    .info-row{display:flex;align-items:center;gap:10px;margin-bottom:12px;color:#2D3436;font-size:0.95rem;}
+
+    .info-row{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
     .info-row i{color:#00BFA6;}
+
     .contact-buttons{display:flex;gap:12px;margin-top:20px;}
-    .btn{flex:1;padding:14px;border:none;border-radius:8px;cursor:pointer;transition:0.3s;display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;font-weight:500;color:white;}
+    .btn{
+      flex:1;padding:12px;border-radius:8px;color:white;
+      text-decoration:none;display:flex;align-items:center;justify-content:center;gap:8px;
+    }
     .btn-call{background:#00BFA6;}
     .btn-call:hover{background:#009688;}
     .btn-whatsapp{background:#25D366;}
     .btn-whatsapp:hover{background:#20ba5a;}
 
-    .footer{background:#2D3436;color:white;text-align:center;padding:3rem 20px;margin-top:60px;}
-    .footer h3{color:#00BFA6;}
+    /* =====================================================
+       FOOTER
+    ===================================================== */
+    .footer{
+      background:#2D3436;color:white;text-align:center;
+      padding:3rem 20px;margin-top:60px;
+    }
   </style>
 </head>
+
 <body>
-  <nav class="navbar">
-    <div class="nav-container">
-      <div class="nav-logo"><h2>TravelBuddy</h2></div>
-      <ul class="nav-menu">
-        <li><a href="index.html">Home</a></li>
-        <li><a href="blog.html">Blog</a></li>
-        <li><a href="find-companion.html">Find Companion</a></li>
-        <li><a href="contact.html">Contact</a></li>
-      </ul>
-      <div class="hamburger"><span></span><span></span><span></span></div>
+
+<!-- NAVBAR -->
+<nav class="tb-navbar">
+  <div class="tb-nav-container">
+
+    <div class="tb-logo">TravelBuddy</div>
+
+    <div class="tb-links">
+      <a href="index.html">Home</a>
+      <a href="find-companion.html">Find Companion</a>
+      <a href="explore.html">Plan a Trip</a>
+      <a href="blog.html">Community</a>
     </div>
-  </nav>
 
-  <section class="page-hero">
-    <h1><i class="fas fa-cookie-bite"></i> Travel Snacks & Drinks</h1>
-    <p>Grab quick bites and refreshing drinks from your favorite travel stores.</p>
-  </section>
+    <div class="tb-right">
+      <div class="tb-burger" id="tb-burger"><i class="fas fa-bars"></i></div>
+      <div class="tb-profile" id="tb-profile"></div>
+    </div>
 
-  <section class="page-content">
-    <div class="search-box">
-      <div class="search-wrapper">
-        <input type="text" id="searchInput" class="search-input" placeholder="Search by store, city, or category...">
-        <select id="cityFilter" class="filter-select">
-          <option value="">All Cities</option>
-          <option value="Delhi">Delhi</option>
-          <option value="Goa">Goa</option>
-          <option value="Mumbai">Mumbai</option>
-          <option value="Jaipur">Jaipur</option>
-          <option value="Manali">Manali</option>
-        </select>
-        <select id="categoryFilter" class="filter-select">
-          <option value="">All Categories</option>
-          <option value="Energy Bars">Energy Bars</option>
-          <option value="Juices">Juices</option>
-          <option value="Instant Meals">Instant Meals</option>
-          <option value="Dry Fruits">Dry Fruits</option>
-          <option value="Snacks Combo">Snacks Combo</option>
-        </select>
+  </div>
+
+  <div class="tb-mobile-menu" id="tb-mobile-menu"></div>
+</nav>
+
+
+<!-- HERO -->
+<section class="page-hero">
+  <h1><i class="fas fa-cookie-bite"></i> Travel Snacks & Drinks</h1>
+  <p>Grab quick bites and refreshing drinks during your journey.</p>
+</section>
+
+
+<!-- CONTENT -->
+<section class="page-content">
+
+  <div class="search-box">
+    <div class="search-wrapper">
+      <input type="text" id="searchInput" class="search-input" placeholder="Search by store, city, or category...">
+
+      <select id="cityFilter" class="filter-select">
+        <option value="">All Cities</option>
+        <option value="Delhi">Delhi</option>
+        <option value="Goa">Goa</option>
+        <option value="Mumbai">Mumbai</option>
+        <option value="Jaipur">Jaipur</option>
+        <option value="Manali">Manali</option>
+      </select>
+
+      <select id="categoryFilter" class="filter-select">
+        <option value="">All Categories</option>
+        <option value="Energy Bars">Energy Bars</option>
+        <option value="Juices">Juices</option>
+        <option value="Instant Meals">Instant Meals</option>
+        <option value="Dry Fruits">Dry Fruits</option>
+        <option value="Snacks Combo">Snacks Combo</option>
+      </select>
+    </div>
+  </div>
+
+  <h2 style="font-size:1.8rem;font-weight:600;margin-bottom:20px;">Top Snack Stores</h2>
+
+  <div class="drivers-grid" id="storeGrid"></div>
+
+</section>
+
+
+<!-- FOOTER -->
+<footer class="footer">
+  <h3>TravelBuddy</h3>
+  <p>© 2025 TravelBuddy. All rights reserved.</p>
+</footer>
+
+
+
+<script>
+/* ---------------------------------------
+      NAVBAR LOGIC (Same everywhere)
+----------------------------------------- */
+document.addEventListener("DOMContentLoaded",()=>{
+
+  const user = JSON.parse(localStorage.getItem("user"));
+  const defaultImg = "https://cdn-icons-png.flaticon.com/512/1077/1077114.png";
+
+  const profileEl = document.getElementById("tb-profile");
+  const mobileMenuEl = document.getElementById("tb-mobile-menu");
+  const burgerEl = document.getElementById("tb-burger");
+
+  if(user){
+    profileEl.innerHTML = `
+      <img src="${user.img || defaultImg}">
+      <div class="tb-dropdown" id="tb-dropdown">
+        <a href="profile.html">My Profile</a>
+        <a href="trips.html">Trips</a>
+        <a href="my-blogs.html">My Blogs</a>
+        <a href="#" id="tb-logout">Logout</a>
       </div>
-    </div>
+    `;
 
-    <h2 class="section-title">Top Snack Stores</h2>
-    <div class="drivers-grid" id="storeGrid"></div>
-  </section>
+    mobileMenuEl.innerHTML = `
+      <a href="index.html">Home</a>
+      <a href="find-companion.html">Find Companion</a>
+      <a href="explore.html">Plan a Trip</a>
+      <a href="blog.html">Community</a>
+      <hr style="width:60%;margin:auto;">
+      <a href="profile.html">My Profile</a>
+      <a href="trips.html">Trips</a>
+      <a href="my-blogs.html">My Blogs</a>
+      <a href="#" id="tb-logout2">Logout</a>
+    `;
+  } else {
+    profileEl.innerHTML = `<img src="${defaultImg}">`;
+    mobileMenuEl.innerHTML = `
+      <a href="index.html">Home</a>
+      <a href="find-companion.html">Find Companion</a>
+      <a href="explore.html">Plan a Trip</a>
+      <a href="blog.html">Community</a>
+    `;
+  }
 
-  <footer class="footer">
-    <h3>TravelBuddy</h3>
-    <p>&copy; 2025 TravelBuddy. All rights reserved.</p>
-  </footer>
+  /* Dropdown toggle */
+  document.addEventListener("click",(e)=>{
+    if(e.target.closest("#tb-profile")){
+      const dd=document.getElementById("tb-dropdown");
+      if(dd) dd.style.display = dd.style.display==="block" ? "none" : "block";
+    }
+  });
 
-  <script>
-  const stores = [
+  /* Logout */
+  const logout = ()=>{
+    localStorage.removeItem("user");
+    window.location.href="index.html";
+  };
+  document.getElementById("tb-logout")?.addEventListener("click",logout);
+  document.getElementById("tb-logout2")?.addEventListener("click",logout);
+
+  /* Mobile menu */
+  burgerEl.addEventListener("click",()=>{
+    mobileMenuEl.style.display =
+      mobileMenuEl.style.display==="flex" ? "none" : "flex";
+  });
+});
+
+
+/* ---------------------------------------
+      SNACK STORE CARD LOGIC
+----------------------------------------- */
+const stores = [
   {name:"SnackXpress",city:"Delhi",category:"Energy Bars",photo:"https://picsum.photos/150?random=201",rating:4.9,reviews:210,verified:true,phone:"1234",whatsapp:"1234"},
   {name:"TrekBite Cafe",city:"Manali",category:"Juices",photo:"https://picsum.photos/150?random=202",rating:4.8,reviews:190,verified:true,phone:"1234",whatsapp:"1234"},
   {name:"Nomad Snacks",city:"Goa",category:"Dry Fruits",photo:"https://picsum.photos/150?random=203",rating:4.7,reviews:170,verified:true,phone:"1234",whatsapp:"1234"},
@@ -123,50 +332,63 @@
 ];
 
 
-    function createCard(s){
-      return `
-      <div class="driver-card">
-        <div class="driver-header">
-          <img src="${s.photo}" class="driver-photo">
-          <div class="driver-name">${s.name}</div>
-          <div class="driver-rating">
-            <span class="stars">${'★'.repeat(Math.floor(s.rating))}${'☆'.repeat(5-Math.floor(s.rating))}</span>
-            <span>${s.rating} (${s.reviews} reviews)</span>
-          </div>
+function createCard(s){
+  return `
+    <div class="driver-card">
+      <div class="driver-header">
+        <img src="${s.photo}" class="driver-photo">
+        <div class="driver-name">${s.name}</div>
+        <div class="driver-rating">
+          <span class="stars">${'★'.repeat(Math.floor(s.rating))}${'☆'.repeat(5-Math.floor(s.rating))}</span>
+          <span>${s.rating} (${s.reviews} reviews)</span>
         </div>
-        <div class="driver-body">
-          ${s.verified ? '<span class="badge badge-verified"><i class="fas fa-check-circle"></i> Verified</span>' : ''}
-          <span class="badge badge-snack"><i class="fas fa-cookie-bite"></i> ${s.category}</span>
-          <div class="info-row"><i class="fas fa-map-marker-alt"></i>${s.city}</div>
-          <div class="contact-buttons">
-            <a href="tel:${s.phone}" class="btn btn-call"><i class="fas fa-phone"></i> Call</a>
-            <a href="https://wa.me/${s.whatsapp}" target="_blank" class="btn btn-whatsapp"><i class="fab fa-whatsapp"></i> Chat</a>
-          </div>
+      </div>
+
+      <div class="driver-body">
+        ${s.verified ? '<span class="badge badge-verified"><i class="fas fa-check-circle"></i> Verified</span>' : ""}
+        <span class="badge badge-snack"><i class="fas fa-cookie-bite"></i> ${s.category}</span>
+
+        <div class="info-row"><i class="fas fa-map-marker-alt"></i>${s.city}</div>
+
+        <div class="contact-buttons">
+          <a href="tel:${s.phone}" class="btn btn-call"><i class="fas fa-phone"></i> Call</a>
+          <a href="https://wa.me/${s.whatsapp}" target="_blank" class="btn btn-whatsapp"><i class="fab fa-whatsapp"></i> Chat</a>
         </div>
-      </div>`;
-    }
+      </div>
+    </div>
+  `;
+}
 
-    function renderStores(list){
-      document.getElementById("storeGrid").innerHTML = list.map(createCard).join('');
-    }
+function renderStores(list){
+  document.getElementById("storeGrid").innerHTML = list.map(createCard).join('');
+}
 
-    function filterStores(){
-      const search=document.getElementById('searchInput').value.toLowerCase();
-      const city=document.getElementById('cityFilter').value;
-      const category=document.getElementById('categoryFilter').value;
-      const filtered=stores.filter(s=>{
-        const matchSearch=s.name.toLowerCase().includes(search)||s.city.toLowerCase().includes(search)||s.category.toLowerCase().includes(search);
-        const matchCity=!city||s.city===city;
-        const matchCategory=!category||s.category===category;
-        return matchSearch&&matchCity&&matchCategory;
-      });
-      renderStores(filtered);
-    }
+function filterStores(){
+  const search=document.getElementById("searchInput").value.toLowerCase();
+  const city=document.getElementById("cityFilter").value;
+  const category=document.getElementById("categoryFilter").value;
 
-    document.getElementById('searchInput').addEventListener('input',filterStores);
-    document.getElementById('cityFilter').addEventListener('change',filterStores);
-    document.getElementById('categoryFilter').addEventListener('change',filterStores);
-    renderStores(stores);
-  </script>
+  const filtered = stores.filter(s=>{
+    const matchSearch =
+      s.name.toLowerCase().includes(search) ||
+      s.city.toLowerCase().includes(search) ||
+      s.category.toLowerCase().includes(search);
+
+    const matchCity = !city || s.city===city;
+    const matchCategory = !category || s.category===category;
+
+    return matchSearch && matchCity && matchCategory;
+  });
+
+  renderStores(filtered);
+}
+
+document.getElementById("searchInput").addEventListener("input",filterStores);
+document.getElementById("cityFilter").addEventListener("change",filterStores);
+document.getElementById("categoryFilter").addEventListener("change",filterStores);
+
+renderStores(stores);
+</script>
+
 </body>
 </html>

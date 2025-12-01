@@ -4,267 +4,464 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>City Explore Guides | TravelBuddy</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
   <style>
-    * {margin: 0; padding: 0; box-sizing: border-box;}
-    body {
-      font-family: 'Poppins', sans-serif;
-      background: #F4F9F9;
-      color: #2D3436;
-      line-height: 1.6;
-    }
-.btn {
-      display: inline-block;
-      background: #00BFA6;
-      color: white;
-      padding: 10px 30px;
-      border-radius: 30px;
-      text-decoration: none;
-      font-weight: 500;
-      transition: all 0.3s ease;
+    *{margin:0;padding:0;box-sizing:border-box;}
+
+    body{
+      font-family:'Poppins',sans-serif;
+      background:#F4F9F9;
+      color:#2D3436;
+      line-height:1.6;
+      overflow-x:hidden;
     }
 
-    .btn:hover {
-      background: #019E8E;
-      transform: translateY(-3px);
+    /* ----------------------------------------------------
+       UNIVERSAL TRAVELBUDDY NAVBAR (CLEAN VERSION)
+    -----------------------------------------------------*/
+    .tb-navbar{
+      width:100%;
+      position:fixed;
+      top:0;
+      z-index:10000;
+      background:linear-gradient(135deg,#00BFA6,#00D2A6,#00E3A0);
+      padding:12px 0;
+      box-shadow:0 6px 25px rgba(0,0,0,0.15);
+      animation:gradientMove 6s infinite alternate ease-in-out;
     }
-    /* Navbar */
-    .navbar {
-      background: rgba(255,255,255,0.95);
-      backdrop-filter: blur(10px);
-      position: fixed;
-      top: 0;
-      width: 100%;
-      z-index: 1000;
-      box-shadow: 0 2px 20px rgba(0,191,166,0.1);
-    }
-    .nav-container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      height: 70px;
-    }
-    .nav-logo h2 {color: #00BFA6; font-size: 1.8rem; font-weight: 700;}
-    .nav-menu {display: flex; list-style: none; gap: 2rem;}
-    .nav-menu li a {
-      text-decoration: none; color: #2D3436; font-weight: 500;
-      position: relative;
-    }
-    .nav-menu li a:hover {color: #00BFA6;}
-    .hamburger {display: none; flex-direction: column; cursor: pointer;}
-    .hamburger span {
-      width: 25px; height: 3px; background: #2D3436;
-      margin: 3px 0; border-radius: 2px;
+    @keyframes gradientMove{
+      0%{background:linear-gradient(135deg,#00BFA6,#00D2A6,#00E3A0);}
+      100%{background:linear-gradient(135deg,#00E3A0,#00D2A6,#00BFA6);}
     }
 
-    /* Hero */
-    .page-hero {
-      background: linear-gradient(135deg, #00BFA6, #FDCB6E);
-      padding: 150px 20px 80px;
-      text-align: center;
-      color: white;
+    .tb-nav-container{
+      max-width:1250px;
+      margin:auto;
+      padding:0 24px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
     }
-    .page-hero h1 {font-size: 3rem; font-weight: 700; margin-bottom: 1rem;}
-    .page-hero p {font-size: 1.2rem; opacity: 0.9;}
 
-    /* Search & Filter */
-    .page-content {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 60px 20px;
+    .tb-logo{
+      font-size:1.9rem;
+      font-weight:700;
+      color:white;
     }
-    .search-box {
-      background: white;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0,191,166,0.1);
-      margin-bottom: 40px;
+
+    .tb-links{
+      display:flex;
+      align-items:center;
+      gap:30px;
     }
-    .search-wrapper {
-      display: flex;
-      gap: 15px;
-      flex-wrap: wrap;
+
+    .tb-links a{
+      color:white;
+      font-weight:500;
+      text-decoration:none;
+      transition:0.2s;
     }
-    .search-input, .filter-select {
-      flex: 1;
-      min-width: 250px;
-      padding: 15px 20px;
-      border: 2px solid #e0e0e0;
-      border-radius: 8px;
-      font-size: 1rem;
-      font-family: 'Poppins', sans-serif;
-      transition: 0.3s;
+
+    .tb-links a:hover{
+      opacity:0.8;
+      transform:translateY(-2px);
     }
-    .search-input:focus, .filter-select:focus {
-      outline: none;
-      border-color: #00BFA6;
+
+    .tb-right{
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+
+    .tb-profile{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      cursor:pointer;
+      position:relative;
+      color:white;
+    }
+
+    .tb-profile img{
+      width:42px;
+      height:42px;
+      border-radius:50%;
+      border:2px solid white;
+      object-fit:cover;
+    }
+
+    .tb-dropdown{
+      position:absolute;
+      top:58px;
+      right:0;
+      width:180px;
+      background:white;
+      border-radius:12px;
+      display:none;
+      overflow:hidden;
+      box-shadow:0 10px 25px rgba(0,0,0,0.15);
+    }
+
+    .tb-dropdown a{
+      display:block;
+      padding:12px 15px;
+      font-weight:500;
+      text-decoration:none;
+      color:#2D3436;
+    }
+
+    .tb-dropdown a:hover{
+      background:linear-gradient(135deg,#00BFA6,#FDCB6E);
+      color:white;
+    }
+
+    .tb-burger{
+      font-size:2rem;
+      color:white;
+      display:none;
+      cursor:pointer;
+    }
+
+    .tb-mobile-menu{
+      display:none;
+      flex-direction:column;
+      background:white;
+      width:100%;
+      padding:20px 0;
+      text-align:center;
+      gap:5px;
+      box-shadow:0 8px 20px rgba(0,0,0,0.15);
+    }
+
+    .tb-mobile-menu a{
+      padding:12px 0;
+      font-weight:600;
+      color:#00BFA6;
+      border-bottom:1px solid #eee;
+      text-decoration:none;
+    }
+
+    @media(max-width:900px){
+      .tb-links{display:none;}
+      .tb-burger{display:block;}
+    }
+
+    /* HERO */
+    .page-hero{
+      background:linear-gradient(135deg,#00BFA6,#FDCB6E);
+      padding:160px 20px 90px;
+      text-align:center;
+      color:white;
+    }
+    .page-hero h1{
+      font-size:3rem;
+      font-weight:700;
+      margin-bottom:1rem;
+    }
+
+    /* CONTENT */
+    .page-content{
+      max-width:1200px;
+      margin:auto;
+      padding:60px 20px;
+    }
+
+    .search-box{
+      background:white;
+      padding:30px;
+      border-radius:12px;
+      box-shadow:0 4px 20px rgba(0,191,166,0.1);
+      margin-bottom:40px;
+    }
+
+    .search-wrapper{
+      display:flex;
+      flex-wrap:wrap;
+      gap:15px;
+    }
+
+    .search-input,.filter-select{
+      flex:1;
+      min-width:250px;
+      padding:15px 20px;
+      font-size:1rem;
+      border:2px solid #e0e0e0;
+      border-radius:8px;
+      transition:0.3s;
+    }
+
+    .search-input:focus,.filter-select:focus{
+      border-color:#00BFA6;
+      outline:none;
     }
 
     /* Section Title */
-    .section-title {
-      font-size: 2rem;
-      margin-bottom: 2rem;
-      text-align: center;
-      color: #2D3436;
-      font-weight: 600;
+    .section-title{
+      font-size:2.1rem;
+      text-align:center;
+      color:#2D3436;
+      font-weight:600;
+      margin-bottom:20px;
     }
 
-    /* Profile Cards */
-    .drivers-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-      gap: 25px;
-      margin-top: 30px;
+    /* GUIDE CARDS */
+    .drivers-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+      gap:25px;
     }
-    .driver-card {
-      background: white;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+    .driver-card{
+      background:white;
+      border-radius:12px;
+      box-shadow:0 4px 10px rgba(0,0,0,0.05);
+      overflow:hidden;
+      transition:0.3s;
     }
-    .driver-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 8px 25px rgba(0,191,166,0.15);
+
+    .driver-card:hover{
+      transform:translateY(-5px);
+      box-shadow:0 10px 25px rgba(0,191,166,0.15);
     }
-    .driver-header {
-      background: linear-gradient(135deg, #00BFA6, #FDCB6E);
-      padding: 30px 20px;
-      text-align: center;
-      color: white;
+
+    .driver-header{
+      background:linear-gradient(135deg,#00BFA6,#FDCB6E);
+      color:white;
+      text-align:center;
+      padding:30px 20px;
     }
-    .driver-photo {
-      width: 100px;
-      height: 100px;
-      border-radius: 50%;
-      border: 4px solid white;
-      margin: 0 auto 15px;
-      object-fit: cover;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+
+    .driver-photo{
+      width:100px;
+      height:100px;
+      border:4px solid white;
+      border-radius:50%;
+      margin-bottom:13px;
+      object-fit:cover;
     }
-    .driver-name {font-size: 1.5rem; font-weight: 600;}
-    .driver-rating {
-      display: flex; align-items: center; justify-content: center;
-      gap: 5px; font-size: 0.9rem;
+
+    .driver-name{
+      font-size:1.4rem;
+      font-weight:600;
     }
-    .stars {color: #FFD700;}
-    .driver-body {padding: 25px;}
-    .badge {
-      display: inline-block; padding: 6px 14px;
-      border-radius: 20px; font-size: 0.85rem;
-      margin-right: 8px; margin-bottom: 8px; font-weight: 500;
+
+    .driver-rating{
+      display:flex;
+      justify-content:center;
+      gap:6px;
+      font-size:0.9rem;
     }
-    .badge-verified {background: #e8f5e9; color: #2e7d32;}
-    .badge-city {background: #e3f2fd; color: #1976d2;}
-    .info-row {
-      display: flex; align-items: center; gap: 10px;
-      margin-bottom: 12px; color: #2D3436; font-size: 0.95rem;
+
+    .stars{color:#FFD700;}
+
+    .driver-body{
+      padding:23px;
     }
-    .info-row i {color: #00BFA6;}
-    .languages {margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px;}
-    .languages span {
-      background: #F4F9F9; padding: 6px 12px; border-radius: 15px;
-      font-size: 0.85rem; margin-right: 8px; display: inline-block;
-      margin-bottom: 8px;
+
+    .badge{
+      padding:6px 12px;
+      border-radius:18px;
+      display:inline-block;
+      font-size:0.85rem;
+      font-weight:500;
+      margin-right:5px;
+      margin-bottom:5px;
     }
-    .contact-buttons {display: flex; gap: 12px; margin-top: 20px;}
-    .btn {
-      flex: 1; padding: 14px; border: none; border-radius: 8px;
-      cursor: pointer; transition: 0.3s;
-      display: flex; align-items: center; justify-content: center;
-      gap: 8px; text-decoration: none; font-weight: 500; color: white;
+
+    .badge-verified{background:#e8f5e9;color:#2e7d32;}
+    .badge-city{background:#e3f2fd;color:#1976d2;}
+
+    .info-row{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      margin-bottom:10px;
     }
-    .btn-call {background: #00BFA6;}
-    .btn-call:hover {background: #009688;}
-    .btn-whatsapp {background: #25D366;}
-    .btn-whatsapp:hover {background: #20ba5a;}
-    .no-results {
-      text-align: center; padding: 60px 20px;
-      background: white; border-radius: 12px;
-      color: #666; box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+
+    .info-row i{color:#00BFA6;}
+
+    .languages{
+      margin-top:15px;
+      border-top:1px solid #eee;
+      padding-top:12px;
     }
-    .footer {
-      background: #2D3436;
-      color: white;
-      text-align: center;
-      padding: 3rem 20px;
-      margin-top: 60px;
+
+    .languages span{
+      background:#F4F9F9;
+      padding:6px 12px;
+      margin:4px;
+      border-radius:14px;
+      font-size:0.85rem;
+      display:inline-block;
     }
-    .footer h3 {color: #00BFA6;}
-    @media (max-width:768px){
-      .nav-menu{position:fixed;top:70px;left:-100%;flex-direction:column;background:white;width:100%;padding:2rem 0;transition:0.3s;}
-      .nav-menu.active{left:0;}
-      .hamburger{display:flex;}
+
+    .contact-buttons{
+      margin-top:20px;
+      display:flex;
+      gap:12px;
     }
+
+    .btn{
+      flex:1;
+      padding:14px;
+      border-radius:8px;
+      font-weight:600;
+      color:white;
+      text-decoration:none;
+      display:flex;
+      justify-content:center;
+      gap:8px;
+    }
+
+    .btn-call{background:#00BFA6;}
+    .btn-whatsapp{background:#25D366;}
+
+    footer{
+      background:#2D3436;
+      padding:3rem 20px;
+      color:white;
+      text-align:center;
+      margin-top:50px;
+    }
+
   </style>
 </head>
 <body>
 
-<nav class="navbar">
-  <div class="nav-container">
-    <div class="nav-logo"><h2>TravelBuddy</h2></div>
-    <ul class="nav-menu">
-      <li><a href="index.html">Home</a></li>
-      <li><a href="blog.html">Blog</a></li>
-      <li><a href="find-companion.html">Find Companion</a></li>
-      <li><a href="contact.html">Contact</a></li>
-    </ul>
-    <div class="hamburger"><span></span><span></span><span></span></div>
+<!-- ⚡ UNIVERSAL NAVBAR -->
+<nav class="tb-navbar">
+  <div class="tb-nav-container">
+    <div class="tb-logo">TravelBuddy</div>
+
+    <div class="tb-links">
+      <a href="index.html">Home</a>
+      <a href="find-companion.html">Find Companion</a>
+      <a href="explore.html">Plan a Trip</a>
+      <a href="blog.html">Community</a>
+    </div>
+
+    <div class="tb-right">
+      <div class="tb-burger" id="tb-burger"><i class="fas fa-bars"></i></div>
+      <div class="tb-profile" id="tb-profile"></div>
+    </div>
   </div>
+
+  <div class="tb-mobile-menu" id="tb-mobile-menu"></div>
 </nav>
 
+<!-- HERO -->
 <section class="page-hero">
   <h1><i class="fas fa-city"></i> City Explore Guides</h1>
   <p>Discover hidden gems and local experiences with expert city guides.</p>
 </section>
 
+<!-- CONTENT -->
 <section class="page-content">
   <div class="search-box">
     <div class="search-wrapper">
-      <input type="text" id="searchInput" class="search-input" placeholder="Search by name, city, or specialization...">
+      <input id="searchInput" class="search-input" placeholder="Search by name, city, or specialization...">
       <select id="cityFilter" class="filter-select">
         <option value="">All Cities</option>
-        <option value="Delhi">Delhi</option>
-        <option value="Mumbai">Mumbai</option>
-        <option value="Jaipur">Jaipur</option>
-        <option value="Kolkata">Kolkata</option>
-        <option value="Bangalore">Bangalore</option>
+        <option>Delhi</option>
+        <option>Mumbai</option>
+        <option>Jaipur</option>
+        <option>Kolkata</option>
+        <option>Bangalore</option>
       </select>
       <select id="specializationFilter" class="filter-select">
         <option value="">All Specializations</option>
-        <option value="Heritage">Heritage</option>
-        <option value="Food Tour">Food Tour</option>
-        <option value="Nightlife">Nightlife</option>
-        <option value="Cultural">Cultural</option>
-        <option value="Shopping">Shopping</option>
+        <option>Heritage</option>
+        <option>Food Tour</option>
+        <option>Nightlife</option>
+        <option>Cultural</option>
+        <option>Shopping</option>
       </select>
     </div>
   </div>
 
   <h2 class="section-title">Top City Guides</h2>
 
-  <div class="drivers-grid" id="guidesGrid"></div>
-  <div class="no-results" id="noResults" style="display:none;">
-    <i class="fas fa-search"></i>
-    <h3>No guides found</h3>
-    <p>Try adjusting your search or filters</p>
+  <div id="guidesGrid" class="drivers-grid"></div>
+  <div id="noResults" class="no-results" style="display:none;">
+    <i class="fas fa-search"></i><h3>No guides found</h3>
   </div>
 </section>
 
-<footer class="footer">
+<!-- FOOTER -->
+<footer>
   <h3>TravelBuddy</h3>
-  <p>&copy; 2025 TravelBuddy. All rights reserved.</p>
+  <p>© 2025 TravelBuddy. All rights reserved.</p>
 </footer>
 
 <script>
-const hamburger=document.querySelector(".hamburger");
-const navMenu=document.querySelector(".nav-menu");
-hamburger.addEventListener("click",()=>navMenu.classList.toggle("active"));
+/* NAVBAR JS */
+document.addEventListener("DOMContentLoaded", () => {
+  const user = JSON.parse(localStorage.getItem("user"));
+  const defaultImg = "https://cdn-icons-png.flaticon.com/512/1077/1077114.png";
 
-const guides = [
+  const profileEl = document.getElementById("tb-profile");
+  const mobileMenu = document.getElementById("tb-mobile-menu");
+  const burger = document.getElementById("tb-burger");
+
+  if(user){
+    profileEl.innerHTML = `
+      <img src="${user.img || defaultImg}">
+      <i class="fas fa-caret-down"></i>
+      <div class="tb-dropdown" id="tb-dropdown">
+        <a href="profile.html">My Profile</a>
+        <a href="trips.html">Trips</a>
+        <a href="my-blogs.html">My Blogs</a>
+        <a href="#" id="logout1">Logout</a>
+      </div>
+    `;
+
+    mobileMenu.innerHTML = `
+      <a href="index.html">Home</a>
+      <a href="find-companion.html">Find Companion</a>
+      <a href="explore.html">Plan a Trip</a>
+      <a href="blog.html">Community</a>
+      <a href="profile.html">My Profile</a>
+      <a href="#" id="logout2">Logout</a>
+    `;
+  } else {
+    profileEl.innerHTML = `<img src="${defaultImg}">`;
+    mobileMenu.innerHTML = `
+      <a href="index.html">Home</a>
+      <a href="find-companion.html">Find Companion</a>
+      <a href="explore.html">Plan a Trip</a>
+      <a href="blog.html">Community</a>
+    `;
+  }
+
+  document.addEventListener("click", (e)=>{
+    if(e.target.closest("#tb-profile")){
+      const dd=document.getElementById("tb-dropdown");
+      dd.style.display = dd.style.display==="block" ? "none" : "block";
+    } else {
+      const dd=document.getElementById("tb-dropdown");
+      if(dd) dd.style.display="none";
+    }
+  });
+
+  const logout = () => {
+    localStorage.removeItem("user");
+    window.location.href="index.html";
+  };
+
+  document.getElementById("logout1")?.addEventListener("click", logout);
+  document.getElementById("logout2")?.addEventListener("click", logout);
+
+  burger.addEventListener("click", ()=>{
+    mobileMenu.style.display = mobileMenu.style.display==="flex" ? "none" : "flex";
+  });
+});
+
+/* GUIDE FILTER LOGIC */
+const guides=[
+
   {name:"Rohan Verma",city:"Delhi",specialization:"Heritage",photo:"https://i.pravatar.cc/150?img=12",rating:4.9,reviews:210,experience:"9 years",languages:["Hindi","English"],verified:true,phone:"1234",whatsapp:"1234"},
   {name:"Sneha Kapoor",city:"Mumbai",specialization:"Food Tour",photo:"https://i.pravatar.cc/150?img=44",rating:4.8,reviews:190,experience:"7 years",languages:["Hindi","English","Marathi"],verified:true,phone:"1234",whatsapp:"1234"},
   {name:"Arjun Singh",city:"Jaipur",specialization:"Cultural",photo:"https://i.pravatar.cc/150?img=29",rating:4.7,reviews:160,experience:"8 years",languages:["Hindi","English"],verified:true,phone:"1234",whatsapp:"1234"},
@@ -275,27 +472,26 @@ const guides = [
   {name:"Neha Patel",city:"Mumbai",specialization:"Shopping",photo:"https://i.pravatar.cc/150?img=45",rating:4.9,reviews:260,experience:"9 years",languages:["Hindi","English","Gujarati"],verified:true,phone:"1234",whatsapp:"1234"},
   {name:"Rakesh Das",city:"Kolkata",specialization:"Food Tour",photo:"https://i.pravatar.cc/150?img=32",rating:4.7,reviews:150,experience:"6 years",languages:["Hindi","English","Bengali"],verified:true,phone:"1234",whatsapp:"1234"},
   {name:"Simran Kaur",city:"Delhi",specialization:"Cultural",photo:"https://i.pravatar.cc/150?img=38",rating:4.8,reviews:200,experience:"8 years",languages:["Hindi","English","Punjabi"],verified:true,phone:"1234",whatsapp:"1234"}
+
 ];
 
 function createGuideCard(g){
   return `
   <div class="driver-card">
     <div class="driver-header">
-      <img src="${g.photo}" class="driver-photo" alt="${g.name}">
+      <img src="${g.photo}" class="driver-photo">
       <div class="driver-name">${g.name}</div>
       <div class="driver-rating">
-        <span class="stars">${'★'.repeat(Math.floor(g.rating))}${'☆'.repeat(5-Math.floor(g.rating))}</span>
-        <span>${g.rating} (${g.reviews} reviews)</span>
+        <span class="stars">${"★".repeat(Math.round(g.rating))}</span>
+        <span>${g.rating} (${g.reviews})</span>
       </div>
     </div>
     <div class="driver-body">
-      <div>
-        ${g.verified?'<span class="badge badge-verified"><i class="fas fa-check-circle"></i> Verified</span>':''}
-        <span class="badge badge-city"><i class="fas fa-landmark"></i> ${g.specialization}</span>
-      </div>
-      <div class="info-row"><i class="fas fa-map-marker-alt"></i><span>${g.city}</span></div>
-      <div class="info-row"><i class="fas fa-clock"></i><span>${g.experience} experience</span></div>
-      <div class="languages"><strong>Languages:</strong>${g.languages.map(l=>`<span>${l}</span>`).join('')}</div>
+      <div>${g.verified ? '<span class="badge badge-verified"><i class="fas fa-check-circle"></i> Verified</span>' : ''}</div>
+      <div><span class="badge badge-city"><i class="fas fa-landmark"></i> ${g.specialization}</span></div>
+      <div class="info-row"><i class="fas fa-map-marker-alt"></i>${g.city}</div>
+      <div class="info-row"><i class="fas fa-clock"></i>${g.experience}</div>
+      <div class="languages"><strong>Languages:</strong>${g.languages.map(l=>`<span>${l}</span>`).join("")}</div>
       <div class="contact-buttons">
         <a href="tel:${g.phone}" class="btn btn-call"><i class="fas fa-phone"></i> Call</a>
         <a href="https://wa.me/${g.whatsapp}" target="_blank" class="btn btn-whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</a>
@@ -304,31 +500,36 @@ function createGuideCard(g){
   </div>`;
 }
 
-function renderGuides(list){
-  const grid=document.getElementById("guidesGrid");
-  const noResults=document.getElementById("noResults");
-  if(list.length===0){grid.style.display='none';noResults.style.display='block';}
-  else{grid.style.display='grid';noResults.style.display='none';grid.innerHTML=list.map(createGuideCard).join('');}
-}
-
 function filterGuides(){
-  const search=document.getElementById('searchInput').value.toLowerCase();
-  const city=document.getElementById('cityFilter').value;
-  const spec=document.getElementById('specializationFilter').value;
+  const search=document.getElementById("searchInput").value.toLowerCase();
+  const city=document.getElementById("cityFilter").value;
+  const spec=document.getElementById("specializationFilter").value;
+
   const filtered=guides.filter(g=>{
-    const matchSearch=g.name.toLowerCase().includes(search)||g.city.toLowerCase().includes(search)||g.specialization.toLowerCase().includes(search);
-    const matchCity=!city||g.city===city;
-    const matchSpec=!spec||g.specialization===spec;
-    return matchSearch&&matchCity&&matchSpec;
+    const m1=g.name.toLowerCase().includes(search)||g.city.toLowerCase().includes(search)||g.specialization.toLowerCase().includes(search);
+    const m2=!city || g.city===city;
+    const m3=!spec || g.specialization===spec;
+    return m1 && m2 && m3;
   });
-  renderGuides(filtered);
+
+  const grid=document.getElementById("guidesGrid");
+  const noR=document.getElementById("noResults");
+
+  if(filtered.length===0){
+    grid.innerHTML='';
+    noR.style.display='block';
+  }else{
+    noR.style.display='none';
+    grid.innerHTML=filtered.map(createGuideCard).join('');
+  }
 }
 
-document.getElementById('searchInput').addEventListener('input',filterGuides);
-document.getElementById('cityFilter').addEventListener('change',filterGuides);
-document.getElementById('specializationFilter').addEventListener('change',filterGuides);
+document.getElementById("searchInput").addEventListener("input",filterGuides);
+document.getElementById("cityFilter").addEventListener("change",filterGuides);
+document.getElementById("specializationFilter").addEventListener("change",filterGuides);
 
-renderGuides(guides);
+filterGuides();
 </script>
+
 </body>
 </html>
