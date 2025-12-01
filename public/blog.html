@@ -86,6 +86,7 @@
       cursor:pointer;
       position:relative;
     }
+    
     .tb-profile img{
       width:42px;
       height:42px;
@@ -387,9 +388,7 @@ document.addEventListener("DOMContentLoaded",()=>{
 
 </main>
 
-<footer style="text-align:center;padding:40px 20px;color:#777">
-  © 2025 TravelBuddy
-</footer>
+
 
 <script src="/socket.io/socket.io.js"></script>
 
@@ -537,6 +536,33 @@ loadCommunity();
 socket.on("new-blog",(b)=> blogGrid.prepend(renderBlogCard(b)));
 socket.on("new-photo",(p)=> prependPhotoCard(p));
 </script>
+<!-- SIMPLE CLEAN FOOTER -->
+<footer class="simple-footer">
+  <h3>TravelBuddy</h3>
+  <p>© 2025 TravelBuddy. All rights reserved.</p>
+</footer>
+
+<style>
+.simple-footer {
+  background: #2D3436;
+  color: white;
+  text-align: center;
+  padding: 40px 20px;
+  font-family: 'Poppins', sans-serif;
+  margin-top: 50px;
+}
+
+.simple-footer h3 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 5px;
+}
+
+.simple-footer p {
+  font-size: 0.95rem;
+  opacity: 0.85;
+}
+</style>
 
 </body>
 </html>

@@ -223,6 +223,9 @@ app.post("/api/find-users-by-trip", async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 });
+app.get("/api/logout", (req, res) => {
+  res.json({ success: true, message: "Logged out successfully" });
+});
 
 app.post("/api/send-request", async (req, res) => {
   try {
@@ -285,35 +288,55 @@ app.post("/api/respond-request", async (req, res) => {
   try {
     const { toEmail, fromEmail, action } = req.body;
 
-    if (action !== "accept" && action !== "reject") return res.json({ success: false });
-
-    await usersCollection.updateOne(
-      { email: toEmail, "requests.fromEmail": fromEmail },
-      { $set: { "requests.$.status": action } }
-    );
-
-    await usersCollection.updateOne(
-      { email: fromEmail, "sentRequests.toEmail": toEmail },
-      { $set: { "sentRequests.$.status": action } }
-    );
+    if (!["accept", "reject"].includes(action))
+      return res.json({ success: false });
 
     if (action === "accept") {
+      // Update request status
+      await usersCollection.updateOne(
+        { email: toEmail, "requests.fromEmail": fromEmail },
+        { $set: { "requests.$.status": "accept" } }
+      );
+
+      await usersCollection.updateOne(
+        { email: fromEmail, "sentRequests.toEmail": toEmail },
+        { $set: { "sentRequests.$.status": "accept" } }
+      );
+
+      // Add to connections
       await usersCollection.updateOne(
         { email: toEmail },
         { $addToSet: { connections: fromEmail } }
       );
+
       await usersCollection.updateOne(
         { email: fromEmail },
         { $addToSet: { connections: toEmail } }
       );
+
+    } else if (action === "reject") {
+
+      // ❌ REMOVE request from receiver
+      await usersCollection.updateOne(
+        { email: toEmail },
+        { $pull: { requests: { fromEmail: fromEmail } } }
+      );
+
+      // ❌ REMOVE from sender’s sentRequests
+      await usersCollection.updateOne(
+        { email: fromEmail },
+        { $pull: { sentRequests: { toEmail: toEmail } } }
+      );
     }
 
     res.json({ success: true });
+
   } catch (err) {
     console.error("❌ /api/respond-request error:", err);
     res.json({ success: false });
   }
 });
+
 
 // ----------------- Chats -----------------
 app.get("/api/get-chat", async (req, res) => {
@@ -568,3 +591,4 @@ const PORT = process.env.PORT || 5001;
 server.listen(PORT, "0.0.0.0", () => {
   console.log(`🚀 Server running on PORT ${PORT}`);
 });
+
