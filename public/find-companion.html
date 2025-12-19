@@ -282,6 +282,122 @@ footer.footer {
       padding:3rem 20px;
       margin-top: 40px;
     }
+/* ===============================
+   RESPONSIVE FIXS
+================================ */
+
+/* Tablets */
+@media (max-width: 1024px) {
+  .page-hero h1 {
+    font-size: 2.4rem;
+  }
+
+  .search-box {
+    max-width: 90%;
+    gap: 12px;
+  }
+
+  #resultsContainer {
+    gap: 30px;
+    padding: 15px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+
+  /* Navbar */
+  .tb-nav-container {
+    padding: 0 16px;
+  }
+
+  .tb-logo {
+    font-size: 1.6rem;
+  }
+
+  /* Hero */
+  .page-hero {
+    padding: 120px 16px 70px;
+  }
+
+  .page-hero h1 {
+    font-size: 2rem;
+  }
+
+  .page-hero p {
+    font-size: 0.95rem;
+  }
+
+  /* Search box */
+  .search-box {
+    flex-direction: column;
+    align-items: stretch;
+    margin: -30px 16px 40px;
+  }
+
+  .search-box label {
+    font-size: 0.85rem;
+  }
+
+  .search-box input,
+  .search-box button {
+    width: 100%;
+  }
+
+  /* Cards */
+  #resultsContainer {
+    grid-template-columns: 1fr;
+    gap: 28px;
+    margin: 40px auto;
+  }
+
+  .card {
+    padding-top: 60px;
+  }
+
+  .profile-pic {
+    width: 80px;
+    height: 80px;
+    top: -40px;
+  }
+
+  .card h2 {
+    font-size: 1.1rem;
+  }
+
+  .card p {
+    font-size: 0.9rem;
+  }
+
+  .view-btn,
+  .connect-btn {
+    width: 85%;
+    margin: 8px auto 0;
+    display: block;
+  }
+
+  /* Footer */
+  .footer {
+    padding: 2.2rem 16px;
+    font-size: 0.9rem;
+  }
+}
+
+/* Small Mobile */
+@media (max-width: 420px) {
+
+  .page-hero h1 {
+    font-size: 1.7rem;
+  }
+
+  .tb-logo {
+    font-size: 1.4rem;
+  }
+
+  .card {
+    padding-bottom: 20px;
+  }
+}
 
   </style>
 </head>
@@ -364,7 +480,7 @@ document.addEventListener("DOMContentLoaded", () => {
       <div class="tb-dropdown" id="tb-dropdown">
         <a href="profile.html">My Profile</a>
         <a href="trips.html">Trips</a>
-        <a href="my-blogs.html">My Blogs</a>
+        <a href="blogs.html">My Blogs</a>
         <a href="#" id="tb-logout">Logout</a>
       </div>
     `;
@@ -377,7 +493,7 @@ document.addEventListener("DOMContentLoaded", () => {
       <hr>
       <a href="profile.html">My Profile</a>
       <a href="trips.html">Trips</a>
-      <a href="my-blogs.html">My Blogs</a>
+      <a href="blogs.html">My Blogs</a>
       <a href="#" id="tb-logout2">Logout</a>
     `;
   } else {
