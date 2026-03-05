@@ -102,7 +102,7 @@ function verhoeffCheck(aadhaar) {
   aadhaar.split('').reverse().forEach((num, i) => {
     c = d[c][p[i % 8][parseInt(num, 10)]];
   });
-  return c === 0;
+  return c ===DD
 }
 
 // ----------------- AUTH / USERS (signup/login/update) -----------------
@@ -226,7 +226,35 @@ app.post("/api/find-users-by-trip", async (req, res) => {
 app.get("/api/logout", (req, res) => {
   res.json({ success: true, message: "Logged out successfully" });
 });
+// ----------------- ADD TRIP -----------------
+app.post("/api/add-trip", async (req, res) => {
+  try {
+    const { email, destination, date, budget, notes } = req.body;
 
+    if (!email || !destination || !date) {
+      return res.json({ success: false, message: "Missing fields" });
+    }
+
+    const trip = {
+      destination,
+      date,
+      budget: budget || "",
+      notes: notes || "",
+      createdAt: new Date().toISOString()
+    };
+
+    await usersCollection.updateOne(
+      { email },
+      { $push: { trips: trip } }
+    );
+
+    res.json({ success: true, trip });
+
+  } catch (err) {
+    console.error("❌ /api/add-trip error:", err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
 app.post("/api/send-request", async (req, res) => {
   try {
     const { fromEmail, toEmail } = req.body;
