@@ -15,24 +15,24 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
+
 app.use(cors());
 app.use(express.json({ limit: "30mb" }));
 app.use(express.urlencoded({ limit: "30mb", extended: true }));
 app.use(bodyParser.json({ limit: "30mb" }));
 app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
 
-// Serve static frontend files (public/)
 app.use(express.static(path.join(__dirname, "public")));
 
-// HTTP + Socket.io
 const server = http.createServer(app);
+
 const io = new IOServer(server, {
   cors: { origin: "*" },
 });
 
-// ----------------- MongoDB Connection -----------------
 const uri = process.env.MONGO_URI;
 const client = new MongoClient(uri);
+
 let usersCollection;
 let chatsCollection;
 let blogsCollection;
@@ -40,8 +40,11 @@ let photosCollection;
 
 async function connectDB() {
   try {
+
     await client.connect();
+
     const db = client.db("travel_bunk");
+
     usersCollection = db.collection("users");
     chatsCollection = db.collection("chats");
     blogsCollection = db.collection("blogs");
@@ -49,7 +52,6 @@ async function connectDB() {
 
     console.log("✅ Connected to MongoDB Atlas (travel_bunk)");
 
-    // indexes
     await usersCollection.createIndex({ email: 1 }, { unique: true });
     await chatsCollection.createIndex({ users: 1 });
     await blogsCollection.createIndex({ createdAt: -1 });
@@ -61,19 +63,19 @@ async function connectDB() {
     console.error("❌ MongoDB connection failed:", err);
   }
 }
+
 connectDB();
 
-// ----------------- Socket.IO -----------------
 io.on("connection", (socket) => {
+
   socket.on("join", ({ email }) => {
     if (email) socket.join(email);
   });
 
-  socket.on("disconnect", () => {});
 });
 
-// ----------------- Aadhaar Verhoeff (same as before) -----------------
 function verhoeffCheck(aadhaar) {
+
   const d = [
     [0,1,2,3,4,5,6,7,8,9],
     [1,2,3,4,0,6,7,8,9,5],
@@ -99,10 +101,12 @@ function verhoeffCheck(aadhaar) {
   ];
 
   let c = 0;
-  aadhaar.split('').reverse().forEach((num, i) => {
+
+  aadhaar.split("").reverse().forEach((num, i) => {
     c = d[c][p[i % 8][parseInt(num, 10)]];
   });
-  return c ===DD
+
+  return c === 0;
 }
 
 // ----------------- AUTH / USERS (signup/login/update) -----------------
