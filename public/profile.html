@@ -327,171 +327,689 @@ a {
 <script>
 document.addEventListener("DOMContentLoaded", () => {
 
-  const socket = io();
-  const baseURL = location.hostname === "localhost"
-    ? "http://localhost:5001"
-    : "https://travelbuddy-hluu.onrender.com";
+  const baseURL =
+    location.hostname === "localhost"
+      ? "http://localhost:5001"
+      : "https://travelbuddy-hluu.onrender.com";
 
-  let user = JSON.parse(localStorage.getItem("user"));
-  const defaultImg = "https://cdn-icons-png.flaticon.com/512/1077/1077114.png";
+  const token =
+    localStorage.getItem("token");
 
-  if(!user){
+  let user =
+    JSON.parse(localStorage.getItem("user"));
+
+  const defaultImg =
+    "https://cdn-icons-png.flaticon.com/512/1077/1077114.png";
+
+  if (!token || !user) {
+
     alert("Please login first.");
+
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
+
     location.href = "signin.html";
+
     return;
   }
 
   /* NAVBAR LOGIC */
-  const profileEl = document.getElementById("tb-profile");
-  const mobileMenuEl = document.getElementById("tb-mobile-menu");
-  const burgerEl = document.getElementById("tb-burger");
+
+  const profileEl =
+    document.getElementById("tb-profile");
+
+  const mobileMenuEl =
+    document.getElementById("tb-mobile-menu");
+
+  const burgerEl =
+    document.getElementById("tb-burger");
 
   profileEl.innerHTML = `
     <img src="${user.img || defaultImg}">
     <i class="fas fa-caret-down"></i>
+
     <div class="tb-dropdown" id="tb-dropdown">
-      <a href="profile.html">My Profile</a>
-      <a href="trips.html">Trips</a>
-      <a href="blogs.html">My Blogs</a>
-      <a href="#" id="tb-logout">Logout</a>
+
+      <a href="profile.html">
+        My Profile
+      </a>
+
+      <a href="trips.html">
+        Trips
+      </a>
+
+      <a href="blogs.html">
+        My Blogs
+      </a>
+
+      <a href="#" id="tb-logout">
+        Logout
+      </a>
+
     </div>
   `;
 
   mobileMenuEl.innerHTML = `
-    <a href="index.html">Home</a>
-    <a href="find-companion.html">Find Companion</a>
-    <a href="explore.html">Add Trip</a>
-    <a href="blog.html">Community</a>
+    <a href="index.html">
+      Home
+    </a>
+
+    <a href="find-companion.html">
+      Find Companion
+    </a>
+
+    <a href="explore.html">
+      Add Trip
+    </a>
+
+    <a href="blog.html">
+      Community
+    </a>
+
     <hr>
-    <a href="profile.html">My Profile</a>
-    <a href="trips.html">Trips</a>
-    <a href="my-blogs.html">My Blogs</a>
-    <a href="#" id="tb-logout2">Logout</a>
+
+    <a href="profile.html">
+      My Profile
+    </a>
+
+    <a href="trips.html">
+      Trips
+    </a>
+
+    <a href="blogs.html">
+      My Blogs
+    </a>
+
+    <a href="#" id="tb-logout2">
+      Logout
+    </a>
   `;
 
   document.addEventListener("click", e => {
-    if (e.target.closest("#tb-profile")) {
-      const dd = document.getElementById("tb-dropdown");
-      dd.style.display = dd.style.display === "block" ? "none" : "block";
+
+    if (
+      e.target.closest("#tb-profile")
+    ) {
+
+      const dd =
+        document.getElementById("tb-dropdown");
+
+      if (dd) {
+
+        dd.style.display =
+          dd.style.display === "block"
+            ? "none"
+            : "block";
+
+      }
+
     } else {
-      const dd = document.getElementById("tb-dropdown");
-      if (dd) dd.style.display = "none";
+
+      const dd =
+        document.getElementById("tb-dropdown");
+
+      if (dd) {
+        dd.style.display = "none";
+      }
+
     }
+
   });
 
   burgerEl.onclick = () => {
+
     mobileMenuEl.style.display =
-      mobileMenuEl.style.display === "flex" ? "none" : "flex";
+      mobileMenuEl.style.display === "flex"
+        ? "none"
+        : "flex";
+
   };
 
-  document.addEventListener("click", e => {
-    if (e.target.id === "tb-logout" || e.target.id === "tb-logout2") {
+  async function logout() {
+
+    try {
+
+      await fetch(
+        `${baseURL}/api/logout`,
+        {
+          method: "POST",
+          headers: {
+            "Authorization":
+              `Bearer ${token}`
+          }
+        }
+      );
+
+    } catch (error) {
+
+      console.error(
+        "❌ Logout error:",
+        error
+      );
+
+    } finally {
+
       localStorage.removeItem("user");
-      location.href = "index.html";
+      localStorage.removeItem("token");
+
+      window.location.href =
+        "index.html";
+
     }
+
+  }
+
+  document.addEventListener("click", e => {
+
+    if (
+      e.target.id === "tb-logout" ||
+      e.target.id === "tb-logout2"
+    ) {
+
+      e.preventDefault();
+
+      logout();
+
+    }
+
   });
 
   /* LOAD PROFILE DATA */
-  async function loadProfile(){
-    const res = await fetch(`${baseURL}/api/user-profile?email=${user.email}`);
-    const data = await res.json();
-    if (!data.success) return;
-    const u = data.user;
 
-    document.getElementById("profilePhoto").src = u.img || defaultImg;
-    document.getElementById("profileName").innerText = u.firstName + " " + u.lastName;
-    document.getElementById("profileEmail").innerText = u.email;
-    document.getElementById("profileCollege").innerText = "College: " + (u.college || "N/A");
-    document.getElementById("profileBio").innerText = u.bio || "Traveller";
+  async function loadProfile() {
 
-    document.getElementById("totalTrips").innerText = u.trips.length;
-    document.getElementById("totalDistance").innerText = (u.totalDistance || 0) + " km";
-    document.getElementById("avgRating").innerText = u.rating || "N/A";
+    try {
 
-    /* TRIPS */
-    const tArea = document.getElementById("tripsArea");
-    tArea.innerHTML = u.trips.length
-      ? u.trips.slice(0,3).map(t => `
-        <div class="card">
-          <h4>${t.destination}</h4>
-          <p>${t.date}</p>
-        </div>`).join("")
-      : `<div class="card"><p>No trips yet.</p></div>`;
+      const profileRes =
+        await fetch(
+          `${baseURL}/api/user-profile?email=${encodeURIComponent(user.email)}`,
+          {
+            headers: {
+              "Authorization":
+                `Bearer ${token}`
+            }
+          }
+        );
 
-    /* BLOGS */
-    const blogRes = await fetch(`${baseURL}/api/blogs/${encodeURIComponent(user.email)}`);
-    const blogData = await blogRes.json();
-    const bArea = document.getElementById("blogsArea");
+      const profileData =
+        await profileRes.json();
 
-    bArea.innerHTML = blogData.success && blogData.blogs.length
-      ? blogData.blogs.slice(0,3).map(b => `
-        <div class="card">
-          <h4>${b.title}</h4>
-          <p>${b.content.slice(0,60)}...</p>
-        </div>`).join("")
-      : `<div class="card"><p>No blogs yet.</p></div>`;
+      if (
+        profileRes.status === 401 ||
+        profileRes.status === 403
+      ) {
 
-    /* REQUESTS */
-    const reqArea = document.getElementById("requestsArea");
-    const filteredRequests = (u.requests || []).filter(r => r.status !== "reject");
+        alert(
+          profileData.message ||
+          "Session expired. Please login again."
+        );
 
-    reqArea.innerHTML = filteredRequests.length === 0
-      ? `<div class="card"><p>No Pending Requests</p></div>`
-      : filteredRequests.map(r => `
-        <div class="card">
-          <p><strong>${r.fromEmail}</strong></p>
-          <p>Status: ${r.status}</p>
+        localStorage.removeItem("user");
+        localStorage.removeItem("token");
 
-          ${r.status === "pending" ? `
-            <button class='view-btn acceptBtn' data-from='${r.fromEmail}'>Accept</button>
-            <button class='view-btn rejectBtn' data-from='${r.fromEmail}' style='background:#e74c3c;'>Reject</button>
-          ` : ""}
-        </div>`).join("");
+        window.location.href =
+          "signin.html";
 
-    /* CONNECTIONS */
-    const cArea = document.getElementById("connectionsArea");
-    cArea.innerHTML = u.connections.length
-      ? u.connections.map(e => `
-        <div class="card">
-          <p>${e}</p>
-          <a class="view-btn" href="chat.html?to=${e}">Chat</a>
-          <a class="view-btn" href="companion-profile.html?email=${e}">View</a>
-        </div>`).join("")
-      : `<div class="card"><p>No connections.</p></div>`;
+        return;
+
+      }
+
+      if (!profileData.success) {
+
+        alert(
+          profileData.message ||
+          "Unable to load profile."
+        );
+
+        return;
+
+      }
+
+      const u =
+        profileData.user;
+
+      document.getElementById(
+        "profilePhoto"
+      ).src =
+        u.img || defaultImg;
+
+      document.getElementById(
+        "profileName"
+      ).innerText =
+        `${u.firstName || ""} ${u.lastName || ""}`.trim();
+
+      document.getElementById(
+        "profileEmail"
+      ).innerText =
+        u.email || "";
+
+      document.getElementById(
+        "profileCollege"
+      ).innerText =
+        "College: " +
+        (u.college || "N/A");
+
+      document.getElementById(
+        "profileBio"
+      ).innerText =
+        u.bio || "Traveller";
+
+      const trips =
+        Array.isArray(u.trips)
+          ? u.trips
+          : [];
+
+      document.getElementById(
+        "totalTrips"
+      ).innerText =
+        trips.length;
+
+      document.getElementById(
+        "totalDistance"
+      ).innerText =
+        (u.totalDistance || 0) +
+        " km";
+
+      document.getElementById(
+        "avgRating"
+      ).innerText =
+        u.rating || "N/A";
+
+      /* TRIPS */
+
+      const tArea =
+        document.getElementById(
+          "tripsArea"
+        );
+
+      tArea.innerHTML =
+        trips.length
+
+          ? trips
+              .slice(0, 3)
+              .map(t => `
+                <div class="card">
+
+                  <h4>
+                    ${t.destination || "Unknown destination"}
+                  </h4>
+
+                  <p>
+                    ${t.date || "Date not available"}
+                  </p>
+
+                </div>
+              `)
+              .join("")
+
+          : `
+              <div class="card">
+                <p>No trips yet.</p>
+              </div>
+            `;
+
+      /* BLOGS */
+
+      const blogs =
+        Array.isArray(u.blogs)
+          ? u.blogs
+          : [];
+
+      const bArea =
+        document.getElementById(
+          "blogsArea"
+        );
+
+      bArea.innerHTML =
+        blogs.length
+
+          ? blogs
+              .slice(0, 3)
+              .map(b => `
+                <div class="card">
+
+                  <h4>
+                    ${b.title || "Untitled"}
+                  </h4>
+
+                  <p>
+                    ${(b.content || "")
+                      .slice(0, 60)}...
+                  </p>
+
+                </div>
+              `)
+              .join("")
+
+          : `
+              <div class="card">
+                <p>No blogs yet.</p>
+              </div>
+            `;
+
+      /* REQUESTS + CONNECTIONS */
+
+      const requestsRes =
+        await fetch(
+          `${baseURL}/api/requests`,
+          {
+            headers: {
+              "Authorization":
+                `Bearer ${token}`
+            }
+          }
+        );
+
+      const requestsData =
+        await requestsRes.json();
+
+      if (
+        requestsRes.status === 401 ||
+        requestsRes.status === 403
+      ) {
+
+        alert(
+          requestsData.message ||
+          "Session expired. Please login again."
+        );
+
+        localStorage.removeItem("user");
+        localStorage.removeItem("token");
+
+        window.location.href =
+          "signin.html";
+
+        return;
+
+      }
+
+      const requests =
+        requestsData.success
+          ? requestsData.requests || []
+          : [];
+
+      const sentRequests =
+        requestsData.success
+          ? requestsData.sentRequests || []
+          : [];
+
+      /* REQUESTS */
+
+      const reqArea =
+        document.getElementById(
+          "requestsArea"
+        );
+
+      const filteredRequests =
+        requests.filter(
+          r => r.status !== "reject"
+        );
+
+      reqArea.innerHTML =
+        filteredRequests.length === 0
+
+          ? `
+              <div class="card">
+                <p>No Pending Requests</p>
+              </div>
+            `
+
+          : filteredRequests
+              .map(r => `
+                <div class="card">
+
+                  <p>
+                    <strong>
+                      ${r.fromEmail}
+                    </strong>
+                  </p>
+
+                  <p>
+                    Status:
+                    ${r.status}
+                  </p>
+
+                  ${
+                    r.status === "pending"
+                      ? `
+                        <button
+                          class="view-btn acceptBtn"
+                          data-from="${r.fromEmail}"
+                        >
+                          Accept
+                        </button>
+
+                        <button
+                          class="view-btn rejectBtn"
+                          data-from="${r.fromEmail}"
+                          style="background:#e74c3c;"
+                        >
+                          Reject
+                        </button>
+                      `
+                      : ""
+                  }
+
+                </div>
+              `)
+              .join("");
+
+      /* CONNECTIONS */
+
+      const connections =
+        requestsData.success &&
+        Array.isArray(
+          requestsData.connections
+        )
+          ? requestsData.connections
+          : Array.isArray(
+              user.connections
+            )
+              ? user.connections
+              : [];
+
+      const cArea =
+        document.getElementById(
+          "connectionsArea"
+        );
+
+      cArea.innerHTML =
+        connections.length
+
+          ? connections
+              .map(email => `
+                <div class="card">
+
+                  <p>
+                    ${email}
+                  </p>
+
+                  <a
+                    class="view-btn"
+                    href="chat.html?to=${encodeURIComponent(email)}"
+                  >
+                    Chat
+                  </a>
+
+                  <a
+                    class="view-btn"
+                    href="companion-profile.html?email=${encodeURIComponent(email)}"
+                  >
+                    View
+                  </a>
+
+                </div>
+              `)
+              .join("")
+
+          : `
+              <div class="card">
+                <p>No connections.</p>
+              </div>
+            `;
+
+      /* SAVE SAFE USER DATA */
+
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          ...user,
+          ...u
+        })
+      );
+
+    } catch (error) {
+
+      console.error(
+        "❌ Load profile error:",
+        error
+      );
+
+      alert(
+        "Unable to load profile. Please try again."
+      );
+
+    }
+
   }
 
   loadProfile();
 
-  /* ACCEPT - REJECT */
-  document.addEventListener("click", async (e) => {
-    if (e.target.matches(".acceptBtn")) {
-      const fromEmail = e.target.dataset.from;
-      await fetch(`${baseURL}/api/respond-request`, {
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({ fromEmail, toEmail:user.email, action:"accept" })
-      });
-      loadProfile();
+  /* ACCEPT / REJECT */
+
+  document.addEventListener(
+    "click",
+    async e => {
+
+      if (
+        !e.target.matches(".acceptBtn") &&
+        !e.target.matches(".rejectBtn")
+      ) {
+
+        return;
+
+      }
+
+      const currentToken =
+        localStorage.getItem("token");
+
+      if (!currentToken) {
+
+        alert(
+          "Please login again."
+        );
+
+        localStorage.removeItem("user");
+        localStorage.removeItem("token");
+
+        window.location.href =
+          "signin.html";
+
+        return;
+
+      }
+
+      const fromEmail =
+        e.target.dataset.from;
+
+      const action =
+        e.target.matches(".acceptBtn")
+          ? "accept"
+          : "reject";
+
+      e.target.disabled = true;
+
+      try {
+
+        const res =
+          await fetch(
+            `${baseURL}/api/respond-request`,
+            {
+              method: "POST",
+
+              headers: {
+                "Content-Type":
+                  "application/json",
+
+                "Authorization":
+                  `Bearer ${currentToken}`
+              },
+
+              body: JSON.stringify({
+                fromEmail,
+                action
+              })
+
+            }
+          );
+
+        const data =
+          await res.json();
+
+        if (
+          res.status === 401 ||
+          res.status === 403
+        ) {
+
+          alert(
+            data.message ||
+            "Session expired. Please login again."
+          );
+
+          localStorage.removeItem("user");
+          localStorage.removeItem("token");
+
+          window.location.href =
+            "signin.html";
+
+          return;
+
+        }
+
+        if (!data.success) {
+
+          alert(
+            data.message ||
+            "Unable to respond to request."
+          );
+
+          e.target.disabled = false;
+
+          return;
+
+        }
+
+        await loadProfile();
+
+      } catch (error) {
+
+        console.error(
+          "❌ Respond request error:",
+          error
+        );
+
+        alert(
+          "Unable to process request. Please try again."
+        );
+
+        e.target.disabled = false;
+
+      }
+
     }
+  );
 
-    if (e.target.matches(".rejectBtn")) {
-      const fromEmail = e.target.dataset.from;
-      await fetch(`${baseURL}/api/respond-request`, {
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({ fromEmail, toEmail:user.email, action:"reject" })
-      });
-      loadProfile();
-    }
-  });
+  document.getElementById(
+    "editProfileBtn"
+  ).onclick =
+    () =>
+      location.href =
+        "edit-profile.html";
 
-  document.getElementById("editProfileBtn").onclick =
-    () => location.href = "edit-profile.html";
-
-  document.getElementById("logoutBtn").onclick = () => {
-    localStorage.removeItem("user");
-    location.href = "index.html";
-  };
+  document.getElementById(
+    "logoutBtn"
+  ).onclick =
+    logout;
 
 });
 </script>

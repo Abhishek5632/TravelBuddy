@@ -11,40 +11,8 @@ import http from "http";
 import { Server as IOServer } from "socket.io";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import crypto from "crypto";
-import nodemailer from "nodemailer";
 
 dotenv.config();
-
-const emailTransporter =
-  process.env.SMTP_HOST &&
-  process.env.SMTP_USER &&
-  process.env.SMTP_PASS
-    ? nodemailer.createTransport({
-        host: process.env.SMTP_HOST,
-        port: Number(process.env.SMTP_PORT || 587),
-        secure: String(process.env.SMTP_PORT) === "465",
-        auth: {
-          user: process.env.SMTP_USER,
-          pass: process.env.SMTP_PASS
-        }
-      })
-    : null;
-if (emailTransporter) {
-  emailTransporter.verify((error) => {
-    if (error) {
-      console.error("❌ SMTP connection failed:", error.message);
-    } else {
-      console.log("✅ SMTP connection ready.");
-    }
-  });
-} else {
-  console.log("⚠️ SMTP transporter not configured.");
-}
-
-if (!process.env.JWT_SECRET) {
-  console.error("❌ JWT_SECRET is missing from .env. Authentication cannot start safely.");
-}
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -110,10 +78,6 @@ let usersCollection;
 let chatsCollection;
 let blogsCollection;
 let photosCollection;
-let otpChallengesCollection;
-let safetyReportsCollection;
-let blockedUsersCollection;
-let sessionsCollection;
 
 
 // =====================================================
@@ -132,10 +96,6 @@ async function connectDB() {
     chatsCollection = db.collection("chats");
     blogsCollection = db.collection("blogs");
     photosCollection = db.collection("photos");
-    otpChallengesCollection = db.collection("otpChallenges");
-    safetyReportsCollection = db.collection("safetyReports");
-    blockedUsersCollection = db.collection("blockedUsers");
-    sessionsCollection = db.collection("sessions");
 
     console.log(
       "✅ Connected to MongoDB Atlas (travel_bunk)"
@@ -166,12 +126,6 @@ async function connectDB() {
     await photosCollection.createIndex({
       authorEmail: 1
     });
-
-    await otpChallengesCollection.createIndex({ expiresAt: 1 }, { expireAfterSeconds: 0 });
-    await sessionsCollection.createIndex({ sessionId: 1 }, { unique: true });
-    await sessionsCollection.createIndex({ userId: 1 });
-    await blockedUsersCollection.createIndex({ ownerId: 1, blockedId: 1 }, { unique: true });
-    await safetyReportsCollection.createIndex({ createdAt: -1 });
 
 
   } catch (err) {
@@ -788,62 +742,16 @@ app.post("/api/login", async (req, res) => {
             });
         }
 
-        const sessionId = crypto.randomUUID();
-
-        await sessionsCollection.insertOne({
-            sessionId,
-            userId: user._id.toString(),
-            email: user.email,
-            createdAt: new Date(),
-            lastSeenAt: new Date(),
-            revoked: false
-        });
-
-        // Create JWT only after password verification. Optional MFA can be enabled
-        // with REQUIRE_LOGIN_OTP=true once an SMTP transporter is configured.
-        if (process.env.REQUIRE_LOGIN_OTP === "true") {
-            const otp = crypto.randomInt(100000, 1000000).toString();
-            const otpHash = crypto.createHash("sha256").update(otp).digest("hex");
-            const challengeId = crypto.randomUUID();
-            const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
-
-            await otpChallengesCollection.deleteMany({ userId: user._id.toString(), purpose: "login" });
-            await otpChallengesCollection.insertOne({
-                challengeId,
-                userId: user._id.toString(),
-                email: user.email,
-                purpose: "login",
-                sessionId,
-                otpHash,
-                attempts: 0,
-                createdAt: new Date(),
-                expiresAt
-            });
-
-            if (emailTransporter) {
-                await emailTransporter.sendMail({
-                    from: process.env.SMTP_FROM || process.env.SMTP_USER,
-                    to: user.email,
-                    subject: "TravelBuddy Login OTP",
-                    text: `Your TravelBuddy login OTP is ${otp}. It expires in 5 minutes.`
-                });
-            } else {
-                await sessionsCollection.deleteOne({ sessionId });
-                return res.status(500).json({ success: false, message: "Login OTP email service is not configured." });
-            }
-
-            return res.json({
-                success: true,
-                requiresOtp: true,
-                challengeId,
-                message: "OTP sent to your email."
-            });
-        }
-
+        // Create JWT
         const token = jwt.sign(
-            { userId: user._id.toString(), email: user.email, sessionId },
+            {
+                userId: user._id.toString(),
+                email: user.email
+            },
             JWT_SECRET,
-            { expiresIn: "7d" }
+            {
+                expiresIn: "7d"
+            }
         );
 
         console.log("🔐 JWT created for:", user.email);
@@ -882,162 +790,6 @@ app.post("/api/login", async (req, res) => {
             message: "Server error during login."
         });
     }
-});
-app.post("/api/verify-login-otp", async (req, res) => {
-  try {
-    const { challengeId, otp } = req.body;
-
-    if (!challengeId || !otp) {
-      return res.status(400).json({
-        success: false,
-        message: "Challenge ID and OTP are required."
-      });
-    }
-
-    if (!/^\d{6}$/.test(String(otp))) {
-      return res.status(400).json({
-        success: false,
-        message: "OTP must contain 6 digits."
-      });
-    }
-
-    const challenge = await otpChallengesCollection.findOne({
-      challengeId,
-      purpose: "login"
-    });
-
-    if (!challenge) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid or expired OTP."
-      });
-    }
-
-    if (new Date() > new Date(challenge.expiresAt)) {
-      await otpChallengesCollection.deleteOne({ challengeId });
-
-      if (challenge.sessionId) {
-        await sessionsCollection.updateOne(
-          { sessionId: challenge.sessionId },
-          { $set: { revoked: true, revokedAt: new Date() } }
-        );
-      }
-
-      return res.status(400).json({
-        success: false,
-        message: "OTP has expired. Please login again."
-      });
-    }
-
-    if (challenge.attempts >= 5) {
-      await otpChallengesCollection.deleteOne({ challengeId });
-
-      if (challenge.sessionId) {
-        await sessionsCollection.updateOne(
-          { sessionId: challenge.sessionId },
-          { $set: { revoked: true, revokedAt: new Date() } }
-        );
-      }
-
-      return res.status(429).json({
-        success: false,
-        message: "Too many incorrect OTP attempts. Please login again."
-      });
-    }
-
-    const otpHash = crypto
-      .createHash("sha256")
-      .update(String(otp))
-      .digest("hex");
-
-    if (otpHash !== challenge.otpHash) {
-      await otpChallengesCollection.updateOne(
-        { challengeId },
-        { $inc: { attempts: 1 } }
-      );
-
-      return res.status(401).json({
-        success: false,
-        message: "Invalid OTP."
-      });
-    }
-
-    const session = await sessionsCollection.findOne({
-      sessionId: challenge.sessionId,
-      userId: challenge.userId,
-      revoked: false
-    });
-
-    if (!session) {
-      await otpChallengesCollection.deleteOne({ challengeId });
-
-      return res.status(401).json({
-        success: false,
-        message: "Login session is no longer valid."
-      });
-    }
-
-    const user = await usersCollection.findOne({
-      _id: new ObjectId(challenge.userId)
-    });
-
-    if (!user) {
-      await otpChallengesCollection.deleteOne({ challengeId });
-
-      return res.status(404).json({
-        success: false,
-        message: "User not found."
-      });
-    }
-
-    await otpChallengesCollection.deleteOne({
-      challengeId
-    });
-
-    const token = jwt.sign(
-      {
-        userId: user._id.toString(),
-        email: user.email,
-        sessionId: challenge.sessionId
-      },
-      JWT_SECRET,
-      {
-        expiresIn: "7d"
-      }
-    );
-
-    console.log("🔐 OTP verified. JWT created for:", user.email);
-
-    return res.json({
-      success: true,
-      message: "Login successful.",
-      token,
-      user: {
-        id: user._id,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
-        phone: user.phone,
-        college: user.college,
-        gender: user.gender,
-        img: user.img,
-        verification: user.verification || {
-          email: false,
-          phone: false,
-          identity: false,
-          selfie: false
-        }
-      }
-    });
-
-  } catch (error) {
-    console.error("❌ OTP verification error:", error);
-
-    return res.status(500).json({
-      success: false,
-      message: "Server error during OTP verification."
-    });
-  }
 });
 
 // =====================================================
@@ -1078,54 +830,9 @@ function authenticateToken(req, res, next) {
       JWT_SECRET
     );
 
-    if (!decoded.userId || !decoded.sessionId) {
+    req.user = decoded;
 
-      return res.status(403).json({
-        success: false,
-        message: "Invalid authentication token."
-      });
-
-    }
-
-    sessionsCollection.findOneAndUpdate(
-      {
-        sessionId: decoded.sessionId,
-        userId: decoded.userId,
-        revoked: false
-      },
-      {
-        $set: {
-          lastSeenAt: new Date()
-        }
-      }
-    ).then(session => {
-
-      if (!session) {
-
-        return res.status(403).json({
-          success: false,
-          message: "Session expired or revoked."
-        });
-
-      }
-
-      req.user = decoded;
-
-      next();
-
-    }).catch(err => {
-
-      console.error(
-        "❌ Session verification failed:",
-        err
-      );
-
-      return res.status(500).json({
-        success: false,
-        message: "Authentication service error."
-      });
-
-    });
+    next();
 
   } catch (error) {
 
@@ -1202,72 +909,109 @@ app.post(
   "/api/update-profile",
   authenticateToken,
   async (req, res) => {
-    try {
-      const updates = { ...req.body };
+  try {
 
-      delete updates._id;
-      delete updates.email;
-      delete updates.password;
-      delete updates.aadhaar;
-      delete updates.aadhaarVerified;
-      delete updates.verificationStatus;
-      delete updates.verificationMethod;
-      delete updates.verificationDate;
+    const {
+      email,
+      ...updates
+    } = req.body;
 
-      if (Object.keys(updates).length === 0) {
-        return res.status(400).json({
-          success: false,
-          message: "No valid profile fields to update."
-        });
-      }
 
-      const result = await usersCollection.updateOne(
-        {
-          _id: new ObjectId(req.user.userId)
-        },
-        {
-          $set: {
-            ...updates,
-            updatedAt: new Date()
-          }
-        }
-      );
-
-      if (result.matchedCount === 0) {
-        return res.status(404).json({
-          success: false,
-          message: "User not found."
-        });
-      }
-
-      const updatedUser = await usersCollection.findOne(
-        {
-          _id: new ObjectId(req.user.userId)
-        },
-        {
-          projection: {
-            password: 0,
-            aadhaar: 0
-          }
-        }
-      );
+    if (!email) {
 
       return res.json({
-        success: true,
-        message: "Profile updated successfully.",
-        user: updatedUser
-      });
 
-    } catch (error) {
-      console.error("❌ Update profile error:", error);
-
-      return res.status(500).json({
         success: false,
-        message: "Failed to update profile."
+
+        message:
+          "Missing email"
+
       });
+
     }
+
+
+    if (updates._id) {
+
+      delete updates._id;
+
+    }
+
+
+    const result =
+      await usersCollection.updateOne(
+
+        {
+          email
+        },
+
+        {
+          $set:
+            updates
+        }
+
+      );
+
+
+    if (
+      result.modifiedCount === 0
+    ) {
+
+      return res.json({
+
+        success: false,
+
+        message:
+          "No changes or user not found"
+
+      });
+
+    }
+
+
+    const updatedUser =
+      await usersCollection.findOne({
+        email
+      });
+
+
+    console.log(
+      "✏️ Profile updated:",
+      email
+    );
+
+
+    res.json({
+
+      success: true,
+
+      user:
+        updatedUser
+
+    });
+
+
+  } catch (err) {
+
+    console.error(
+      "❌ Update profile error:",
+      err
+    );
+
+
+    res.status(500).json({
+
+      success: false,
+
+      message:
+        "Server error"
+
+    });
+
   }
-);
+
+});
+
 
 // =====================================================
 // FIND USERS BY TRIP
@@ -1423,67 +1167,41 @@ app.get(
 
 
 // =====================================================
-// SECURITY: SESSION LOGOUT / LOGOUT ALL
-// =====================================================
-
-app.post("/api/logout", authenticateToken, async (req, res) => {
-  try {
-    await sessionsCollection.updateOne(
-      { sessionId: req.user.sessionId },
-      { $set: { revoked: true, revokedAt: new Date() } }
-    );
-    return res.json({ success: true, message: "Logged out successfully." });
-  } catch (error) {
-    console.error("❌ Logout error:", error);
-    return res.status(500).json({ success: false, message: "Logout failed." });
-  }
-});
-
-app.post("/api/logout-all-sessions", authenticateToken, async (req, res) => {
-  try {
-    await sessionsCollection.updateMany(
-      { userId: req.user.userId, revoked: false },
-      { $set: { revoked: true, revokedAt: new Date() } }
-    );
-    return res.json({ success: true, message: "All sessions logged out." });
-  } catch (error) {
-    console.error("❌ Logout-all error:", error);
-    return res.status(500).json({ success: false, message: "Logout-all failed." });
-  }
-});
-
-// =====================================================
 // ADD TRIP
 // =====================================================
 
 app.post(
   "/api/add-trip",
-  authenticateToken,
   async (req, res) => {
 
     try {
 
       const {
+        email,
         destination,
         date,
         budget,
         notes
       } = req.body;
 
-      const authenticatedEmail = req.user.email;
 
       if (
-        !authenticatedEmail ||
+        !email ||
         !destination ||
         !date
       ) {
 
         return res.json({
+
           success: false,
-          message: "Missing fields"
+
+          message:
+            "Missing fields"
+
         });
 
       }
+
 
       const trip = {
 
@@ -1506,7 +1224,7 @@ app.post(
       await usersCollection.updateOne(
 
         {
-          email: authenticatedEmail
+          email
         },
 
         {
@@ -1554,152 +1272,198 @@ app.post(
   }
 );
 
+
 // =====================================================
 // SEND REQUEST
 // =====================================================
+
 app.post(
   "/api/send-request",
-  authenticateToken,
   async (req, res) => {
 
     try {
 
-      const fromEmail =
-        String(req.user.email || "")
-          .trim()
-          .toLowerCase();
+      const {
+        fromEmail,
+        toEmail
+      } = req.body;
 
-      const normalizedToEmail =
-        String(req.body.toEmail || "")
-          .trim()
-          .toLowerCase();
 
-      if (!fromEmail || !normalizedToEmail) {
-        return res.status(400).json({
+      if (
+        !fromEmail ||
+        !toEmail
+      ) {
+
+        return res.json({
+
           success: false,
-          message: "Recipient email is required."
+
+          message:
+            "Missing fields"
+
         });
+
       }
 
-      if (fromEmail === normalizedToEmail) {
-        return res.status(400).json({
-          success: false,
-          message: "You cannot send a request to yourself."
-        });
-      }
 
-      const fromUser = await usersCollection.findOne({
-        email: fromEmail
-      });
+      const fromUser =
+        await usersCollection.findOne({
 
-      const targetUser = await usersCollection.findOne({
-        email: normalizedToEmail
-      });
-
-      if (!fromUser || !targetUser) {
-        return res.status(404).json({
-          success: false,
-          message: "User not found."
-        });
-      }
-
-      const alreadyConnected =
-        (fromUser.connections || []).some(
-          email =>
-            String(email).trim().toLowerCase() ===
-            normalizedToEmail
-        ) ||
-        (targetUser.connections || []).some(
-          email =>
-            String(email).trim().toLowerCase() ===
+          email:
             fromEmail
-        );
 
-      if (alreadyConnected) {
-        return res.status(400).json({
-          success: false,
-          message: "You are already connected."
         });
+
+
+      const toUser =
+        await usersCollection.findOne({
+
+          email:
+            toEmail
+
+        });
+
+
+      if (
+        !fromUser ||
+        !toUser
+      ) {
+
+        return res.json({
+
+          success: false,
+
+          message:
+            "User(s) not found"
+
+        });
+
       }
 
-      const pendingOutgoing =
-        (fromUser.sentRequests || []).some(
-          request =>
-            String(request.toEmail || "")
-              .trim()
-              .toLowerCase() === normalizedToEmail &&
-            request.status === "pending"
-        );
 
-      const pendingIncoming =
-        (targetUser.requests || []).some(
-          request =>
-            String(request.fromEmail || "")
-              .trim()
-              .toLowerCase() === fromEmail &&
-            request.status === "pending"
-        );
+      const pending =
+        (toUser.requests || [])
+          .some(
 
-      if (pendingOutgoing || pendingIncoming) {
-        return res.status(409).json({
+            (r) =>
+
+              r.fromEmail ===
+                fromEmail &&
+
+              r.status ===
+                "pending"
+
+          );
+
+
+      if (pending) {
+
+        return res.json({
+
           success: false,
-          message: "Connection request already pending."
+
+          message:
+            "Already sent"
+
         });
+
       }
+
 
       const requestObj = {
+
         fromEmail,
-        fromName: fromUser.firstName,
-        status: "pending",
-        createdAt: new Date().toISOString()
+
+        fromName:
+          fromUser.firstName,
+
+        status:
+          "pending",
+
+        createdAt:
+          new Date().toISOString()
+
       };
 
-      await usersCollection.updateOne(
-        {
-          email: normalizedToEmail
-        },
-        {
-          $push: {
-            requests: requestObj
-          }
-        }
-      );
 
       await usersCollection.updateOne(
+
         {
-          email: fromEmail
+          email:
+            toEmail
+
         },
+
         {
+
           $push: {
+
+            requests:
+              requestObj
+
+          }
+
+        }
+
+      );
+
+
+      await usersCollection.updateOne(
+
+        {
+          email:
+            fromEmail
+
+        },
+
+        {
+
+          $push: {
+
             sentRequests: {
-              toEmail: normalizedToEmail,
-              status: "pending",
-              createdAt: new Date().toISOString()
+
+              toEmail,
+
+              status:
+                "pending"
+
             }
+
           }
+
         }
+
       );
 
-      io.to(normalizedToEmail).emit(
+
+      io.to(toEmail).emit(
         "request-received",
         requestObj
       );
 
-      return res.json({
-        success: true,
-        message: "Connection request sent."
+
+      res.json({
+
+        success: true
+
       });
+
 
     } catch (err) {
 
       console.error(
-        "❌ /api/send-request error:",
+        "❌ send-request error:",
         err
       );
 
-      return res.status(500).json({
+
+      res.status(500).json({
+
         success: false,
-        message: "Failed to send connection request."
+
+        message:
+          "Server error"
+
       });
 
     }
@@ -1707,49 +1471,72 @@ app.post(
   }
 );
 
+
 // =====================================================
 // GET REQUESTS
 // =====================================================
 
 app.get(
   "/api/requests",
-  authenticateToken,
   async (req, res) => {
-    try {
-      const email = req.user.email;
 
-      const user = await usersCollection.findOne(
-        { email },
-        {
-          projection: {
-            requests: 1,
-            sentRequests: 1
-          }
-        }
-      );
+    const {
+      email
+    } = req.query;
+
+
+    try {
+
+      const user =
+        await usersCollection.findOne({
+          email
+        });
+
 
       if (!user) {
-        return res.status(404).json({
+
+        return res.json({
+
           success: false,
+
           requests: [],
+
           sentRequests: []
+
         });
+
       }
 
-      return res.json({
+
+      res.json({
+
         success: true,
-        requests: user.requests || [],
-        sentRequests: user.sentRequests || []
+
+        requests:
+          user.requests || [],
+
+        sentRequests:
+          user.sentRequests || []
+
       });
+
 
     } catch (err) {
-      console.error("❌ /api/requests error:", err);
 
-      return res.status(500).json({
-        success: false,
-        message: "Server error"
+      console.error(
+        "❌ /api/requests error:",
+        err
+      );
+
+
+      res.json({
+
+        success: false
+
       });
+
     }
+
   }
 );
 
@@ -1760,117 +1547,217 @@ app.get(
 
 app.post(
   "/api/respond-request",
-  authenticateToken,
   async (req, res) => {
+
     try {
-      const { fromEmail, action } = req.body;
-      const toEmail = req.user.email;
 
-      if (!fromEmail || !action) {
-        return res.status(400).json({
-          success: false,
-          message: "Missing fields"
+      const {
+        toEmail,
+        fromEmail,
+        action
+      } = req.body;
+
+
+      if (
+        !["accept", "reject"]
+          .includes(action)
+      ) {
+
+        return res.json({
+
+          success: false
+
         });
+
       }
 
-      const normalizedFromEmail = fromEmail.toLowerCase().trim();
 
-      if (!["accept", "reject"].includes(action)) {
-        return res.status(400).json({
-          success: false,
-          message: "Invalid action."
-        });
-      }
+      if (
+        action === "accept"
+      ) {
 
-      const requestOwner = await usersCollection.findOne({
-        email: toEmail,
-        "requests.fromEmail": normalizedFromEmail
-      });
 
-      if (!requestOwner) {
-        return res.status(404).json({
-          success: false,
-          message: "Request not found."
-        });
-      }
-
-      if (action === "accept") {
         await usersCollection.updateOne(
+
           {
-            email: toEmail,
-            "requests.fromEmail": normalizedFromEmail
+            email:
+              toEmail,
+
+            "requests.fromEmail":
+              fromEmail
+
           },
+
           {
+
             $set: {
-              "requests.$.status": "accepted"
-            },
-            $addToSet: {
-              connections: normalizedFromEmail
+
+              "requests.$.status":
+                "accept"
+
             }
+
           }
+
         );
 
+
         await usersCollection.updateOne(
+
           {
-            email: normalizedFromEmail,
-            "sentRequests.toEmail": toEmail
+            email:
+              fromEmail,
+
+            "sentRequests.toEmail":
+              toEmail
+
           },
+
           {
+
             $set: {
-              "sentRequests.$.status": "accepted"
-            },
-            $addToSet: {
-              connections: toEmail
+
+              "sentRequests.$.status":
+                "accept"
+
             }
+
           }
+
         );
 
-      } else {
+
         await usersCollection.updateOne(
+
           {
-            email: toEmail
+            email:
+              toEmail
+
           },
+
           {
+
+            $addToSet: {
+
+              connections:
+                fromEmail
+
+            }
+
+          }
+
+        );
+
+
+        await usersCollection.updateOne(
+
+          {
+            email:
+              fromEmail
+
+          },
+
+          {
+
+            $addToSet: {
+
+              connections:
+                toEmail
+
+            }
+
+          }
+
+        );
+
+      }
+
+
+      else if (
+        action === "reject"
+      ) {
+
+
+        await usersCollection.updateOne(
+
+          {
+            email:
+              toEmail
+
+          },
+
+          {
+
             $pull: {
+
               requests: {
-                fromEmail: normalizedFromEmail
+
+                fromEmail:
+                  fromEmail
+
               }
+
             }
+
           }
+
         );
+
 
         await usersCollection.updateOne(
+
           {
-            email: normalizedFromEmail
+            email:
+              fromEmail
+
           },
+
           {
+
             $pull: {
+
               sentRequests: {
-                toEmail: toEmail
+
+                toEmail:
+                  toEmail
+
               }
+
             }
+
           }
+
         );
+
       }
 
-      return res.json({
-        success: true,
-        message:
-          action === "accept"
-            ? "Request accepted."
-            : "Request rejected."
+
+      res.json({
+
+        success: true
+
       });
+
 
     } catch (err) {
-      console.error("❌ /api/respond-request error:", err);
 
-      return res.status(500).json({
-        success: false,
-        message: "Server error"
+      console.error(
+        "❌ /api/respond-request error:",
+        err
+      );
+
+
+      res.json({
+
+        success: false
+
       });
+
     }
+
   }
 );
+
 
 // =====================================================
 // CHAT
@@ -1878,136 +1765,48 @@ app.post(
 
 app.get(
   "/api/get-chat",
-  authenticateToken,
   async (req, res) => {
 
     try {
 
-      const currentUserEmail =
-        String(req.user.email || "")
-          .trim()
-          .toLowerCase();
+      const {
+        user1,
+        user2
+      } = req.query;
 
-      const requestedUser1 =
-        String(req.query.user1 || "")
-          .trim()
-          .toLowerCase();
 
-      const requestedUser2 =
-        String(req.query.user2 || "")
-          .trim()
-          .toLowerCase();
+      const usersPair =
+        [
+          user1,
+          user2
+        ].sort();
 
-      if (!requestedUser1 || !requestedUser2) {
-        return res.status(400).json({
-          success: false,
-          message: "Both chat users are required."
+
+      const chat =
+        await chatsCollection.findOne({
+
+          users:
+            usersPair
+
         });
-      }
 
-      if (requestedUser1 === requestedUser2) {
-        return res.status(400).json({
-          success: false,
-          message: "Invalid chat participants."
-        });
-      }
 
-      if (
-        requestedUser1 !== currentUserEmail &&
-        requestedUser2 !== currentUserEmail
-      ) {
-        return res.status(403).json({
-          success: false,
-          message: "You are not a participant in this chat."
-        });
-      }
+      res.json({
 
-      const otherUserEmail =
-        requestedUser1 === currentUserEmail
-          ? requestedUser2
-          : requestedUser1;
-
-      const currentUser = await usersCollection.findOne(
-        {
-          email: currentUserEmail
-        },
-        {
-          projection: {
-            email: 1,
-            connections: 1
-          }
-        }
-      );
-
-      const otherUser = await usersCollection.findOne(
-        {
-          email: otherUserEmail
-        },
-        {
-          projection: {
-            email: 1,
-            connections: 1
-          }
-        }
-      );
-
-      if (!currentUser || !otherUser) {
-        return res.status(404).json({
-          success: false,
-          message: "Chat user not found."
-        });
-      }
-
-      const isConnected =
-        Array.isArray(currentUser.connections) &&
-        currentUser.connections.some(
-          email =>
-            String(email)
-              .trim()
-              .toLowerCase() === otherUserEmail
-        );
-
-      if (!isConnected) {
-        return res.status(403).json({
-          success: false,
-          message: "You can chat only with connected users."
-        });
-      }
-
-      const blocked = await blockedUsersCollection.findOne({
-        $or: [
-          {
-            blockerEmail: currentUserEmail,
-            blockedEmail: otherUserEmail
-          },
-          {
-            blockerEmail: otherUserEmail,
-            blockedEmail: currentUserEmail
-          }
-        ]
-      });
-
-      if (blocked) {
-        return res.status(403).json({
-          success: false,
-          message: "Chat is unavailable because one user has blocked the other."
-        });
-      }
-
-      const usersPair = [
-        currentUserEmail,
-        otherUserEmail
-      ].sort();
-
-      const chat = await chatsCollection.findOne({
-        users: usersPair
-      });
-
-      return res.json({
         success: true,
-        messages: chat ? chat.messages || [] : [],
-        chatId: chat ? chat._id : null
+
+        messages:
+          chat
+            ? chat.messages
+            : [],
+
+        chatId:
+          chat
+            ? chat._id
+            : null
+
       });
+
 
     } catch (err) {
 
@@ -2016,9 +1815,11 @@ app.get(
         err
       );
 
-      return res.status(500).json({
-        success: false,
-        message: "Failed to load chat."
+
+      res.json({
+
+        success: false
+
       });
 
     }
@@ -2029,151 +1830,91 @@ app.get(
 
 app.post(
   "/api/send-message",
-  authenticateToken,
   async (req, res) => {
 
     try {
 
-      const from =
-        String(req.user.email || "")
-          .trim()
-          .toLowerCase();
-
-      const to =
-        String(req.body.to || "")
-          .trim()
-          .toLowerCase();
-
-      const messageText =
-        String(req.body.text || "")
-          .trim();
-
-      if (!from || !to || !messageText) {
-
-        return res.status(400).json({
-          success: false,
-          message: "Recipient and message are required."
-        });
-
-      }
-
-      if (from === to) {
-
-        return res.status(400).json({
-          success: false,
-          message: "You cannot send a message to yourself."
-        });
-
-      }
-
-      if (messageText.length > 2000) {
-
-        return res.status(400).json({
-          success: false,
-          message: "Message is too long."
-        });
-
-      }
-
-      const currentUser =
-        await usersCollection.findOne(
-          {
-            email: from
-          },
-          {
-            projection: {
-              email: 1,
-              connections: 1
-            }
-          }
-        );
-
-      const targetUser =
-        await usersCollection.findOne(
-          {
-            email: to
-          },
-          {
-            projection: {
-              email: 1
-            }
-          }
-        );
-
-      if (!currentUser || !targetUser) {
-
-        return res.status(404).json({
-          success: false,
-          message: "User not found."
-        });
-
-      }
-
-      const isConnected =
-        Array.isArray(currentUser.connections) &&
-        currentUser.connections.includes(to);
-
-      if (!isConnected) {
-
-        return res.status(403).json({
-          success: false,
-          message: "You can message only connected users."
-        });
-
-      }
-
-      const blocked =
-        await blockedUsersCollection.findOne({
-          $or: [
-            {
-              blockerEmail: from,
-              blockedEmail: to
-            },
-            {
-              blockerEmail: to,
-              blockedEmail: from
-            }
-          ]
-        });
-
-      if (blocked) {
-
-        return res.status(403).json({
-          success: false,
-          message:
-            "Message cannot be sent because one user has blocked the other."
-        });
-
-      }
-
-      const usersPair = [
+      const {
         from,
-        to
-      ].sort();
+        to,
+        text
+      } = req.body;
+
+
+      if (
+        !from ||
+        !to ||
+        !text
+      ) {
+
+        return res.json({
+
+          success: false,
+
+          message:
+            "Missing fields"
+
+        });
+
+      }
+
+
+      const usersPair =
+        [
+          from,
+          to
+        ].sort();
+
 
       const msg = {
-        sender: from,
-        text: messageText,
-        time: new Date().toISOString()
+
+        sender:
+          from,
+
+        text,
+
+        time:
+          new Date().toISOString()
+
       };
 
+
       await chatsCollection.updateOne(
+
         {
-          users: usersPair
+          users:
+            usersPair
+
         },
+
         {
+
           $push: {
-            messages: msg
+
+            messages:
+              msg
+
           },
+
           $setOnInsert: {
-            users: usersPair,
-            createdAt: new Date().toISOString()
+
+            users:
+              usersPair,
+
+            createdAt:
+              new Date().toISOString()
+
           }
+
         },
+
         {
-          upsert: true
+          upsert:
+            true
         }
+
       );
+
 
       io.to(from).emit(
         "new-message",
@@ -2185,10 +1926,13 @@ app.post(
         msg
       );
 
-      return res.json({
-        success: true,
-        message: "Message sent successfully."
+
+      res.json({
+
+        success: true
+
       });
+
 
     } catch (err) {
 
@@ -2197,15 +1941,18 @@ app.post(
         err
       );
 
-      return res.status(500).json({
-        success: false,
-        message: "Failed to send message."
+
+      res.json({
+
+        success: false
+
       });
 
     }
 
   }
 );
+
 
 // =====================================================
 // USER PROFILE
@@ -2213,161 +1960,62 @@ app.post(
 
 app.get(
   "/api/user-profile",
-  authenticateToken,
   async (req, res) => {
 
     try {
 
       const email =
-        String(req.query.email || "")
-          .trim()
-          .toLowerCase();
+        req.query.email;
 
-      if (!email) {
-
-        return res.status(400).json({
-          success: false,
-          message: "Email is required."
-        });
-
-      }
 
       const user =
-        await usersCollection.findOne(
-          {
-            email
-          },
-          {
-            projection: {
-              firstName: 1,
-              lastName: 1,
-              email: 1,
-              college: 1,
-              age: 1,
-              gender: 1,
-              travelStyle: 1,
-              bio: 1,
-              img: 1,
-              rating: 1,
-              trips: 1,
-              blogs: 1,
-              photos: 1,
-              verification: 1
-            }
-          }
-        );
+        await usersCollection.findOne({
+          email
+        });
+
 
       if (!user) {
 
-        return res.status(404).json({
+        return res.json({
+
           success: false,
-          message: "User not found."
+
+          message:
+            "Not found"
+
         });
 
       }
 
-      const score =
-        verificationScore(user);
 
-      const safeUser = {
+      res.json({
 
-        id: user._id,
-
-        firstName:
-          user.firstName || "",
-
-        lastName:
-          user.lastName || "",
-
-        email:
-          user.email,
-
-        college:
-          user.college || "",
-
-        age:
-          user.age || "",
-
-        gender:
-          user.gender || "",
-
-        travelStyle:
-          user.travelStyle || "",
-
-        bio:
-          user.bio || "",
-
-        img:
-          user.img || "",
-
-        rating:
-          user.rating || 0,
-
-        trips:
-          user.trips || [],
-
-        blogs:
-          user.blogs || [],
-
-        photos:
-          user.photos || [],
-
-        safety: {
-
-          score,
-
-          badge:
-            badgeForScore(score),
-
-          verification: {
-
-            email:
-              Boolean(
-                user.verification?.email
-              ),
-
-            phone:
-              Boolean(
-                user.verification?.phone
-              ),
-
-            identity:
-              Boolean(
-                user.verification?.identity
-              ),
-
-            selfie:
-              Boolean(
-                user.verification?.selfie
-              )
-
-          }
-
-        }
-
-      };
-
-      return res.json({
         success: true,
-        user: safeUser
+
+        user
+
       });
 
-    } catch (error) {
+
+    } catch (err) {
 
       console.error(
-        "❌ User profile error:",
-        error
+        "❌ /api/user-profile error:",
+        err
       );
 
-      return res.status(500).json({
-        success: false,
-        message: "Unable to load profile."
+
+      res.json({
+
+        success: false
+
       });
 
     }
 
   }
 );
+
 
 // =====================================================
 // GET ALL USERS
@@ -3022,122 +2670,6 @@ app.get(
   }
 );
 
-
-// =====================================================
-// SAFETY: BLOCK / REPORT / SOS / LIVE TRIP
-// =====================================================
-
-app.post("/api/block-user", authenticateToken, async (req, res) => {
-  try {
-    const blockedEmail = String(req.body.blockedEmail || "").toLowerCase().trim();
-    if (!blockedEmail || blockedEmail === req.user.email.toLowerCase()) {
-      return res.status(400).json({ success: false, message: "Valid user is required." });
-    }
-    const target = await usersCollection.findOne({ email: blockedEmail }, { projection: { _id: 1, email: 1 } });
-    if (!target) return res.status(404).json({ success: false, message: "User not found." });
-    await blockedUsersCollection.updateOne(
-      { ownerId: req.user.userId, blockedId: target._id.toString() },
-      { $set: { ownerId: req.user.userId, blockedId: target._id.toString(), blockedEmail, createdAt: new Date() } },
-      { upsert: true }
-    );
-    return res.json({ success: true, message: "User blocked." });
-  } catch (error) {
-    console.error("❌ Block user error:", error);
-    return res.status(500).json({ success: false, message: "Could not block user." });
-  }
-});
-
-app.post("/api/unblock-user", authenticateToken, async (req, res) => {
-  try {
-    const blockedEmail = String(req.body.blockedEmail || "").toLowerCase().trim();
-    const target = await usersCollection.findOne({ email: blockedEmail }, { projection: { _id: 1 } });
-    if (!target) return res.status(404).json({ success: false, message: "User not found." });
-    await blockedUsersCollection.deleteOne({ ownerId: req.user.userId, blockedId: target._id.toString() });
-    return res.json({ success: true, message: "User unblocked." });
-  } catch (error) {
-    return res.status(500).json({ success: false, message: "Could not unblock user." });
-  }
-});
-
-app.get("/api/blocked-users", authenticateToken, async (req, res) => {
-  try {
-    const blocked = await blockedUsersCollection.find({ ownerId: req.user.userId }).toArray();
-    return res.json({ success: true, blockedUsers: blocked });
-  } catch (error) {
-    return res.status(500).json({ success: false, message: "Could not load blocked users." });
-  }
-});
-
-app.post("/api/report-user", authenticateToken, async (req, res) => {
-  try {
-    const reportedEmail = String(req.body.reportedEmail || "").toLowerCase().trim();
-    const reason = String(req.body.reason || "").trim();
-    if (!reportedEmail || !reason) return res.status(400).json({ success: false, message: "Reported user and reason are required." });
-    if (reportedEmail === req.user.email.toLowerCase()) return res.status(400).json({ success: false, message: "You cannot report yourself." });
-    await safetyReportsCollection.insertOne({
-      type: "user-report", reporterId: req.user.userId, reporterEmail: req.user.email,
-      reportedEmail, reason: reason.slice(0, 1000), details: String(req.body.details || "").slice(0, 3000),
-      status: "open", createdAt: new Date()
-    });
-    return res.json({ success: true, message: "Report submitted." });
-  } catch (error) {
-    console.error("❌ Report error:", error);
-    return res.status(500).json({ success: false, message: "Could not submit report." });
-  }
-});
-
-app.post("/api/sos", authenticateToken, async (req, res) => {
-  try {
-    const latitude = Number(req.body.latitude);
-    const longitude = Number(req.body.longitude);
-    if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
-      return res.status(400).json({ success: false, message: "Valid location is required for SOS." });
-    }
-    const report = {
-      type: "sos", userId: req.user.userId, email: req.user.email,
-      latitude, longitude, tripId: req.body.tripId || null, status: "open", createdAt: new Date()
-    };
-    const result = await safetyReportsCollection.insertOne(report);
-    io.emit("sos-alert", { id: result.insertedId.toString(), ...report });
-    return res.json({ success: true, message: "SOS alert recorded.", alertId: result.insertedId });
-  } catch (error) {
-    console.error("❌ SOS error:", error);
-    return res.status(500).json({ success: false, message: "Could not record SOS." });
-  }
-});
-
-app.post("/api/live-trip/location", authenticateToken, async (req, res) => {
-  try {
-    const latitude = Number(req.body.latitude);
-    const longitude = Number(req.body.longitude);
-    if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) return res.status(400).json({ success: false, message: "Valid location required." });
-    const location = { latitude, longitude, accuracy: Number(req.body.accuracy) || null, updatedAt: new Date() };
-    await usersCollection.updateOne({ _id: new ObjectId(req.user.userId) }, { $set: { activeTripLocation: location } });
-    io.to(req.user.email).emit("trip-location-update", { userId: req.user.userId, ...location });
-    return res.json({ success: true, location });
-  } catch (error) {
-    return res.status(500).json({ success: false, message: "Could not update location." });
-  }
-});
-
-app.get("/api/safety-profile", authenticateToken, async (req, res) => {
-  try {
-    const user = await usersCollection.findOne({ _id: new ObjectId(req.user.userId) });
-    if (!user) return res.status(404).json({ success: false, message: "User not found." });
-    const verification = user.verification || {};
-    let score = 0;
-    if (verification.email) score += 10;
-    if (verification.phone) score += 20;
-    if (verification.identity) score += 25;
-    if (verification.selfie) score += 20;
-    if (user.emergencyContact?.name && user.emergencyContact?.phone) score += 10;
-    if (user.firstName && user.phone && user.gender) score += 5;
-    const badge = score >= 75 ? "Safety Verified" : score >= 50 ? "Verified" : score >= 30 ? "Trusted" : "Basic";
-    return res.json({ success: true, safetyScore: score, badge, verification, emergencyContact: user.emergencyContact || null });
-  } catch (error) {
-    return res.status(500).json({ success: false, message: "Could not load safety profile." });
-  }
-});
 
 // =====================================================
 // PING

@@ -354,47 +354,103 @@ document.getElementById("addTripForm").onsubmit = async (e)=>{
   e.preventDefault();
 
   const user = JSON.parse(localStorage.getItem("user"));
-  const msg=document.getElementById("message");
+  const token = localStorage.getItem("token");
+  const msg = document.getElementById("message");
 
-  const trip={
-    email:user.email,
-    college:document.getElementById("college").value.trim(),
-    date:document.getElementById("date").value,
-    destination:document.getElementById("destination").value.trim(),
-    distance:document.getElementById("distance").value.trim(),
-    description:document.getElementById("description").value.trim()
+  if(!user || !token){
+    msg.style.color = "red";
+    msg.textContent = "❌ Please login again.";
+
+    setTimeout(() => {
+      window.location.href = "signin.html";
+    }, 1000);
+
+    return;
+  }
+
+  const trip = {
+    destination: document.getElementById("destination").value.trim(),
+    date: document.getElementById("date").value,
+    budget: document.getElementById("distance").value.trim(),
+    notes: document.getElementById("description").value.trim()
   };
 
   if(!trip.date || !trip.destination){
-    msg.style.color="red";
-    msg.textContent="⚠️ Please fill required fields!";
+    msg.style.color = "red";
+    msg.textContent = "⚠️ Please fill required fields!";
     return;
   }
 
   try{
+
     const res = await fetch("/api/add-trip",{
       method:"POST",
-      headers:{ "Content-Type":"application/json" },
+
+      headers:{
+        "Content-Type":"application/json",
+        "Authorization":`Bearer ${token}`
+      },
+
       body:JSON.stringify(trip)
     });
 
-    const data=await res.json();
+    const data = await res.json();
+
+    if(res.status === 401 || res.status === 403){
+
+      msg.style.color = "red";
+      msg.textContent = "❌ Session expired. Please login again.";
+
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+
+      setTimeout(() => {
+        window.location.href = "signin.html";
+      }, 1000);
+
+      return;
+    }
 
     if(data.success){
-      msg.style.color="green";
-      msg.textContent="✅ Trip added successfully!";
-      user.trips=data.trips;
-      localStorage.setItem("user",JSON.stringify(user));
+
+      msg.style.color = "green";
+      msg.textContent = "✅ Trip added successfully!";
+
+      if(data.trip){
+        user.trips = user.trips || [];
+        user.trips.push(data.trip);
+
+        localStorage.setItem(
+          "user",
+          JSON.stringify(user)
+        );
+      }
+
       document.getElementById("addTripForm").reset();
-      document.getElementById("email").value=user.email;
+
+      document.getElementById("email").value =
+        user.email;
+
     } else {
-      msg.style.color="red";
-      msg.textContent="❌ " + data.message;
+
+      msg.style.color = "red";
+      msg.textContent =
+        "❌ " +
+        (data.message || "Failed to add trip.");
+
     }
 
   } catch(err){
-    msg.style.color="red";
-    msg.textContent="⚠️ Server error. Try again later.";
+
+    console.error(
+      "❌ Add trip error:",
+      err
+    );
+
+    msg.style.color = "red";
+    msg.textContent =
+      "⚠️ Server error. Try again later.";
+
   }
 
 };

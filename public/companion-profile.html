@@ -282,7 +282,7 @@ document.addEventListener("DOMContentLoaded", () => {
       <div class="tb-dropdown" id="tb-dropdown">
         <a href="profile.html">My Profile</a>
         <a href="trips.html">Trips</a>
-        <a href="my-blogs.html">My Blogs</a>
+        <a href="blogs.html">My Blogs</a>
         <a href="#" id="logout1">Logout</a>
       </div>
     `;
@@ -394,21 +394,81 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   requestBtn.onclick = async () => {
-    requestBtn.disabled = true;
+
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    requestInfo.innerText = "Please login again.";
+    requestBtn.disabled = false;
+
+    setTimeout(() => {
+      window.location.href = "signin.html";
+    }, 1000);
+
+    return;
+  }
+
+  requestBtn.disabled = true;
+  requestInfo.innerText = "Sending request...";
+
+  try {
 
     const res = await fetch(`${baseURL}/api/send-request`, {
-      method:"POST",
-      headers:{ "Content-Type":"application/json" },
-      body: JSON.stringify({ fromEmail: myEmail, toEmail: compEmail })
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        toEmail: compEmail
+      })
     });
 
     const data = await res.json();
+
+    if (res.status === 401 || res.status === 403) {
+
+      requestInfo.innerText =
+        data.message || "Session expired. Please login again.";
+
+      if (res.status === 401) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+
+        setTimeout(() => {
+          window.location.href = "signin.html";
+        }, 1000);
+      }
+
+      requestBtn.disabled = false;
+      return;
+    }
+
     if (data.success) {
-      requestInfo.innerText = "Request sent! Waiting for acceptance.";
+
+      requestInfo.innerText =
+        "Request sent! Waiting for acceptance.";
+
+      requestBtn.disabled = true;
+
     } else {
-      requestInfo.innerText = data.message || "Error.";
+
+      requestInfo.innerText =
+        data.message || "Unable to send request.";
+
       requestBtn.disabled = false;
     }
+
+  } catch (error) {
+
+    console.error("❌ Send request error:", error);
+
+    requestInfo.innerText =
+      "Unable to send request. Please try again.";
+
+    requestBtn.disabled = false;
+  }
+
   };
 
 })();

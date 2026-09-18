@@ -1,574 +1,1164 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sign Up - TravelBuddy</title>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 
 <style>
+
 /* 🌈 Reset */
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
 }
 
 body {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  background: linear-gradient(135deg, #00BFA6, #FDCB6E);
-  overflow-x: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #00BFA6, #FDCB6E);
+    overflow-x: hidden;
 }
 
 /* ✈️ Navbar */
 .navbar {
-  position: absolute;
-  top: 0;
-  width: 100%;
-  background: rgba(255, 255, 255, 0.25);
-  backdrop-filter: blur(10px);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  padding: 15px 0;
-  z-index: 10;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 15px 0;
+    z-index: 10;
 }
 
 .nav-container {
-  max-width: 1100px;
-  margin: auto;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 20px;
+    max-width: 1100px;
+    margin: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
 }
 
 .nav-logo h2 {
-  color: white;
-  font-weight: 700;
+    color: white;
+    font-weight: 700;
 }
 
 .nav-menu {
-  display: flex;
-  gap: 1.5rem;
-  list-style: none;
+    display: flex;
+    gap: 1.5rem;
+    list-style: none;
 }
 
 .nav-menu a {
-  text-decoration: none;
-  color: white;
-  font-weight: 500;
-  transition: 0.3s;
+    text-decoration: none;
+    color: white;
+    font-weight: 500;
+    transition: 0.3s;
 }
 
 .nav-menu a:hover {
-  color: #222;
+    color: #222;
 }
 
 /* 🪄 Auth Container */
 .auth-container {
-  position: relative;
-  width: 90%;
-  height: 600px;
-  max-width: 950px;
-  background: #fff;
-  border-radius: 20px;
-  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.15);
-  display: flex;
-  overflow: hidden;
-  margin-top: 100px;
-  transition: 0.8s ease-in-out;
+    position: relative;
+    width: 90%;
+    height: 600px;
+    max-width: 950px;
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.15);
+    display: flex;
+    overflow: hidden;
+    margin-top: 100px;
+    transition: 0.8s ease-in-out;
 }
 
 /* Left Panel */
 .auth-panel {
-  flex: 0.4;
-  background: linear-gradient(135deg, #00BFA6, #2ECC71);
-  color: white;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  border-radius: 150px 0 0 100px;
-  padding: 40px 30px;
+    flex: 0.4;
+    background: linear-gradient(135deg, #00BFA6, #2ECC71);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    border-radius: 150px 0 0 100px;
+    padding: 40px 30px;
 }
 
 .auth-panel h2 {
-  font-size: 1.8rem;
-  margin-bottom: 15px;
+    font-size: 1.8rem;
+    margin-bottom: 15px;
 }
 
 .auth-panel p {
-  font-size: 1rem;
-  margin-bottom: 25px;
+    font-size: 1rem;
+    margin-bottom: 25px;
 }
 
 .auth-panel a {
-  display: inline-block;
-  border: 2px solid white;
-  padding: 10px 25px;
-  border-radius: 10px;
-  color: white;
-  text-decoration: none;
-  font-weight: 600;
-  transition: 0.3s;
+    display: inline-block;
+    border: 2px solid white;
+    padding: 10px 25px;
+    border-radius: 10px;
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    transition: 0.3s;
 }
 
 .auth-panel a:hover {
-  background: white;
-  color: #00BFA6;
+    background: white;
+    color: #00BFA6;
 }
 
 /* 🌍 Signup Form Box */
 .auth-box {
-  flex: 0.6;
-  background: white;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 35px 45px;
-  text-align: center;
-  overflow-y: auto;
-  max-height: 600px;
-  scroll-behavior: smooth;
+    flex: 0.6;
+    background: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 35px 45px;
+    text-align: center;
+    overflow-y: auto;
+    max-height: 600px;
+    scroll-behavior: smooth;
 }
 
 .auth-box::-webkit-scrollbar {
-  width: 6px;
+    width: 6px;
 }
+
 .auth-box::-webkit-scrollbar-thumb {
-  background: #ccc;
-  border-radius: 10px;
+    background: #ccc;
+    border-radius: 10px;
 }
 
 .auth-box h1 {
-  font-size: 2rem;
-  color: #00BFA6;
-  margin-bottom: 10px;
+    font-size: 2rem;
+    color: #00BFA6;
+    margin-bottom: 10px;
 }
 
 .auth-box p {
-  color: #555;
-  font-weight: 500;
-  margin-bottom: 25px;
+    color: #555;
+    font-weight: 500;
+    margin-bottom: 25px;
 }
 
 /* Input Form */
 form {
-  width: 100%;
-  max-width: 500px;
+    width: 100%;
+    max-width: 500px;
 }
 
 .form-row {
-  display: flex;
-  gap: 15px;
-  flex-wrap: wrap;
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
 }
 
 .form-group {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 16px;
-  text-align: left;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 16px;
+    text-align: left;
 }
 
 .form-group label {
-  margin-bottom: 6px;
-  font-weight: 500;
-  color: #333;
+    margin-bottom: 6px;
+    font-weight: 500;
+    color: #333;
 }
 
 .form-group input,
 .form-group select {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  font-size: 1rem;
-  outline: none;
-  transition: 0.3s;
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    font-size: 1rem;
+    outline: none;
+    transition: 0.3s;
 }
 
 .form-group input:focus,
 .form-group select:focus {
-  border-color: #00BFA6;
-  box-shadow: 0 0 6px #00bfa64d;
+    border-color: #00BFA6;
+    box-shadow: 0 0 6px #00bfa64d;
 }
 
 /* Profile Photo */
 .profile-upload {
-  text-align: center;
-  margin-bottom: 25px;
+    text-align: center;
+    margin-bottom: 25px;
 }
+
 #photoPreview {
-  width: 110px;
-  height: 110px;
-  border-radius: 50%;
-  border: 3px solid #00BFA6;
-  overflow: hidden;
-  margin: 10px auto;
-  background: #eee;
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    border: 3px solid #00BFA6;
+    overflow: hidden;
+    margin: 10px auto;
+    background: #eee;
 }
+
 #previewImg {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
+
 #profilePhoto {
-  margin-top: 10px;
-  font-size: 0.9rem;
-  color: #333;
-  cursor: pointer;
+    margin-top: 10px;
+    font-size: 0.9rem;
+    color: #333;
+    cursor: pointer;
 }
 
 /* Buttons */
 .btn-full {
-  width: 100%;
-  padding: 14px;
-  border: none;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #00BFA6, #FDCB6E);
-  color: white;
-  font-weight: 600;
-  font-size: 1.05rem;
-  cursor: pointer;
-  transition: 0.3s ease;
-  margin-top: 10px;
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #00BFA6, #FDCB6E);
+    color: white;
+    font-weight: 600;
+    font-size: 1.05rem;
+    cursor: pointer;
+    transition: 0.3s ease;
+    margin-top: 10px;
 }
 
 .btn-full:hover {
-  transform: scale(1.03);
-  box-shadow: 0 4px 15px rgba(0, 191, 166, 0.3);
+    transform: scale(1.03);
+    box-shadow: 0 4px 15px rgba(0, 191, 166, 0.3);
 }
 
 /* Checkboxes */
 .checkbox-group {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-top: 10px;
-  font-size: 0.9rem;
-  color: #333;
-  flex-wrap: wrap;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+    font-size: 0.9rem;
+    color: #333;
+    flex-wrap: wrap;
 }
 
 .checkbox-group input {
-  width: auto;
+    width: auto;
 }
 
 .checkbox-group a {
-  color: #00BFA6;
-  text-decoration: none;
-  font-weight: 600;
+    color: #00BFA6;
+    text-decoration: none;
+    font-weight: 600;
 }
 
 .checkbox-group a:hover {
-  text-decoration: underline;
+    text-decoration: underline;
 }
 
 /* ✈️ Plane animation */
 .plane {
-  position: absolute;
-  font-size: 2.5rem;
-  top: 45%;
-  right: 8%;
-  opacity: 0;
-  transition: 1s ease-in-out;
+    position: absolute;
+    font-size: 2.5rem;
+    top: 45%;
+    right: 8%;
+    opacity: 0;
+    transition: 1s ease-in-out;
 }
 
 .fly-left {
-  transform: translateX(-650px);
-  opacity: 1;
+    transform: translateX(-650px);
+    opacity: 1;
 }
 
 /* 📱 Responsive Styles */
 @media (max-width: 1024px) {
-  .auth-container {
-    flex-direction: column;
-    width: 95%;
-    margin-top: 110px;
-  }
-  .auth-panel {
-    border-radius: 0;
-    width: 100%;
-    flex: none;
-    padding: 30px 20px;
-  }
-  .auth-box {
-    width: 100%;
-    padding: 25px;
-    max-height: none;
-  }
+
+    .auth-container {
+        flex-direction: column;
+        width: 95%;
+        margin-top: 110px;
+    }
+
+    .auth-panel {
+        border-radius: 0;
+        width: 100%;
+        flex: none;
+        padding: 30px 20px;
+    }
+
+    .auth-box {
+        width: 100%;
+        padding: 25px;
+        max-height: none;
+    }
 }
 
 @media (max-width: 600px) {
-  .auth-box h1 {
-    font-size: 1.6rem;
-  }
-  .form-row {
-    flex-direction: column;
-  }
-  .auth-panel h2 {
-    font-size: 1.5rem;
-  }
-  .auth-panel p {
-    font-size: 0.9rem;
-  }
-  .btn-full {
-    font-size: 1rem;
-    padding: 12px;
-  }
-  .navbar .nav-menu {
-    gap: 1rem;
-  }
-  .plane {
-    display: none;
-  }
+
+    .auth-box h1 {
+        font-size: 1.6rem;
+    }
+
+    .form-row {
+        flex-direction: column;
+    }
+
+    .auth-panel h2 {
+        font-size: 1.5rem;
+    }
+
+    .auth-panel p {
+        font-size: 0.9rem;
+    }
+
+    .btn-full {
+        font-size: 1rem;
+        padding: 12px;
+    }
+
+    .navbar .nav-menu {
+        gap: 1rem;
+    }
+
+    .plane {
+        display: none;
+    }
 }
+
 </style>
 </head>
 
 <body>
+
 <nav class="navbar">
-  <div class="nav-container">
-    <div class="nav-logo"><h2>TravelBuddy</h2></div>
-    <ul class="nav-menu">
-      <li><a href="index.html">Home</a></li>
-      <!-- <li><a href="signin.html">Login</a></li> -->
-      <!-- <li><a href="signup.html" class="active">Sign Up</a></li> -->
-    </ul>
-  </div>
+
+    <div class="nav-container">
+
+        <div class="nav-logo">
+            <h2>TravelBuddy</h2>
+        </div>
+
+        <ul class="nav-menu">
+
+            <li>
+                <a href="index.html">Home</a>
+            </li>
+
+            <!-- <li><a href="signin.html">Login</a></li> -->
+            <!-- <li><a href="signup.html" class="active">Sign Up</a></li> -->
+
+        </ul>
+
+    </div>
+
 </nav>
+
 
 <div class="auth-container">
 
-  <!-- ✈️ Left Panel -->
-  <div class="auth-panel">
-    <h2>Welcome Aboard!</h2>
-    <p>Already a member? Sign in to continue your adventure.</p>
-    <a href="signin.html" id="signinLink">Sign In ✈️</a>
-  </div>
+    <!-- ✈️ Left Panel -->
 
-  <!-- 🌍 Signup Form -->
-  <div class="auth-box">
-    <h1>Join the Travel Tribe 🌍</h1>
-    <p>Create your TravelBuddy account to meet new companions!</p>
+    <div class="auth-panel">
 
-    <form id="signupForm" enctype="multipart/form-data">
-      <div class="profile-upload">
-        <label><b>Profile Photo</b></label>
-        <div id="photoPreview">
-          <img id="previewImg" src="https://cdn-icons-png.flaticon.com/512/1077/1077114.png" alt="Preview">
-        </div>
-        <input type="file" id="profilePhoto" name="profilePhoto" accept="image/*" required>
-      </div>
+        <h2>Welcome Aboard!</h2>
 
-      <div class="form-row">
-        <div class="form-group">
-          <label for="firstName">First Name</label>
-          <input type="text" id="firstName" name="firstName" required>
-        </div>
-        <div class="form-group">
-          <label for="lastName">Last Name</label>
-          <input type="text" id="lastName" name="lastName" required>
-        </div>
-      </div>
+        <p>
+            Already a member? Sign in to continue your adventure.
+        </p>
 
-      <div class="form-group">
-        <label for="email">Email Address</label>
-        <input type="email" id="email" name="email" required>
-      </div>
+        <a href="signin.html" id="signinLink">
+            Sign In ✈️
+        </a>
 
-      <div class="form-group">
-        <label for="phone">Phone Number</label>
-        <input type="tel" id="phone" name="phone" required>
-      </div>
+    </div>
 
-      <div class="form-group">
-        <label for="college">College (Optional)</label>
-        <input type="text" id="college" name="college">
-      </div>
 
-      <div class="form-row">
-        <div class="form-group">
-          <label for="age">Age</label>
-          <select id="age" name="age" required>
-            <option value="">Select your age range</option>
-            <option value="18-22">18-22</option>
-            <option value="23-27">23-27</option>
-            <option value="28-32">28-32</option>
-            <option value="33+">33+</option>
-          </select>
-        </div>
+    <!-- 🌍 Signup Form -->
 
-        <div class="form-group">
-          <label for="travelStyle">Travel Style</label>
-          <select id="travelStyle" name="travelStyle" required>
-            <option value="">What's your vibe?</option>
-            <option value="budget">Budget Explorer 💰</option>
-            <option value="adventure">Adventure Seeker 🏔️</option>
-            <option value="cultural">Culture Enthusiast 🏛️</option>
-            <option value="relaxed">Chill Traveler 🏖️</option>
-            <option value="party">Party Hopper 🎉</option>
-            <option value="solo">Solo to Group 👥</option>
-          </select>
-        </div>
-      </div>
+    <div class="auth-box">
 
-      <div class="form-group">
-        <label for="password">Password</label>
-        <input type="password" id="password" name="password" required>
-      </div>
+        <h1>Join the Travel Tribe 🌍</h1>
 
-      <div class="form-group">
-        <label for="confirmPassword">Confirm Password</label>
-        <input type="password" id="confirmPassword" name="confirmPassword" required>
-      </div>
+        <p>
+            Create your TravelBuddy account to meet new companions!
+        </p>
 
-      <div class="form-group">
-        <label for="aadhaar">Aadhaar Number</label>
-        <input type="text" id="aadhaar" name="aadhaar" required maxlength="12" pattern="\d{12}">
-      </div>
 
-      <div class="checkbox-group">
-        <input type="checkbox" id="terms" required>
-        <label for="terms">I agree to the <a href="#">Terms</a> & <a href="#">Privacy Policy</a></label>
-      </div>
+        <form id="signupForm" enctype="multipart/form-data">
 
-      <div class="checkbox-group">
-        <input type="checkbox" id="newsletter">
-        <label for="newsletter">Send me travel tips & updates</label>
-      </div>
 
-      <button type="submit" class="btn-full">Create Account 🚀</button>
-    </form>
-  </div>
+            <!-- Profile Photo -->
 
-  <div class="plane" id="plane">✈️</div>
+            <div class="profile-upload">
+
+                <label>
+                    <b>Profile Photo</b>
+                </label>
+
+                <div id="photoPreview">
+
+                    <img
+                        id="previewImg"
+                        src="https://cdn-icons-png.flaticon.com/512/1077/1077114.png"
+                        alt="Preview"
+                    >
+
+                </div>
+
+                <input
+                    type="file"
+                    id="profilePhoto"
+                    name="profilePhoto"
+                    accept="image/*"
+                    required
+                >
+
+            </div>
+
+
+            <!-- Name -->
+
+            <div class="form-row">
+
+                <div class="form-group">
+
+                    <label for="firstName">
+                        First Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="firstName"
+                        name="firstName"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="lastName">
+                        Last Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="lastName"
+                        name="lastName"
+                        required
+                    >
+
+                </div>
+
+            </div>
+
+
+            <!-- Email -->
+
+            <div class="form-group">
+
+                <label for="email">
+                    Email Address
+                </label>
+
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    required
+                >
+
+            </div>
+
+
+            <!-- Phone -->
+
+            <div class="form-group">
+
+                <label for="phone">
+                    Phone Number
+                </label>
+
+                <input
+                    type="tel"
+                    id="phone"
+                    name="phone"
+                    required
+                >
+
+            </div>
+
+
+            <!-- College -->
+
+            <div class="form-group">
+
+                <label for="college">
+                    College (Optional)
+                </label>
+
+                <input
+                    type="text"
+                    id="college"
+                    name="college"
+                >
+
+            </div>
+
+
+            <!-- Age + Travel Style -->
+
+            <div class="form-row">
+
+                <div class="form-group">
+
+                    <label for="age">
+                        Age
+                    </label>
+
+                    <select
+                        id="age"
+                        name="age"
+                        required
+                    >
+
+                        <option value="">
+                            Select your age range
+                        </option>
+
+                        <option value="18-22">
+                            18-22
+                        </option>
+
+                        <option value="23-27">
+                            23-27
+                        </option>
+
+                        <option value="28-32">
+                            28-32
+                        </option>
+
+                        <option value="33+">
+                            33+
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="travelStyle">
+                        Travel Style
+                    </label>
+
+                    <select
+                        id="travelStyle"
+                        name="travelStyle"
+                        required
+                    >
+
+                        <option value="">
+                            What's your vibe?
+                        </option>
+
+                        <option value="budget">
+                            Budget Explorer 💰
+                        </option>
+
+                        <option value="adventure">
+                            Adventure Seeker 🏔️
+                        </option>
+
+                        <option value="cultural">
+                            Culture Enthusiast 🏛️
+                        </option>
+
+                        <option value="relaxed">
+                            Chill Traveler 🏖️
+                        </option>
+
+                        <option value="party">
+                            Party Hopper 🎉
+                        </option>
+
+                        <option value="solo">
+                            Solo to Group 👥
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <!-- Password -->
+
+            <div class="form-group">
+
+                <label for="password">
+                    Password
+                </label>
+
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    required
+                >
+
+            </div>
+
+
+            <!-- Confirm Password -->
+
+            <div class="form-group">
+
+                <label for="confirmPassword">
+                    Confirm Password
+                </label>
+
+                <input
+                    type="password"
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    required
+                >
+
+            </div>
+
+
+            <!-- Aadhaar -->
+
+            <div class="form-group">
+
+                <label for="aadhaar">
+                    Aadhaar Number
+                </label>
+
+                <input
+                    type="text"
+                    id="aadhaar"
+                    name="aadhaar"
+                    required
+                    maxlength="12"
+                    pattern="\d{12}"
+                >
+
+            </div>
+
+
+            <!-- 🛡️ SAFETY INFORMATION -->
+
+            <div class="form-group">
+
+                <label for="gender">
+                    <i class="fas fa-user-shield"></i>
+                    Gender
+                </label>
+
+                <select
+                    id="gender"
+                    name="gender"
+                    required
+                >
+
+                    <option value="">
+                        Select Gender
+                    </option>
+
+                    <option value="female">
+                        Female
+                    </option>
+
+                    <option value="male">
+                        Male
+                    </option>
+
+                    <option value="other">
+                        Other / Prefer not to say
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- Emergency Contact Name -->
+
+            <div class="form-group">
+
+                <label for="emergencyName">
+                    <i class="fas fa-user-friends"></i>
+                    Emergency Contact Name
+                </label>
+
+                <input
+                    type="text"
+                    id="emergencyName"
+                    name="emergencyName"
+                    placeholder="Enter emergency contact name"
+                    required
+                >
+
+            </div>
+
+
+            <!-- Emergency Contact Phone -->
+
+            <div class="form-group">
+
+                <label for="emergencyPhone">
+                    <i class="fas fa-phone-alt"></i>
+                    Emergency Contact Phone
+                </label>
+
+                <input
+                    type="tel"
+                    id="emergencyPhone"
+                    name="emergencyPhone"
+                    placeholder="Enter emergency contact number"
+                    pattern="[0-9]{10}"
+                    maxlength="10"
+                    required
+                >
+
+            </div>
+
+
+            <!-- Terms -->
+
+            <div class="checkbox-group">
+
+                <input
+                    type="checkbox"
+                    id="terms"
+                    required
+                >
+
+                <label for="terms">
+                    I agree to the
+                    <a href="#">Terms</a>
+                    &
+                    <a href="#">Privacy Policy</a>
+                </label>
+
+            </div>
+
+
+            <!-- Newsletter -->
+
+            <div class="checkbox-group">
+
+                <input
+                    type="checkbox"
+                    id="newsletter"
+                >
+
+                <label for="newsletter">
+                    Send me travel tips & updates
+                </label>
+
+            </div>
+
+
+            <!-- Submit -->
+
+            <button
+                type="submit"
+                class="btn-full"
+            >
+                Create Account 🚀
+            </button>
+
+
+        </form>
+
+    </div>
+
+
+    <div class="plane" id="plane">
+        ✈️
+    </div>
+
 </div>
 
+
 <script>
-  const baseURL = window.location.hostname === "localhost"
-    ? "http://localhost:5001"
-    : "https://travelbuddy-hluu.onrender.com";
-  
-  // ✈️ Plane animation
-  const plane = document.getElementById("plane");
-  document.getElementById("signinLink").addEventListener("click", e => {
-    e.preventDefault();
-    plane.classList.add("fly-left");
-    setTimeout(() => window.location.href = "signin.html", 1000);
-  });
-  
-  // ✅ Image Preview & Conversion
-  let profileBase64 = "";
-  document.getElementById("profilePhoto").addEventListener("change", e => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = ev => {
-        document.getElementById("previewImg").src = ev.target.result;
-        profileBase64 = ev.target.result; // store Base64
-      };
-      reader.readAsDataURL(file);
-    }
-  });
-  
-  // ✅ Verhoeff Algorithm for Aadhaar
-  function verhoeffCheck(aadhaar) {
-    const d = [
-      [0,1,2,3,4,5,6,7,8,9],
-      [1,2,3,4,0,6,7,8,9,5],
-      [2,3,4,0,1,7,8,9,5,6],
-      [3,4,0,1,2,8,9,5,6,7],
-      [4,0,1,2,3,9,5,6,7,8],
-      [5,9,8,7,6,0,4,3,2,1],
-      [6,5,9,8,7,1,0,4,3,2],
-      [7,6,5,9,8,2,1,0,4,3],
-      [8,7,6,5,9,3,2,1,0,4],
-      [9,8,7,6,5,4,3,2,1,0]
-    ];
-    const p = [
-      [0,1,2,3,4,5,6,7,8,9],
-      [1,5,7,6,2,8,3,0,9,4],
-      [5,8,0,3,7,9,6,1,4,2],
-      [8,9,1,6,0,4,3,5,2,7],
-      [9,4,5,3,1,2,6,8,7,0],
-      [4,2,8,6,5,7,3,9,0,1],
-      [2,7,9,3,8,0,6,4,1,5],
-      [7,0,4,6,9,1,3,2,5,8]
-    ];
-    let c = 0;
-    aadhaar.split('').reverse().forEach((num, i) => {
-      c = d[c][p[i % 8][parseInt(num, 10)]];
+
+const baseURL =
+    window.location.hostname === "localhost"
+        ? "http://localhost:5001"
+        : "https://travelbuddy-hluu.onrender.com";
+
+
+// ✈️ Plane animation
+
+const plane = document.getElementById("plane");
+
+document
+    .getElementById("signinLink")
+    .addEventListener("click", e => {
+
+        e.preventDefault();
+
+        plane.classList.add("fly-left");
+
+        setTimeout(() => {
+            window.location.href = "signin.html";
+        }, 1000);
+
     });
+
+
+// ✅ Image Preview & Conversion
+
+let profileBase64 = "";
+
+document
+    .getElementById("profilePhoto")
+    .addEventListener("change", e => {
+
+        const file = e.target.files[0];
+
+        if (file) {
+
+            const reader = new FileReader();
+
+            reader.onload = ev => {
+
+                document.getElementById("previewImg").src =
+                    ev.target.result;
+
+                profileBase64 = ev.target.result;
+
+            };
+
+            reader.readAsDataURL(file);
+
+        }
+
+    });
+
+
+// ✅ Verhoeff Algorithm for Aadhaar
+
+function verhoeffCheck(aadhaar) {
+
+    const d = [
+        [0,1,2,3,4,5,6,7,8,9],
+        [1,2,3,4,0,6,7,8,9,5],
+        [2,3,4,0,1,7,8,9,5,6],
+        [3,4,0,1,2,8,9,5,6,7],
+        [4,0,1,2,3,9,5,6,7,8],
+        [5,9,8,7,6,0,4,3,2,1],
+        [6,5,9,8,7,1,0,4,3,2],
+        [7,6,5,9,8,2,1,0,4,3],
+        [8,7,6,5,9,3,2,1,0,4],
+        [9,8,7,6,5,4,3,2,1,0]
+    ];
+
+    const p = [
+        [0,1,2,3,4,5,6,7,8,9],
+        [1,5,7,6,2,8,3,0,9,4],
+        [5,8,0,3,7,9,6,1,4,2],
+        [8,9,1,6,0,4,3,5,2,7],
+        [9,4,5,3,1,2,6,8,7,0],
+        [4,2,8,6,5,7,3,9,0,1],
+        [2,7,9,3,8,0,6,4,1,5],
+        [7,0,4,6,9,1,3,2,5,8]
+    ];
+
+    let c = 0;
+
+    aadhaar
+        .split('')
+        .reverse()
+        .forEach((num, i) => {
+
+            c =
+                d[c][
+                    p[i % 8][parseInt(num, 10)]
+                ];
+
+        });
+
     return c === 0;
-  }
-  
-  // ✅ Signup Submission
-  document.getElementById("signupForm").addEventListener("submit", async e => {
-    e.preventDefault();
-  
-    const firstName = document.getElementById("firstName").value.trim();
-    const lastName = document.getElementById("lastName").value.trim();
-    const email = document.getElementById("email").value.trim();
-    const phone = document.getElementById("phone").value.trim();
-    const college = document.getElementById("college").value.trim();
-    const age = document.getElementById("age").value.trim();
-    const travelStyle = document.getElementById("travelStyle").value.trim();
-    const password = document.getElementById("password").value.trim();
-    const confirmPassword = document.getElementById("confirmPassword").value.trim();
-    const aadhaar = document.getElementById("aadhaar").value.trim();
-    const newsletter = document.getElementById("newsletter").checked;
-  
-    // Validation Section 🛡️
-    if (!firstName || !email || !password) return alert("Please fill required fields.");
-    if (password.length < 8) return alert("Password must be at least 8 characters.");
-    if (password !== confirmPassword) return alert("Passwords do not match!");
-    if (!/^[6-9]\d{9}$/.test(phone)) return alert("Enter a valid 10-digit Indian phone number.");
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return alert("Invalid email address.");
-    if (!/^\d{12}$/.test(aadhaar) || !verhoeffCheck(aadhaar)) return alert("Invalid Aadhaar number!");
-  
-    const formData = {
-      firstName,
-      lastName,
-      email,
-      phone,
-      college,
-      age,
-      travelStyle,
-      password,
-      aadhaar,
-      newsletter,
-      img: profileBase64 || "https://cdn-icons-png.flaticon.com/512/1077/1077114.png",
-    };
-  
-    try {
-      const res = await fetch(`${baseURL}/api/signup`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData)
-      });
-      const data = await res.json();
-  
-      if (data.success) {
-        alert("🎉 Account created successfully!");
-        window.location.href = "signin.html";
-      } else {
-        alert("⚠️ " + data.message);
-      }
-    } catch (err) {
-      console.error(err);
-      alert("❌ Server error. Please try again later.");
-    }
-  });
-  </script>
-  
+
+}
+
+
+// ✅ Signup Submission
+
+document
+    .getElementById("signupForm")
+    .addEventListener("submit", async e => {
+
+        e.preventDefault();
+
+
+        // Get normal signup information
+
+        const firstName =
+            document.getElementById("firstName").value.trim();
+
+        const lastName =
+            document.getElementById("lastName").value.trim();
+
+        const email =
+            document.getElementById("email").value.trim();
+
+        const phone =
+            document.getElementById("phone").value.trim();
+
+        const college =
+            document.getElementById("college").value.trim();
+
+        const age =
+            document.getElementById("age").value.trim();
+
+        const travelStyle =
+            document.getElementById("travelStyle").value.trim();
+
+        const password =
+            document.getElementById("password").value.trim();
+
+        const confirmPassword =
+            document.getElementById("confirmPassword").value.trim();
+
+        const aadhaar =
+            document.getElementById("aadhaar").value.trim();
+
+        const newsletter =
+            document.getElementById("newsletter").checked;
+
+
+        // 🛡️ Get Safety Information
+
+        const gender =
+            document.getElementById("gender").value;
+
+        const emergencyName =
+            document
+                .getElementById("emergencyName")
+                .value
+                .trim();
+
+        const emergencyPhone =
+            document
+                .getElementById("emergencyPhone")
+                .value
+                .trim();
+
+
+        // 🛡️ Validation Section
+
+        if (!firstName || !email || !password) {
+
+            return alert(
+                "Please fill required fields."
+            );
+
+        }
+
+
+        if (password.length < 8) {
+
+            return alert(
+                "Password must be at least 8 characters."
+            );
+
+        }
+
+
+        if (password !== confirmPassword) {
+
+            return alert(
+                "Passwords do not match!"
+            );
+
+        }
+
+
+        if (!/^[6-9]\d{9}$/.test(phone)) {
+
+            return alert(
+                "Enter a valid 10-digit Indian phone number."
+            );
+
+        }
+
+
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+
+            return alert(
+                "Invalid email address."
+            );
+
+        }
+
+
+        if (
+            !/^\d{12}$/.test(aadhaar) ||
+            !verhoeffCheck(aadhaar)
+        ) {
+
+            return alert(
+                "Invalid Aadhaar number!"
+            );
+
+        }
+
+
+        // 🛡️ Safety validation
+
+        if (!gender) {
+
+            return alert(
+                "Please select your gender."
+            );
+
+        }
+
+
+        if (!emergencyName) {
+
+            return alert(
+                "Please enter emergency contact name."
+            );
+
+        }
+
+
+        if (!/^[6-9]\d{9}$/.test(emergencyPhone)) {
+
+            return alert(
+                "Enter a valid 10-digit emergency contact number."
+            );
+
+        }
+
+
+        // 📦 Prepare data for backend
+
+        const formData = {
+
+            firstName,
+            lastName,
+            email,
+            phone,
+            college,
+            age,
+            travelStyle,
+            password,
+            aadhaar,
+
+            // 🛡️ Safety Information
+
+            gender,
+
+            emergencyContact: {
+
+                name: emergencyName,
+
+                phone: emergencyPhone
+
+            },
+
+            newsletter,
+
+            img:
+                profileBase64 ||
+                "https://cdn-icons-png.flaticon.com/512/1077/1077114.png"
+
+        };
+
+
+        // 🚀 Send data to server
+
+        try {
+
+            const res =
+                await fetch(
+                    `${baseURL}/api/signup`,
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body:
+                            JSON.stringify(formData)
+
+                    }
+                );
+
+
+            const data =
+                await res.json();
+
+
+            if (data.success) {
+
+                alert(
+                    "🎉 Account created successfully!"
+                );
+
+                window.location.href =
+                    "signin.html";
+
+            } else {
+
+                alert(
+                    "⚠️ " + data.message
+                );
+
+            }
+
+        } catch (err) {
+
+            console.error(err);
+
+            alert(
+                "❌ Server error. Please try again later."
+            );
+
+        }
+
+    });
+
+</script>
+
 </body>
+
 </html>

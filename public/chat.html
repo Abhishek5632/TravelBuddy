@@ -122,93 +122,267 @@ button:hover{opacity:0.85;}
 (async function(){
 
   const params = new URLSearchParams(window.location.search);
-  const to = params.get("to");
+  const to = (params.get("to") || "").trim().toLowerCase();
 
   if(!to){
     alert("Invalid chat link");
     window.location.href = "profile.html";
+    return;
   }
 
   const user = JSON.parse(localStorage.getItem("user"));
-  if(!user){
+  const token = localStorage.getItem("token");
+
+  if(!user || !token){
     alert("Please login first");
     window.location.href = "signin.html";
+    return;
   }
 
-  const myEmail = user.email;
+  const myEmail = String(user.email || "").trim().toLowerCase();
+
+  if(!myEmail){
+    alert("Invalid user session");
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
+    window.location.href = "signin.html";
+    return;
+  }
+
   const baseURL = window.location.hostname === "localhost"
     ? "http://localhost:5001"
     : "https://travelbuddy-hluu.onrender.com";
 
   document.getElementById("chatName").innerText = to;
-  // back link goes to the companion's profile
-  document.getElementById("backLink").href = `companion-profile.html?data=${encodeURIComponent(JSON.stringify({ email: to }))}`;
 
-  // connect socket and join room
+  document.getElementById("backLink").href =
+    `companion-profile.html?data=${encodeURIComponent(
+      JSON.stringify({ email: to })
+    )}`;
+
   const socket = io();
-  socket.emit("join", { email: myEmail });
+
+  socket.emit("join", {
+    email: myEmail
+  });
 
   const messagesBox = document.getElementById("messages");
+  const msgInput = document.getElementById("msgInput");
+  const sendBtn = document.getElementById("sendBtn");
 
   function addMessage(text, sender, time){
+
     const div = document.createElement("div");
-    div.className = "msg " + (sender === myEmail ? "me" : "them");
-    div.innerHTML = `${escapeHtml(text)}<span class="time">${new Date(time).toLocaleString()}</span>`;
+
+    div.className =
+      "msg " +
+      (sender === myEmail ? "me" : "them");
+
+    div.innerHTML =
+      `${escapeHtml(String(text))}` +
+      `<span class="time">${new Date(time).toLocaleString()}</span>`;
+
     messagesBox.appendChild(div);
-    messagesBox.scrollTop = messagesBox.scrollHeight;
+
+    messagesBox.scrollTop =
+      messagesBox.scrollHeight;
   }
 
-  function escapeHtml(unsafe) {
+  function escapeHtml(unsafe){
+
     return unsafe
-     .replaceAll("&", "&amp;")
-     .replaceAll("<", "&lt;")
-     .replaceAll(">", "&gt;")
-     .replaceAll('"', "&quot;")
-     .replaceAll("'", "&#039;");
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+
   }
 
-  // Load old chat
   async function loadChat(){
+
     try {
-      const res = await fetch(`${baseURL}/api/get-chat?user1=${encodeURIComponent(myEmail)}&user2=${encodeURIComponent(to)}`);
+
+      const res = await fetch(
+        `${baseURL}/api/get-chat?user2=${encodeURIComponent(to)}`,
+        {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${token}`
+          }
+        }
+      );
+
       const data = await res.json();
-      if(data.success){
-        data.messages.forEach(m=>{
-          addMessage(m.text, m.sender, m.time);
-        });
+
+      if(!res.ok){
+
+        alert(data.message || "Unable to load chat.");
+
+        if(res.status === 401 || res.status === 403){
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+          window.location.href = "signin.html";
+        }
+
+        return;
       }
-    } catch (e) {
-      console.error("Failed to load chat:", e);
+
+      if(data.success){
+
+        messagesBox.innerHTML = "";
+
+        data.messages.forEach(m => {
+          addMessage(
+            m.text,
+            m.sender,
+            m.time
+          );
+        });
+
+      }
+
+    } catch(e){
+
+      console.error(
+        "Failed to load chat:",
+        e
+      );
+
+      alert("Unable to load chat.");
+
     }
+
   }
+
   await loadChat();
 
-  // Send New Msg
-  document.getElementById("sendBtn").onclick = sendMessage;
-  document.getElementById("msgInput").addEventListener("keypress", e=>{
-    if(e.key === "Enter") sendMessage();
-  });
+  sendBtn.onclick = sendMessage;
+
+  msgInput.addEventListener(
+    "keypress",
+    e => {
+
+      if(e.key === "Enter"){
+        sendMessage();
+      }
+
+    }
+  );
 
   async function sendMessage(){
-    const text = document.getElementById("msgInput").value.trim();
+
+    const text =
+      msgInput.value.trim();
+
     if(!text) return;
 
-    // send via socket for realtime and server storage
-    socket.emit("send-message", { from: myEmail, to, text });
-    document.getElementById("msgInput").value = "";
+    sendBtn.disabled = true;
+
+    try {
+
+      const res = await fetch(
+        `${baseURL}/api/send-message`,
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+
+          body: JSON.stringify({
+            to,
+            text
+          })
+        }
+      );
+
+      const data = await res.json();
+
+      if(!res.ok){
+
+        alert(
+          data.message ||
+          "Message could not be sent."
+        );
+
+        if(res.status === 401 || res.status === 403){
+
+          if(
+            data.message &&
+            data.message.toLowerCase().includes("session")
+          ){
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+            window.location.href = "signin.html";
+          }
+
+        }
+
+        return;
+      }
+
+      if(data.success){
+
+        addMessage(
+          text,
+          myEmail,
+          new Date().toISOString()
+        );
+
+        msgInput.value = "";
+
+      }
+
+    } catch(e){
+
+      console.error(
+        "Send message error:",
+        e
+      );
+
+      alert(
+        "Unable to send message. Please try again."
+      );
+
+    } finally {
+
+      sendBtn.disabled = false;
+      msgInput.focus();
+
+    }
+
   }
 
-  // Receive realtime msg
-  socket.on("new-message", payload => {
-    const msg = payload.message;
-    const users = payload.users;
-    if(users.includes(myEmail) && users.includes(to)){
-      addMessage(msg.text, msg.sender, msg.time);
+  socket.on(
+    "new-message",
+    payload => {
+
+      if(!payload) return;
+
+      const msg =
+        payload.message || payload;
+
+      if(!msg.sender) return;
+
+      if(
+        msg.sender === to &&
+        msg.sender !== myEmail
+      ){
+
+        addMessage(
+          msg.text,
+          msg.sender,
+          msg.time
+        );
+
+      }
+
     }
-  });
+  );
 
 })();
 </script>
-
 </body>
 </html>
