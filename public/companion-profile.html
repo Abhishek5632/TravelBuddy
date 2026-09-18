@@ -351,9 +351,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const user = JSON.parse(localStorage.getItem("user"));
   const myEmail = user?.email;
+  const token = localStorage.getItem("token");
+  if (!token) {
+  alert("Please login again.");
+  localStorage.removeItem("user");
+  localStorage.removeItem("token");
+  window.location.href = "signin.html";
+  return;
+}
   const defaultImg = "https://cdn-icons-png.flaticon.com/512/1077/1077114.png";
 
-  const res = await fetch(`${baseURL}/api/user-profile?email=${compEmail}`);
+  const res = await fetch(
+  `${baseURL}/api/user-profile?email=${encodeURIComponent(compEmail)}`,
+  {
+    headers: {
+      "Authorization": `Bearer ${token}`
+    }
+  }
+);
+
   const out = await res.json();
   const u = out.user;
 
