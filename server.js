@@ -3119,7 +3119,58 @@ app.post("/api/live-trip/location", authenticateToken, async (req, res) => {
     return res.status(500).json({ success: false, message: "Could not update location." });
   }
 });
+function verificationScore(user) {
+  let score = 0;
 
+  const verification = user.verification || {};
+
+  if (verification.email) {
+    score += 10;
+  }
+
+  if (verification.phone) {
+    score += 20;
+  }
+
+  if (verification.identity) {
+    score += 25;
+  }
+
+  if (verification.selfie) {
+    score += 20;
+  }
+
+  if (user.emergencyContact?.verified) {
+    score += 10;
+  }
+
+  if (
+    user.firstName &&
+    user.lastName &&
+    user.college &&
+    user.bio
+  ) {
+    score += 5;
+  }
+
+  return Math.min(score, 100);
+}
+
+function badgeForScore(score) {
+  if (score >= 75) {
+    return "Safety Verified";
+  }
+
+  if (score >= 50) {
+    return "Verified";
+  }
+
+  if (score >= 30) {
+    return "Trusted";
+  }
+
+  return "Basic";
+}
 app.get("/api/safety-profile", authenticateToken, async (req, res) => {
   try {
     const user = await usersCollection.findOne({ _id: new ObjectId(req.user.userId) });
