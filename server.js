@@ -12,34 +12,57 @@ import { Server as IOServer } from "socket.io";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
-import nodemailer from "nodemailer";
+
 
 dotenv.config();
 
-const emailTransporter =
-  process.env.SMTP_HOST &&
-  process.env.SMTP_USER &&
-  process.env.SMTP_PASS
-    ? nodemailer.createTransport({
-        host: process.env.SMTP_HOST,
-        port: Number(process.env.SMTP_PORT || 587),
-        secure: String(process.env.SMTP_PORT) === "465",
-        auth: {
-          user: process.env.SMTP_USER,
-          pass: process.env.SMTP_PASS
-        }
-      })
-    : null;
-if (emailTransporter) {
-  emailTransporter.verify((error) => {
-    if (error) {
-      console.error("❌ SMTP connection failed:", error.message);
-    } else {
-      console.log("✅ SMTP connection ready.");
-    }
-  });
+const RESEND_API_KEY = process.env.RESEND_API_KEY;
+const RESEND_FROM = process.env.RESEND_FROM;
+
+if (RESEND_API_KEY && RESEND_FROM) {
+  console.log("✅ Resend email service configured.");
 } else {
-  console.log("⚠️ SMTP transporter not configured.");
+  console.log("⚠️ Resend email service not configured.");
+}
+
+async function sendLoginOtpEmail(to, otp) {
+  if (!RESEND_API_KEY || !RESEND_FROM) {
+    throw new Error("Resend email service is not configured.");
+  }
+
+  const response = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${RESEND_API_KEY}`
+    },
+    body: JSON.stringify({
+      from: RESEND_FROM,
+      to: [to],
+      subject: "TravelBuddy Login OTP",
+      text: `Your TravelBuddy login OTP is ${otp}. It expires in 5 minutes.`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 500px; margin: auto;">
+          <h2>TravelBuddy Login OTP 🔐</h2>
+          <p>Your login OTP is:</p>
+          <h1 style="letter-spacing: 6px;">${otp}</h1>
+          <p>This OTP expires in <strong>5 minutes</strong>.</p>
+          <p>If you did not try to log in, you can safely ignore this email.</p>
+        </div>
+      `
+    })
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    console.error("❌ Resend email error:", data);
+    throw new Error(data?.message || "Failed to send OTP email.");
+  }
+
+  console.log("📧 Login OTP email sent to:", to);
+
+  return data;
 }
 
 if (!process.env.JWT_SECRET) {
@@ -799,8 +822,7 @@ app.post("/api/login", async (req, res) => {
             revoked: false
         });
 
-        // Create JWT only after password verification. Optional MFA can be enabled
-        // with REQUIRE_LOGIN_OTP=true once an SMTP transporter is configured.
+    // Create JWT only after password verification.
         if (process.env.REQUIRE_LOGIN_OTP === "true") {
             const otp = crypto.randomInt(100000, 1000000).toString();
             const otpHash = crypto.createHash("sha256").update(otp).digest("hex");
@@ -820,16 +842,18 @@ app.post("/api/login", async (req, res) => {
                 expiresAt
             });
 
-            if (emailTransporter) {
-                await emailTransporter.sendMail({
-                    from: process.env.SMTP_FROM || process.env.SMTP_USER,
-                    to: user.email,
-                    subject: "TravelBuddy Login OTP",
-                    text: `Your TravelBuddy login OTP is ${otp}. It expires in 5 minutes.`
-                });
-            } else {
+            try {
+                await sendLoginOtpEmail(user.email, otp);
+            } catch (emailError) {
+                console.error("❌ OTP email delivery failed:", emailError.message);
+
                 await sessionsCollection.deleteOne({ sessionId });
-                return res.status(500).json({ success: false, message: "Login OTP email service is not configured." });
+                await otpChallengesCollection.deleteOne({ challengeId });
+
+                return res.status(500).json({
+                    success: false,
+                    message: "Unable to send login OTP. Please try again later."
+                });
             }
 
             return res.json({
